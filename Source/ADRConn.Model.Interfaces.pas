@@ -65,7 +65,17 @@ type
     function toString: String;
   end;
 
+function CreateConnection: IADRConnection;
+
 implementation
+
+uses
+  ADRConn.Model.Firedac.Connection;
+
+function CreateConnection: IADRConnection;
+begin
+  result := TADRConnModelFiredacConnection.New;
+end;
 
 { TADRDriverConnHelper }
 
