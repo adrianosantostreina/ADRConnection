@@ -26,7 +26,8 @@ implementation
 { TADRConnModelGenerator }
 
 uses
-  ADRConn.Model.Generator.Firebird;
+  ADRConn.Model.Generator.Firebird,
+  ADRConn.Model.Generator.Postgres;
 
 constructor TADRConnModelGenerator.create(Query: IADRQuery);
 begin
@@ -49,6 +50,7 @@ class function TADRConnModelGenerator.NewGenerator(Connection: IADRConnection; Q
 begin
   case Connection.Params.Driver of
     adrFirebird : result := TADRConnModelGeneratorFirebird.create(Query);
+    adrPostgres : result := TADRConnModelGeneratorPostgres.create(Query);
   end;
 end;
 

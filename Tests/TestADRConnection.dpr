@@ -25,7 +25,8 @@ uses
   ADRConn.Test.Query.Base in 'Source\ADRConn.Test.Query.Base.pas',
   ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas',
   ADRConn.Model.Generator in '..\Source\ADRConn.Model.Generator.pas',
-  ADRConn.Model.Generator.Firebird in '..\Source\ADRConn.Model.Generator.Firebird.pas';
+  ADRConn.Model.Generator.Firebird in '..\Source\ADRConn.Model.Generator.Firebird.pas',
+  ADRConn.Model.Generator.Postgres in '..\Source\ADRConn.Model.Generator.Postgres.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
