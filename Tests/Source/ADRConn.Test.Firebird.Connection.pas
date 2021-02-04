@@ -16,6 +16,8 @@ type
     [Test]
     procedure TestConnection;
 
+    [Test]
+    procedure TestConnectionVPS;
   end;
 
 
@@ -31,8 +33,22 @@ begin
     .Database('turbomobile.fdb')
     .UserName('sysdba')
     .Password('masterkey')
-  .&End
-  .Connect;
+  .&End;
+
+  Assert.WillNotRaise(TestConnect);
+end;
+
+procedure TADRConnTestFirebird.TestConnectionVPS;
+begin
+  FConnection := CreateConnection;
+  FConnection.Params
+    .Driver(adrFirebird)
+    .Server('69.162.92.41')
+    .Port(3050)
+    .Database('c:\Databases\Firebird\turbomobile.fdb')
+    .UserName('sysdba')
+    .Password('masterkey')
+  .&End;
 
   Assert.WillNotRaise(TestConnect);
 end;
