@@ -27,7 +27,8 @@ implementation
 
 uses
   ADRConn.Model.Generator.Firebird,
-  ADRConn.Model.Generator.Postgres;
+  ADRConn.Model.Generator.Postgres,
+  ADRConn.Model.Generator.SQLite;
 
 constructor TADRConnModelGenerator.create(Query: IADRQuery);
 begin
@@ -49,8 +50,9 @@ end;
 class function TADRConnModelGenerator.NewGenerator(Connection: IADRConnection; Query: IADRQuery): IADRGenerator;
 begin
   case Connection.Params.Driver of
-    adrFirebird : result := TADRConnModelGeneratorFirebird.create(Query);
-    adrPostgres : result := TADRConnModelGeneratorPostgres.create(Query);
+    adrFirebird : result := TADRConnModelGeneratorFirebird.New(Query);
+    adrPostgres : result := TADRConnModelGeneratorPostgres.New(Query);
+    adrSQLite   : Result := TADRConnModelGeneratorSQLite.New(Query)
   end;
 end;
 

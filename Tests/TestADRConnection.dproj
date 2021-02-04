@@ -102,6 +102,7 @@
         <DCCReference Include="..\Source\ADRConn.Model.Generator.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.Generator.Firebird.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.Generator.Postgres.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Generator.SQLite.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
