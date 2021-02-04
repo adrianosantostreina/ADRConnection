@@ -31,6 +31,9 @@ type
 
     [Test]
     procedure TestFindWithDateTimeParams;
+
+    [Test]
+    procedure TestCurrentSequence;
   end;
 
 
@@ -53,6 +56,18 @@ begin
     .Password('masterkey')
   .&End
   .Connect;
+end;
+
+procedure TADRConnTestQueryFirebird.TestCurrentSequence;
+var
+  sequence: Double;
+  nextSequence: Double;
+begin
+  sequence := FQuery.Generator.GetCurrentSequence('GEN_TB_CIDADE_ID');
+  nextSequence := FQuery.Generator.GetNextSequence('GEN_TB_CIDADE_ID');
+  Assert.IsTrue(sequence > 0);
+  Assert.IsTrue(nextSequence > 0);
+  Assert.AreEqual((nextSequence - 1).ToString, sequence.ToString);
 end;
 
 procedure TADRConnTestQueryFirebird.TestFindAll;

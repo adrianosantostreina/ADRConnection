@@ -23,7 +23,9 @@ uses
   ADRConn.Test.Firebird.Query in 'Source\ADRConn.Test.Firebird.Query.pas',
   ADRConn.Test.MySQL.Connection in 'Source\ADRConn.Test.MySQL.Connection.pas',
   ADRConn.Test.Query.Base in 'Source\ADRConn.Test.Query.Base.pas',
-  ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas';
+  ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas',
+  ADRConn.Model.Generator in '..\Source\ADRConn.Model.Generator.pas',
+  ADRConn.Model.Generator.Firebird in '..\Source\ADRConn.Model.Generator.Firebird.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

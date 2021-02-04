@@ -10,6 +10,7 @@ uses
 type
   TADRDriverConn = (adrFirebird, adrPostgres, adrMySql, adrSQLite);
   IADRConnectionParams = interface;
+  IADRGenerator = interface;
 
   IADRConnection = interface
     ['{681E59C7-6AAC-47DE-AE6D-F649C1922565}']
@@ -69,6 +70,14 @@ type
     function Open: TDataSet;
     function ExecSQL: IADRQuery;
     function ExecSQLAndCommit: IADRQuery;
+
+    function Generator: IADRGenerator;
+  end;
+
+  IADRGenerator = interface
+    ['{ABAB66A1-F210-4BD4-8594-F67F1781158A}']
+    function GetCurrentSequence(Name: String): Double;
+    function GetNextSequence(Name: String): Double;
   end;
 
   TADRDriverConnHelper = record helper for TADRDriverConn

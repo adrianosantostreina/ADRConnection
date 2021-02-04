@@ -4,6 +4,7 @@ interface
 
 uses
   ADRConn.Model.Interfaces,
+  ADRConn.Model.Generator,
   Data.DB,
   System.Classes,
   System.SysUtils,
@@ -16,6 +17,7 @@ type TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
     [Weak]
     FConnection: IADRConnection;
     FDQuery : TFDQuery;
+    FGenerator: IADRGenerator;
 
   protected
     function SQL(Value: String): IADRQuery; overload;
@@ -34,6 +36,7 @@ type TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
     function ExecSQL: IADRQuery;
     function ExecSQLAndCommit: IADRQuery;
 
+    function Generator: IADRGenerator;
   public
     constructor create(AConnection: IADRConnection);
     class function New(AConnection: IADRConnection): IADRQuery;
@@ -82,6 +85,13 @@ begin
   finally
     FDQuery.SQL.Clear;
   end;
+end;
+
+function TADRConnModelFiredacQuery.Generator: IADRGenerator;
+begin
+  if not Assigned(FGenerator) then
+    FGenerator := TADRConnModelGenerator.NewGenerator(FConnection, Self);
+  Result := FGenerator;
 end;
 
 class function TADRConnModelFiredacQuery.New(AConnection: IADRConnection): IADRQuery;

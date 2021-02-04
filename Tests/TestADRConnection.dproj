@@ -99,6 +99,8 @@
         <DCCReference Include="Source\ADRConn.Test.MySQL.Connection.pas"/>
         <DCCReference Include="Source\ADRConn.Test.Query.Base.pas"/>
         <DCCReference Include="Source\ADRConn.Test.SQLite.Connection.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Generator.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Generator.Firebird.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
