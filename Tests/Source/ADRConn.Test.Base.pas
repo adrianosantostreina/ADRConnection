@@ -7,7 +7,6 @@ uses
   ADRConn.Model.Interfaces;
 
 type
-  [TestFixture]
   TADRConnTestBase = class
   protected
     FConnection: IADRConnection;
@@ -23,8 +22,5 @@ procedure TADRConnTestBase.TestConnect;
 begin
   FConnection.Connect;
 end;
-
-initialization
-  TDUnitX.RegisterTestFixture(TADRConnTestBase);
 
 end.

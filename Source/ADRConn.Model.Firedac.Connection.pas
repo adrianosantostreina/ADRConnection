@@ -9,6 +9,7 @@ uses
   Data.DB,
   FireDAC.Comp.Client,
   FireDAC.Stan.Def,
+  FireDAC.Stan.Async,
   FireDAC.UI.Intf,
   FireDAC.Comp.UI,
   Firedac.Phys,
@@ -42,6 +43,7 @@ type TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
 
   public
     constructor create;
+    destructor Destroy; override;
     class function New: IADRConnection;
 
 end;
@@ -88,6 +90,14 @@ begin
   FreeAndNil(FDriver);
   FDriver := TADRConnModelFiredacDriver.GetDriver(FParams);
   FDriver.VendorLib := FParams.Lib;
+end;
+
+destructor TADRConnModelFiredacConnection.Destroy;
+begin
+  FConnection.Free;
+  FDriver.Free;
+  FCursor.Free;
+  inherited;
 end;
 
 function TADRConnModelFiredacConnection.Disconnect: IADRConnection;

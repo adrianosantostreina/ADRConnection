@@ -4,7 +4,8 @@ interface
 
 uses
   Data.DB,
-  System.Classes;
+  System.Classes,
+  System.SysUtils;
 
 type
   TADRDriverConn = (adrFirebird, adrPostgres, adrMySql, adrSQLite);
@@ -46,14 +47,24 @@ type
     function Port       : Integer; overload;
     function AutoCommit : Boolean; overload;
     function Driver     : TADRDriverConn; overload;
+    function Settings   : TFormatSettings;
 
     function &End: IADRConnection;
   end;
 
   IADRQuery = interface
-    ['{2038E15B-0654-4A00-A7A8-CA7BBC33E684}']
+    ['{AE3BE608-658C-46D4-AC60-6F4EDB6AF90D}']
     function SQL(Value: String): IADRQuery; overload;
     function SQL(Value: string; const Args: array of const): IADRQuery; overload;
+
+    function ParamAsInteger      (Name: String; Value: Integer): IADRQuery;
+    function ParamAsCurrency     (Name: String; Value: Currency): IADRQuery;
+    function ParamAsFloat        (Name: String; Value: Double): IADRQuery;
+    function ParamAsString       (Name: String; Value: String): IADRQuery;
+    function ParamAsDateTime     (Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsDate         (Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsTime         (Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsBoolean      (Name: String; Value: Boolean): IADRQuery;
 
     function Open: TDataSet;
     function ExecSQL: IADRQuery;
@@ -66,15 +77,22 @@ type
   end;
 
 function CreateConnection: IADRConnection;
+function CreateQuery(Connection: IADRConnection): IADRQuery;
 
 implementation
 
 uses
-  ADRConn.Model.Firedac.Connection;
+  ADRConn.Model.Firedac.Connection,
+  ADRConn.Model.Firedac.Query;
 
 function CreateConnection: IADRConnection;
 begin
   result := TADRConnModelFiredacConnection.New;
+end;
+
+function CreateQuery(Connection: IADRConnection): IADRQuery;
+begin
+  result := TADRConnModelFiredacQuery.New(Connection);
 end;
 
 { TADRDriverConnHelper }

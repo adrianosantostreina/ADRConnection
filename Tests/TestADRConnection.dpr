@@ -13,13 +13,17 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   {$ENDIF }
   DUnitX.TestFramework,
-  ADRConn.Test.Base in 'Source\ADRConn.Test.Base.pas',
   ADRConn.Model.Interfaces in '..\Source\ADRConn.Model.Interfaces.pas',
   ADRConn.Model.Firedac.Connection in '..\Source\ADRConn.Model.Firedac.Connection.pas',
   ADRConn.Model.Params in '..\Source\ADRConn.Model.Params.pas',
   ADRConn.Model.Firedac.Driver in '..\Source\ADRConn.Model.Firedac.Driver.pas',
-  ADRConn.Test.Connection.MySQL in 'Source\ADRConn.Test.Connection.MySQL.pas',
-  ADRConn.Test.Connection.SQLite in 'Source\ADRConn.Test.Connection.SQLite.pas';
+  ADRConn.Model.Firedac.Query in '..\Source\ADRConn.Model.Firedac.Query.pas',
+  ADRConn.Test.Base in 'Source\ADRConn.Test.Base.pas',
+  ADRConn.Test.Firebird.Connection in 'Source\ADRConn.Test.Firebird.Connection.pas',
+  ADRConn.Test.Firebird.Query in 'Source\ADRConn.Test.Firebird.Query.pas',
+  ADRConn.Test.MySQL.Connection in 'Source\ADRConn.Test.MySQL.Connection.pas',
+  ADRConn.Test.Query.Base in 'Source\ADRConn.Test.Query.Base.pas',
+  ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
@@ -32,6 +36,8 @@ begin
 {$IFDEF TESTINSIGHT}
   TestInsight.DUnitX.RunRegisteredTests;
 {$ELSE}
+  IsConsole := False;
+  ReportMemoryLeaksOnShutdown := True;
   try
     //Check command line options, will exit if invalid
     TDUnitX.CheckCommandLine;

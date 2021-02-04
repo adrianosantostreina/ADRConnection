@@ -3,7 +3,8 @@ unit ADRConn.Model.Params;
 interface
 
 uses
-  ADRConn.Model.Interfaces;
+  ADRConn.Model.Interfaces,
+  System.SysUtils;
 
 type TADRConnModelParams = class(TInterfacedObject, IADRConnectionParams)
 
@@ -17,6 +18,7 @@ type TADRConnModelParams = class(TInterfacedObject, IADRConnectionParams)
     FServer      : String;
     FSchema      : string;
     FLib         : string;
+    FFormatSettings: TFormatSettings;
     FPort        : Integer;
     FAutoCommit  : Boolean;
     FDriver      : TADRDriverConn;
@@ -41,6 +43,7 @@ type TADRConnModelParams = class(TInterfacedObject, IADRConnectionParams)
     function Port       : Integer; overload;
     function AutoCommit : Boolean; overload;
     function Driver     : TADRDriverConn; overload;
+    function Settings   : TFormatSettings;
 
     function &End: IADRConnection;
 
@@ -69,6 +72,13 @@ begin
   FConnection := Connection;
   FAutoCommit := True;
   FDriver := adrFirebird;
+
+  FFormatSettings := TFormatSettings.Create;
+  FFormatSettings.DateSeparator   := '-';
+  FFormatSettings.ShortDateFormat := 'yyyy-MM-dd';
+  FFormatSettings.TimeSeparator   := ':';
+  FFormatSettings.ShortTimeFormat := 'hh:mm';
+  FFormatSettings.LongTimeFormat  := 'hh:mm:ss';
 end;
 
 function TADRConnModelParams.Database(Value: string): IADRConnectionParams;
@@ -156,6 +166,11 @@ end;
 function TADRConnModelParams.Server: string;
 begin
   result := FServer;
+end;
+
+function TADRConnModelParams.Settings: TFormatSettings;
+begin
+  result := FFormatSettings;
 end;
 
 function TADRConnModelParams.UserName: string;

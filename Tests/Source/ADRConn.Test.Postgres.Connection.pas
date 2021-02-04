@@ -1,4 +1,4 @@
-unit ADRConn.Test.Connection.Postgres;
+unit ADRConn.Test.Postgres.Connection;
 
 interface
 

@@ -7,6 +7,7 @@ uses
   Data.DB,
   System.Classes,
   System.SysUtils,
+  FireDAC.Stan.Param,
   FireDAC.Comp.Client;
 
 type TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
@@ -16,14 +17,24 @@ type TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
     FConnection: IADRConnection;
     FDQuery : TFDQuery;
 
-  public
+  protected
     function SQL(Value: String): IADRQuery; overload;
     function SQL(Value: string; const Args: array of const): IADRQuery; overload;
+
+    function ParamAsInteger      (Name: String; Value: Integer): IADRQuery;
+    function ParamAsCurrency     (Name: String; Value: Currency): IADRQuery;
+    function ParamAsFloat        (Name: String; Value: Double): IADRQuery;
+    function ParamAsString       (Name: String; Value: String): IADRQuery;
+    function ParamAsDateTime     (Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsDate         (Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsTime         (Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsBoolean      (Name: String; Value: Boolean): IADRQuery;
 
     function Open: TDataSet;
     function ExecSQL: IADRQuery;
     function ExecSQLAndCommit: IADRQuery;
 
+  public
     constructor create(AConnection: IADRConnection);
     class function New(AConnection: IADRConnection): IADRQuery;
     destructor Destroy; override;
@@ -81,12 +92,16 @@ end;
 function TADRConnModelFiredacQuery.Open: TDataSet;
 var
   query : TFDQuery;
+  i: Integer;
 begin
   try
     query := TFDQuery.Create(nil);
     try
       query.Connection := TFDConnection(FConnection.Component);
       query.SQL.Text := FDQuery.SQL.Text;
+      for i := 0 to Pred(FDQuery.ParamCount) do
+        query.ParamByName(FDQuery.Params[i].Name).Value := FDQuery.Params[i].Value;
+
       query.Open;
 
       result := query;
@@ -97,6 +112,54 @@ begin
   finally
     FDQuery.SQL.Clear;
   end;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsBoolean(Name: String; Value: Boolean): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsBoolean := Value;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsCurrency(Name: String; Value: Currency): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsCurrency := Value;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsDate(Name: String; Value: TDateTime): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsDate := Value;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsDateTime(Name: String; Value: TDateTime): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsDateTime := Value;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsFloat(Name: String; Value: Double): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsFloat := Value;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsInteger(Name: String; Value: Integer): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsInteger := Value;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsString(Name: String; Value: String): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsString := Value;
+end;
+
+function TADRConnModelFiredacQuery.ParamAsTime(Name: String; Value: TDateTime): IADRQuery;
+begin
+  Result := Self;
+  FDQuery.ParamByName(Name).AsTime := Value;
 end;
 
 function TADRConnModelFiredacQuery.SQL(Value: String): IADRQuery;

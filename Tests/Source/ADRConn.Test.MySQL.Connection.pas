@@ -1,4 +1,4 @@
-unit ADRConn.Test.Connection.MySQL;
+unit ADRConn.Test.MySQL.Connection;
 
 interface
 

@@ -1,4 +1,4 @@
-unit ADRConn.Test.Connection.Firebird;
+unit ADRConn.Test.SQLite.Connection;
 
 interface
 
@@ -10,7 +10,7 @@ uses
 
 type
   [TestFixture]
-  TADRConnTestFirebird = class(TADRConnTestBase)
+  TADRConnTestSQLite = class(TADRConnTestBase)
 
   public
     [Test]
@@ -20,16 +20,14 @@ type
 
 implementation
 
-{ TADRConnTestFirebird }
+{ TADRConnTestSQLite }
 
-procedure TADRConnTestFirebird.TestConnection;
+procedure TADRConnTestSQLite.TestConnection;
 begin
   FConnection := CreateConnection;
   FConnection.Params
-    .Driver(adrFirebird)
-    .Database('turbomobile.fdb')
-    .UserName('sysdba')
-    .Password('masterkey')
+    .Driver(adrSQLite)
+    .Database('pdvmobile.db3')
   .&End;
 
   Assert.WillNotRaise(TestConnect);
