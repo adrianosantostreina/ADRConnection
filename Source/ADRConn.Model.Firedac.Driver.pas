@@ -43,7 +43,7 @@ end;
 class function TADRConnModelFiredacDriver.GetFirebirdDriver: TFDPhysDriverLink;
 begin
   result := TFDPhysFBDriverLink.Create(nil);
-  Result.VendorLib := '';
+  Result.VendorLib := 'fbclient.dll';
 end;
 
 class function TADRConnModelFiredacDriver.GetMySQLDriver: TFDPhysDriverLink;
@@ -61,7 +61,7 @@ end;
 class function TADRConnModelFiredacDriver.GetSQLiteDriver: TFDPhysDriverLink;
 begin
   result := TFDPhysSQLiteDriverLink.Create(nil);
-  result.VendorLib := '';
+  result.VendorLib := 'sqlite3.dll';
 end;
 
 end.

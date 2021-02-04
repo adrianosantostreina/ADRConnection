@@ -18,7 +18,8 @@ uses
   ADRConn.Model.Firedac.Connection in '..\Source\ADRConn.Model.Firedac.Connection.pas',
   ADRConn.Model.Params in '..\Source\ADRConn.Model.Params.pas',
   ADRConn.Model.Firedac.Driver in '..\Source\ADRConn.Model.Firedac.Driver.pas',
-  ADRConn.Test.Connection.MySQL in 'Source\ADRConn.Test.Connection.MySQL.pas';
+  ADRConn.Test.Connection.MySQL in 'Source\ADRConn.Test.Connection.MySQL.pas',
+  ADRConn.Test.Connection.SQLite in 'Source\ADRConn.Test.Connection.SQLite.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

@@ -68,3 +68,5 @@ __recovery/
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
 Tests/Win32/Debug/dunitx-results.xml
+Tests/dunitx-results.xml
+Tests/TURBOMOBILE.FDB

@@ -27,12 +27,12 @@ begin
   FConnection := CreateConnection;
   FConnection.Params
     .Driver(adrFirebird)
-    .Database('pdvmobile')
+    .Database('turbomobile.fdb')
     .UserName('sysdba')
     .Password('masterkey')
   .&End;
 
-  Assert.WillNotRaise(FConnection.Connect);
+  Assert.WillNotRaise(TestConnect);
 end;
 
 end.

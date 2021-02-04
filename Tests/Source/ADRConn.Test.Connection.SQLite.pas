@@ -27,10 +27,10 @@ begin
   FConnection := CreateConnection;
   FConnection.Params
     .Driver(adrSQLite)
-    .Database('pdvmobile')
+    .Database('pdvmobile.db3')
   .&End;
 
-  Assert.WillNotRaise(FConnection.Connect);
+  Assert.WillNotRaise(TestConnect);
 end;
 
 end.
