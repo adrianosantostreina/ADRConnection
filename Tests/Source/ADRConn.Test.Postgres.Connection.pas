@@ -27,14 +27,15 @@ begin
   FConnection := CreateConnection;
   FConnection.Params
     .Driver(adrPostgres)
-    .Database('pdvmobile')
+    .Server('127.0.0.1')
+    .Database('adrconntest')
     .UserName('postgres')
     .Password('postgres')
-    .Port(5432)
+    .Port(15433)
     .Schema('public')
   .&End;
 
-  Assert.WillNotRaise(FConnection.Connect);
+  Assert.WillNotRaise(TestConnect);
 end;
 
 end.

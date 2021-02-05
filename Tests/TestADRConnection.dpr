@@ -19,17 +19,14 @@ uses
   ADRConn.Model.Firedac.Driver in '..\Source\ADRConn.Model.Firedac.Driver.pas',
   ADRConn.Model.Firedac.Query in '..\Source\ADRConn.Model.Firedac.Query.pas',
   ADRConn.Test.Base in 'Source\ADRConn.Test.Base.pas',
-  ADRConn.Test.Firebird.Connection in 'Source\ADRConn.Test.Firebird.Connection.pas',
-  ADRConn.Test.Firebird.Query in 'Source\ADRConn.Test.Firebird.Query.pas',
-  ADRConn.Test.MySQL.Connection in 'Source\ADRConn.Test.MySQL.Connection.pas',
   ADRConn.Test.Query.Base in 'Source\ADRConn.Test.Query.Base.pas',
-  ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas',
   ADRConn.Model.Generator in '..\Source\ADRConn.Model.Generator.pas',
   ADRConn.Model.Generator.Firebird in '..\Source\ADRConn.Model.Generator.Firebird.pas',
   ADRConn.Model.Generator.Postgres in '..\Source\ADRConn.Model.Generator.Postgres.pas',
   ADRConn.Model.Generator.SQLite in '..\Source\ADRConn.Model.Generator.SQLite.pas',
   ADRConn.Model.Generator.MySQL in '..\Source\ADRConn.Model.Generator.MySQL.pas',
-  ADRConn.Test.MySQL.Query in 'Source\ADRConn.Test.MySQL.Query.pas';
+  ADRConn.Test.Postgres.Connection in 'Source\ADRConn.Test.Postgres.Connection.pas',
+  ADRConn.Test.Postgres.Query in 'Source\ADRConn.Test.Postgres.Query.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
@@ -56,12 +53,14 @@ begin
 
     //tell the runner how we will log things
     //Log to the console window if desired
-    if TDUnitX.Options.ConsoleMode <> TDunitXConsoleMode.Off then
-    begin
-      logger := TDUnitXConsoleLogger.Create(TDUnitX.Options.ConsoleMode = TDunitXConsoleMode.Quiet);
-      runner.AddLogger(logger);
-    end;
+//    if TDUnitX.Options.ConsoleMode <> TDunitXConsoleMode.Off then
+//    begin
+//      logger := TDUnitXConsoleLogger.Create(TDUnitX.Options.ConsoleMode = TDunitXConsoleMode.Quiet);
+//      runner.AddLogger(logger);
+//    end;
     //Generate an NUnit compatible XML File
+    logger := TDUnitXConsoleLogger.Create(true);
+    runner.AddLogger(logger);
     nunitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
     runner.AddLogger(nunitLogger);
 
