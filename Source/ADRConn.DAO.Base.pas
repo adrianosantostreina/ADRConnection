@@ -3,10 +3,13 @@ unit ADRConn.DAO.Base;
 interface
 
 uses
-  ADRConn.Model.Interfaces;
+  ADRConn.Model.Interfaces,
+  Data.DB;
 
-type TADRConnDAOBase = class(TInterfacedObject)
+type
+  TDataSet = Data.DB.TDataSet;
 
+  TADRConnDAOBase = class(TInterfacedObject)
   private
     FManagerTransaction: Boolean;
 

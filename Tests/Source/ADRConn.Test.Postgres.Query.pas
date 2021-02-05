@@ -20,6 +20,12 @@ type
   public
     constructor create;
 
+    [Setup]
+    procedure Setup;
+
+    [TearDown]
+    procedure TearDown;
+
     [Test]
     procedure TestFindAll;
 
@@ -34,6 +40,9 @@ type
 
     [Test]
     procedure TestNextSequence;
+
+    [Test]
+    procedure TestInsertWithParams;
   end;
 
 
@@ -60,12 +69,22 @@ begin
   .Connect;
 end;
 
+procedure TADRConnTestQueryPostgres.Setup;
+begin
+  FConnection.StartTransaction;
+end;
+
 procedure TADRConnTestQueryPostgres.TestNextSequence;
 var
   nextSequence: Double;
 begin
   nextSequence := FQuery.Generator.GetNextSequence('idaccount');
   Assert.IsTrue(nextSequence > 0);
+end;
+
+procedure TADRConnTestQueryPostgres.TearDown;
+begin
+  FConnection.Rollback;
 end;
 
 procedure TADRConnTestQueryPostgres.TestFindAll;
@@ -132,6 +151,22 @@ begin
   finally
     dataSet.Free;
   end;
+end;
+
+procedure TADRConnTestQueryPostgres.TestInsertWithParams;
+begin
+  FQuery
+    .SQL('insert into person (id, name, birthdayDate)')
+    .SQL('values (:id, :name, :birthdayDate)')
+    .ParamAsFloat('id', FQuery.Generator.GetNextSequence('idperson'))
+    .ParamAsString('name', 'test 2')
+    .ParamAsDateTime('birthdayDate', now);
+
+  Assert.WillNotRaise(
+    procedure
+    begin
+      FQuery.ExecSQL;
+    end);
 end;
 
 end.
