@@ -83,6 +83,7 @@ type
   TADRDriverConnHelper = record helper for TADRDriverConn
   public
     function toString: String;
+    procedure fromString(Value: String);
   end;
 
 function CreateConnection: IADRConnection;
@@ -105,6 +106,36 @@ begin
 end;
 
 { TADRDriverConnHelper }
+
+procedure TADRDriverConnHelper.fromString(Value: String);
+var
+  driver: string;
+begin
+  driver := Value.Trim.ToLower;
+  if driver.Equals('firebird') then
+  begin
+    Self := adrFirebird;
+    Exit;
+  end;
+
+  if driver.Equals('postgres') then
+  begin
+    Self := adrPostgres;
+    Exit;
+  end;
+
+  if driver.Equals('mysql') then
+  begin
+    Self := adrMySql;
+    Exit;
+  end;
+
+  if driver.Equals('sqlite') then
+  begin
+    Self := adrSQLite;
+    Exit;
+  end;
+end;
 
 function TADRDriverConnHelper.toString: String;
 begin

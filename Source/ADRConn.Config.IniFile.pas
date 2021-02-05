@@ -3,49 +3,49 @@ unit ADRConn.Config.IniFile;
 interface
 
 uses
+  ADRConn.Model.Interfaces
   System.IniFiles,
   System.SysUtils;
 
 type TADRConnConfigIni = class
 
+  private
+    FFileName    : string;
+    FDriverName  : string;
+    FDatabase    : string;
+    FServer      : string;
+    FUserName    : string;
+    FPassword    : string;
+    FPort        : Integer;
+    FVendorLib   : string;
+    FProtocol    : string;
+
   protected
-    class var FFileName    : string;
-    class var FDriverName  : string;
-    class var FDatabase    : string;
-    class var FServer      : string;
-    class var FUserName    : string;
-    class var FPassword    : string;
-    class var FPort        : Integer;
-    class var FVendorLib   : string;
-    class var FProtocol    : string;
+    function GetIniFile: TIniFile; virtual;
 
-    class function GetIniFile: TIniFile;
   public
-    class constructor Create;
+    constructor Create;
 
-    class property FileName   : string   read FFileName   write FFileName;
-    class property DriverName : string   read FDriverName write FFileName;
-    class property Database   : string   read FDatabase   write FDatabase;
-    class property UserName   : string   read FUserName   write FUserName;
-    class property Password   : string   read FPassword   write FPassword;
-    class property Server     : string   read FServer     write FServer;
-    class property Port       : Integer  read FPort       write FPort;
-    class property VendorLib  : string   read FVendorLib  write FVendorLib;
-    class property Protocol   : string   read FProtocol   write FProtocol;
+    property FileName   : string   read FFileName   write FFileName;
+    property DriverName : string   read FDriverName write FFileName;
+    property Database   : string   read FDatabase   write FDatabase;
+    property UserName   : string   read FUserName   write FUserName;
+    property Password   : string   read FPassword   write FPassword;
+    property Server     : string   read FServer     write FServer;
+    property Port       : Integer  read FPort       write FPort;
+    property VendorLib  : string   read FVendorLib  write FVendorLib;
+    property Protocol   : string   read FProtocol   write FProtocol;
 end;
 
 implementation
 
 { TADRConnConfigIni }
 
-class constructor TADRConnConfigIni.Create;
+constructor TADRConnConfigIni.Create;
 var
   IniFile : TIniFile;
 begin
-  if FFileName = EmptyStr then
-    FFileName :=  ChangeFileExt(GetModuleName(HInstance), '.ini');
-
-  IniFile := TIniFile.Create(FFileName);
+  IniFile := GetIniFile;
   try
     FDriverName  := IniFile.ReadString('CONFIG' , 'DriverName' , FDriverName);
     FDatabase    := IniFile.ReadString('CONFIG' , 'Database'   , FDatabase);
@@ -60,11 +60,8 @@ begin
   end;
 end;
 
-class function TADRConnConfigIni.GetIniFile: TIniFile;
+function TADRConnConfigIni.GetIniFile: TIniFile;
 begin
-  if FFileName = EmptyStr then
-    FFileName :=  ExtractFilePath(ParamStr(0)) + 'Config.ini';
-
   result := TIniFile.Create(FFileName);
 end;
 
