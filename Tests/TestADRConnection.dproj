@@ -103,6 +103,8 @@
         <DCCReference Include="Source\ADRConn.Test.Postgres.Connection.pas"/>
         <DCCReference Include="Source\ADRConn.Test.Postgres.Query.pas"/>
         <DCCReference Include="..\Source\ADRConn.DAO.Base.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Config.IniFile.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Factory.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

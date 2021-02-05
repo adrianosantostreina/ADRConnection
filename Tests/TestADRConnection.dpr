@@ -27,7 +27,9 @@ uses
   ADRConn.Model.Generator.MySQL in '..\Source\ADRConn.Model.Generator.MySQL.pas',
   ADRConn.Test.Postgres.Connection in 'Source\ADRConn.Test.Postgres.Connection.pas',
   ADRConn.Test.Postgres.Query in 'Source\ADRConn.Test.Postgres.Query.pas',
-  ADRConn.DAO.Base in '..\Source\ADRConn.DAO.Base.pas';
+  ADRConn.DAO.Base in '..\Source\ADRConn.DAO.Base.pas',
+  ADRConn.Config.IniFile in '..\Source\ADRConn.Config.IniFile.pas',
+  ADRConn.Model.Factory in '..\Source\ADRConn.Model.Factory.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
