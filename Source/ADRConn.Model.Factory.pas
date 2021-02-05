@@ -18,19 +18,26 @@ implementation
 { TADRConnModelFactory }
 
 class function TADRConnModelFactory.GetConnectionIniFile: IADRConnection;
+var
+  iniConfig: TADRConnConfigIni;
 begin
-  Result := CreateConnection;
-  Result.Params
-    .Server(TADRConnConfigIni.Server)
-    .Database(TADRConnConfigIni.Database)
-    .UserName(TADRConnConfigIni.UserName)
-    .Password(TADRConnConfigIni.Password);
+  iniConfig := TADRConnConfigIni.Create;
+  try
+    Result := CreateConnection;
+    Result.Params
+      .Server(iniConfig.Server)
+      .Database(iniConfig.Database)
+      .UserName(iniConfig.UserName)
+      .Password(iniConfig.Password);
 
-  if TADRConnConfigIni.Port > 0 then
-    Result.Params.Port(TADRConnConfigIni.Port);
+    if iniConfig.Port > 0 then
+      Result.Params.Port(iniConfig.Port);
 
-  if not TADRConnConfigIni.VendorLib.IsEmpty then
-    Result.Params.Lib(TADRConnConfigIni.VendorLib);
+    if not iniConfig.VendorLib.IsEmpty then
+      Result.Params.Lib(iniConfig.VendorLib);
+  finally
+    iniConfig.Free;
+  end;
 end;
 
 end.

@@ -31,7 +31,7 @@ begin
     .Database('adrconntest')
     .UserName('postgres')
     .Password('postgres')
-    .Port(15433)
+    .Port(5432)
     .Schema('public')
   .&End;
 

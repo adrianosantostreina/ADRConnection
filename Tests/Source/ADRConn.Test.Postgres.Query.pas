@@ -64,7 +64,7 @@ begin
     .Database('adrconntest')
     .UserName('postgres')
     .Password('postgres')
-    .Port(15433)
+    .Port(5432)
   .&End
   .Connect;
 end;
@@ -124,7 +124,7 @@ begin
   FQuery
     .SQL('select * from person')
     .SQL('where id = :id')
-    .ParamAsInteger('id', 2);
+    .ParamAsInteger('id', 1);
 
   dataSet := FQuery.Open;
   try

@@ -56,11 +56,11 @@ begin
 
     //tell the runner how we will log things
     //Log to the console window if desired
-//    if TDUnitX.Options.ConsoleMode <> TDunitXConsoleMode.Off then
-//    begin
-//      logger := TDUnitXConsoleLogger.Create(TDUnitX.Options.ConsoleMode = TDunitXConsoleMode.Quiet);
-//      runner.AddLogger(logger);
-//    end;
+    if TDUnitX.Options.ConsoleMode <> TDunitXConsoleMode.Off then
+    begin
+      logger := TDUnitXConsoleLogger.Create(TDUnitX.Options.ConsoleMode = TDunitXConsoleMode.Quiet);
+      runner.AddLogger(logger);
+    end;
     //Generate an NUnit compatible XML File
     logger := TDUnitXConsoleLogger.Create(true);
     runner.AddLogger(logger);
