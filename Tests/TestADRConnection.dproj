@@ -102,6 +102,7 @@
         <DCCReference Include="..\Source\ADRConn.Model.Generator.MySQL.pas"/>
         <DCCReference Include="Source\ADRConn.Test.Postgres.Connection.pas"/>
         <DCCReference Include="Source\ADRConn.Test.Postgres.Query.pas"/>
+        <DCCReference Include="..\Source\ADRConn.DAO.Base.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
