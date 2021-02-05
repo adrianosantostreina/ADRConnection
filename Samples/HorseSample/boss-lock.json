@@ -25,6 +25,14 @@
 			"artifacts": {},
 			"failed": false,
 			"changed": false
+		},
+		"github.com/viniciussanchez/dataset-serialize": {
+			"name": "dataset-serialize",
+			"version": "v2.2.6",
+			"hash": "e81aa349e02e87ce34aa59bd7abac272",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
 		}
 	}
 }
