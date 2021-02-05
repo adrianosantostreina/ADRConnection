@@ -27,7 +27,9 @@ uses
   ADRConn.Model.Generator in '..\Source\ADRConn.Model.Generator.pas',
   ADRConn.Model.Generator.Firebird in '..\Source\ADRConn.Model.Generator.Firebird.pas',
   ADRConn.Model.Generator.Postgres in '..\Source\ADRConn.Model.Generator.Postgres.pas',
-  ADRConn.Model.Generator.SQLite in '..\Source\ADRConn.Model.Generator.SQLite.pas';
+  ADRConn.Model.Generator.SQLite in '..\Source\ADRConn.Model.Generator.SQLite.pas',
+  ADRConn.Model.Generator.MySQL in '..\Source\ADRConn.Model.Generator.MySQL.pas',
+  ADRConn.Test.MySQL.Query in 'Source\ADRConn.Test.MySQL.Query.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

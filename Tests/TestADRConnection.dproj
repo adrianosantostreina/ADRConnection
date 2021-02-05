@@ -103,6 +103,8 @@
         <DCCReference Include="..\Source\ADRConn.Model.Generator.Firebird.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.Generator.Postgres.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.Generator.SQLite.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Generator.MySQL.pas"/>
+        <DCCReference Include="Source\ADRConn.Test.MySQL.Query.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -129,6 +131,12 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
+                <DeployFile LocalName="TestADRConnection.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>TestADRConnection.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -141,12 +149,6 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libpcre.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="TestADRConnection.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>TestADRConnection.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
