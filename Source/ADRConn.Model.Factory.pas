@@ -7,7 +7,10 @@ uses
   ADRConn.Config.IniFile,
   System.SysUtils;
 
-type TADRConnModelFactory = class
+type
+  TADRConnConfigIni = ADRConn.Config.IniFile.TADRConnConfigIni;
+
+  TADRConnModelFactory = class
 
   public
     class function GetConnectionIniFile: IADRConnection;

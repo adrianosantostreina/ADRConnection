@@ -7,6 +7,7 @@ program SampleHorse;
 uses
   Horse,
   Horse.Jhonson,
+  ADRConn.Config.IniFile,
   System.SysUtils,
   Controller.Cidade in 'Controllers\Controller.Cidade.pas',
   DAO.Cidade in 'DAO\DAO.Cidade.pas';
@@ -18,7 +19,7 @@ begin
 
   Controller.Cidade.RegisterCidade;
 
-  THorse.Listen(9000, procedure(Horse: THorse)
+  THorse.Listen(TADRConnConfigIni.ReadInteger('API_PORT', 8001), procedure(Horse: THorse)
     begin
       Writeln(Format('Server is runing on %s:%d', [Horse.Host, Horse.Port]));
       Readln;
