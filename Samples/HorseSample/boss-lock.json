@@ -2,14 +2,6 @@
 	"hash": "d41d8cd98f00b204e9800998ecf8427e",
 	"updated": "2021-02-05T15:23:08.7204971-03:00",
 	"installedModules": {
-		"github.com/adrianosantostreina/adrconnection": {
-			"name": "adrconnection",
-			"version": "1.0.0",
-			"hash": "ff1a0de805b7d59d4a5b2b623f6ea65f",
-			"artifacts": {},
-			"failed": false,
-			"changed": false
-		},
 		"github.com/hashload/horse": {
 			"name": "horse",
 			"version": "2.0.12",
@@ -29,7 +21,7 @@
 		"github.com/viniciussanchez/dataset-serialize": {
 			"name": "dataset-serialize",
 			"version": "v2.2.6",
-			"hash": "e81aa349e02e87ce34aa59bd7abac272",
+			"hash": "130d19bb4099616ef6b6b57d4a010013",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
