@@ -70,9 +70,25 @@ implementation
 
 { TADRConnConfigIni }
 
-constructor TADRConnConfigIni.create;
+constructor TADRConnConfigIni.Create;
+var
+  IniFile : TIniFile;
 begin
-  raise Exception.CreateFmt('Use GetInstance', []);
+  Initialize;
+  IniFile := GetIniFile;
+  try
+    FDriver.fromString(IniFile.ReadString(SECTION_DATABASE, 'Driver', 'Firebird'));
+
+    FDatabase    := IniFile.ReadString(SECTION_DATABASE , 'Database'   , FDatabase);
+    FUserName    := IniFile.ReadString(SECTION_DATABASE , 'User_Name'   , FUserName);
+    FPassword    := IniFile.ReadString(SECTION_DATABASE , 'Password'   , FPassword);
+    FServer      := IniFile.ReadString(SECTION_DATABASE , 'Server'     , FServer);
+    FVendorLib   := IniFile.ReadString(SECTION_DATABASE , 'VendorLib'  , FVendorLib);
+    FProtocol    := IniFile.ReadString(SECTION_DATABASE , 'Protocol'   , FProtocol);
+    FPort        := IniFile.ReadInteger(SECTION_DATABASE, 'Port'       , FPort);
+  finally
+    IniFile.Free;
+  end;
 end;
 
 constructor TADRConnConfigIni.CreatePrivate;
