@@ -28,7 +28,7 @@ begin
   try
     Result := CreateConnection;
     Result.Params
-	  .Driver(iniConfig.Driver)
+	    .Driver(iniConfig.Driver)
       .Server(iniConfig.Server)
       .Database(iniConfig.Database)
       .UserName(iniConfig.UserName)

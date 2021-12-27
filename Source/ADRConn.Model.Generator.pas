@@ -40,7 +40,7 @@ function TADRConnModelGenerator.GetSequence: Double;
 var
   dataSet: TDataSet;
 begin
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     result := dataSet.Fields[0].AsFloat;
   finally
@@ -52,9 +52,9 @@ class function TADRConnModelGenerator.NewGenerator(Connection: IADRConnection; Q
 begin
   case Connection.Params.Driver of
     adrFirebird : result := TADRConnModelGeneratorFirebird.New(Query);
-    adrMySql    : result := TADRConnModelGeneratorMySQL.New(Query);
+    adrMySql : result := TADRConnModelGeneratorMySQL.New(Query);
     adrPostgres : result := TADRConnModelGeneratorPostgres.New(Query);
-    adrSQLite   : Result := TADRConnModelGeneratorSQLite.New(Query);
+    adrSQLite : Result := TADRConnModelGeneratorSQLite.New(Query);
   end;
 end;
 
