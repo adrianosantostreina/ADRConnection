@@ -57,6 +57,8 @@ type
     function SQL(Value: String): IADRQuery; overload;
     function SQL(Value: string; const Args: array of const): IADRQuery; overload;
 
+    function DataSource(Value: TDataSource): IADRQuery;
+
     function ParamAsInteger(Name: String; Value: Integer): IADRQuery;
     function ParamAsCurrency(Name: String; Value: Currency): IADRQuery;
     function ParamAsFloat(Name: String; Value: Double): IADRQuery;
@@ -66,7 +68,8 @@ type
     function ParamAsTime(Name: String; Value: TDateTime): IADRQuery;
     function ParamAsBoolean(Name: String; Value: Boolean): IADRQuery;
 
-    function Open: TDataSet;
+    function OpenDataSet: TDataSet;
+    function Open: IADRQuery;
     function ExecSQL: IADRQuery;
     function ExecSQLAndCommit: IADRQuery;
 

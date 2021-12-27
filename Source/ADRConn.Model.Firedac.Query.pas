@@ -18,10 +18,16 @@ type TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
     FConnection: IADRConnection;
     FDQuery: TFDQuery;
     FGenerator: IADRGenerator;
+    FParams: TParams;
+    FSQL: TStrings;
+
+    function AddParam(Name: string; Value: Variant; AType: TFieldType): TParam;
 
   protected
     function SQL(Value: String): IADRQuery; overload;
     function SQL(Value: string; const Args: array of const): IADRQuery; overload;
+
+    function DataSource(Value: TDataSource): IADRQuery;
 
     function ParamAsInteger(Name: String; Value: Integer): IADRQuery;
     function ParamAsCurrency(Name: String; Value: Currency): IADRQuery;
@@ -32,7 +38,8 @@ type TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
     function ParamAsTime(Name: String; Value: TDateTime): IADRQuery;
     function ParamAsBoolean(Name: String; Value: Boolean): IADRQuery;
 
-    function Open: TDataSet;
+    function OpenDataSet: TDataSet;
+    function Open: IADRQuery;
     function ExecSQL: IADRQuery;
     function ExecSQLAndCommit: IADRQuery;
 
@@ -47,26 +54,58 @@ implementation
 
 { TADRConnModelFiredacQuery }
 
+function TADRConnModelFiredacQuery.AddParam(Name: string; Value: Variant; AType: TFieldType): TParam;
+begin
+  result := FParams.AddParameter;
+  result.Name := Name;
+  result.Value := Value;
+  result.DataType := AType;
+  result.ParamType := ptInput;
+end;
+
 constructor TADRConnModelFiredacQuery.create(AConnection: IADRConnection);
 begin
   FConnection := AConnection;
   FDQuery := TFDQuery.Create(nil);
   FDQuery.Connection := TFDConnection( FConnection.Connection );
+  FSQL := TStringList.Create;
+  FParams := TParams.Create(nil);
+end;
+
+function TADRConnModelFiredacQuery.DataSource(Value: TDataSource): IADRQuery;
+begin
+  result := Self;
+  if Assigned(Value) then
+    Value.DataSet := FDQuery;
 end;
 
 destructor TADRConnModelFiredacQuery.Destroy;
 begin
   FDQuery.Free;
+  FSQL.Free;
+  FParams.Free;
   inherited;
 end;
 
 function TADRConnModelFiredacQuery.ExecSQL: IADRQuery;
+var
+  LQuery: TFDQuery;
+  i: Integer;
 begin
-  result := Self;
+  LQuery := TFDQuery.Create(nil);
   try
-    FDQuery.ExecSQL;
+    LQuery.Connection := TFDConnection(FConnection.Component);
+    LQuery.SQL.Text := FSQL.Text;
+    for i := 0 to Pred(FParams.Count) do
+      LQuery.ParamByName(FParams[i].Name).Value := FParams[i].Value;
+
+    LQuery.Open;
+
+    result := Self;
   finally
-    FDQuery.SQL.Clear;
+    FParams.Clear;
+    FSQL.Clear;
+    LQuery.Free;
   end;
 end;
 
@@ -76,14 +115,14 @@ begin
   try
     FConnection.StartTransaction;
     try
-      FDQuery.ExecSQL;
+      ExecSQL;
       FConnection.Commit;
     except
       FConnection.Rollback;
       raise;
     end;
   finally
-    FDQuery.SQL.Clear;
+    FSQL.Clear;
   end;
 end;
 
@@ -99,83 +138,104 @@ begin
   result := Self.create(AConnection);
 end;
 
-function TADRConnModelFiredacQuery.Open: TDataSet;
+function TADRConnModelFiredacQuery.Open: IADRQuery;
 var
-  query : TFDQuery;
+  i: Integer;
+begin
+  result := Self;
+  if FDQuery.Active then
+    FDQuery.Close;
+
+  FDQuery.SQL.Text := FSQL.Text;
+  try
+    for i := 0 to Pred(FParams.Count) do
+      FDQuery.ParamByName(FParams[i].Name).Value := FParams[i].Value;
+
+    FDQuery.Open;
+  finally
+    FSQL.Clear;
+    FParams.Clear;
+  end;
+end;
+
+function TADRConnModelFiredacQuery.OpenDataSet: TDataSet;
+var
+  LQuery : TFDQuery;
   i: Integer;
 begin
   try
-    query := TFDQuery.Create(nil);
+    LQuery := TFDQuery.Create(nil);
     try
-      query.Connection := TFDConnection(FConnection.Component);
-      query.SQL.Text := FDQuery.SQL.Text;
-      for i := 0 to Pred(FDQuery.ParamCount) do
-        query.ParamByName(FDQuery.Params[i].Name).Value := FDQuery.Params[i].Value;
+      LQuery.Connection := TFDConnection(FConnection.Component);
+      LQuery.SQL.Text := FSQL.Text;
+      for i := 0 to Pred(FParams.Count) do
+        LQuery.ParamByName(FParams[i].Name).Value := FParams[i].Value;
 
-      query.Open;
+      LQuery.Open;
 
-      result := query;
+      result := LQuery;
     except
-      query.Free;
+      LQuery.Free;
       raise;
     end;
   finally
-    FDQuery.SQL.Clear;
+    FSQL.Clear;
+    FParams.Clear;
   end;
 end;
 
 function TADRConnModelFiredacQuery.ParamAsBoolean(Name: String; Value: Boolean): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsBoolean := Value;
+  AddParam(Name, Value, ftBoolean);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsCurrency(Name: String; Value: Currency): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsCurrency := Value;
+  AddParam(Name, Value, ftCurrency);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsDate(Name: String; Value: TDateTime): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsDate := Value;
+  AddParam(Name, Value, ftDate);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsDateTime(Name: String; Value: TDateTime): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsDateTime := Value;
+  AddParam(Name, Value, ftDateTime);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsFloat(Name: String; Value: Double): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsFloat := Value;
+  AddParam(Name, Value, ftFloat);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsInteger(Name: String; Value: Integer): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsInteger := Value;
+  AddParam(Name, Value, ftInteger);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsString(Name: String; Value: String): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsString := Value;
+  AddParam(Name, Value, ftString);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsTime(Name: String; Value: TDateTime): IADRQuery;
 begin
   Result := Self;
-  FDQuery.ParamByName(Name).AsTime := Value;
+  AddParam(Name, Value, ftTime);
 end;
 
 function TADRConnModelFiredacQuery.SQL(Value: String): IADRQuery;
 begin
   Result := Self;
-  FDQuery.SQL.Add( Value );
+  FSQL.Add(Value);
 end;
 
 function TADRConnModelFiredacQuery.SQL(Value: string; const Args: array of const): IADRQuery;

@@ -40,7 +40,7 @@ function TADRConnModelGenerator.GetSequence: Double;
 var
   dataSet: TDataSet;
 begin
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     result := dataSet.Fields[0].AsFloat;
   finally

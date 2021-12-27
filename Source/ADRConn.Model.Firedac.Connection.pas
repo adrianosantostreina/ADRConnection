@@ -10,8 +10,14 @@ uses
   FireDAC.Comp.Client,
   FireDAC.Stan.Def,
   FireDAC.Stan.Async,
-  FireDAC.UI.Intf,
+  {$IFDEF MSWINDOWS}
   FireDAC.Comp.UI,
+  FireDAC.VCLUI.Wait,
+  FireDAC.UI.Intf,
+  {$ENDIF}
+  {$IFDEF LINUX}
+  FireDAC.ConsoleUI.Wait,
+  {$ENDIF}
   Firedac.Phys,
   FireDAC.DApt,
   System.Classes,
