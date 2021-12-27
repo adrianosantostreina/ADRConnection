@@ -13,30 +13,22 @@ type
   TADRConnModelFactory = class
 
   public
-    class function GetConnectionIniFile(ASection: String = ''): IADRConnection;
-    class function GetConnection: IADRConnection;
-
-    class function GetQuery(AConnection: IADRConnection): IADRQuery;
+    class function GetConnectionIniFile: IADRConnection;
 end;
 
 implementation
 
 { TADRConnModelFactory }
 
-class function TADRConnModelFactory.GetConnection: IADRConnection;
-begin
-  result := CreateConnection;
-end;
-
-class function TADRConnModelFactory.GetConnectionIniFile(ASection: String = ''): IADRConnection;
+class function TADRConnModelFactory.GetConnectionIniFile: IADRConnection;
 var
   iniConfig: TADRConnConfigIni;
 begin
-  iniConfig := TADRConnConfigIni.GetInstance(ASection);
+  iniConfig := TADRConnConfigIni.Create;
   try
-    Result := GetConnection;
+    Result := CreateConnection;
     Result.Params
-      .Driver(iniConfig.Driver)
+	    .Driver(iniConfig.Driver)
       .Server(iniConfig.Server)
       .Database(iniConfig.Database)
       .UserName(iniConfig.UserName)
@@ -50,11 +42,6 @@ begin
   finally
     iniConfig.Free;
   end;
-end;
-
-class function TADRConnModelFactory.GetQuery(AConnection: IADRConnection): IADRQuery;
-begin
-  result := CreateQuery(AConnection);
 end;
 
 end.
