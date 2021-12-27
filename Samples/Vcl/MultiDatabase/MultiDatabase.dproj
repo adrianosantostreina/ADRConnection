@@ -106,19 +106,6 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\..\Source\ADRConn.Config.IniFile.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.DAO.Base.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Factory.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Firedac.Connection.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Firedac.Driver.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Firedac.Query.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Generator.Firebird.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Generator.MySQL.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Generator.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Generator.Postgres.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Generator.SQLite.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Interfaces.pas"/>
-        <DCCReference Include="..\..\..\Source\ADRConn.Model.Params.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

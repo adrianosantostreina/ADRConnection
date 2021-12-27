@@ -58,8 +58,8 @@ function TADRConnModelFiredacQuery.AddParam(Name: string; Value: Variant; AType:
 begin
   result := FParams.AddParameter;
   result.Name := Name;
-  result.Value := Value;
   result.DataType := AType;
+  result.Value := Value;
   result.ParamType := ptInput;
 end;
 
