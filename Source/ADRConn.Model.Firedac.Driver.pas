@@ -31,10 +31,10 @@ implementation
 class function TADRConnModelFiredacDriver.GetDriver(Params: IADRConnectionParams): TFDPhysDriverLink;
 begin
   case Params.Driver of
-    adrMySql    : result := GetMySQLDriver;
+    adrMySql : result := GetMySQLDriver;
     adrFirebird : result := GetFirebirdDriver;
     adrPostgres : result := GetPostgresDriver;
-    adrSQLite   : result := GetSQLiteDriver;
+    adrSQLite : result := GetSQLiteDriver;
   else
     raise Exception.CreateFmt('Driver %s not found.', [Params.Driver.toString]);
   end;

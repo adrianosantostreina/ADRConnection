@@ -13,27 +13,27 @@ const
 type TADRConnConfigIni = class
 
   private
-    FFileName    : string;
-    FDatabase    : string;
-    FServer      : string;
-    FUserName    : string;
-    FPassword    : string;
-    FPort        : Integer;
-    FVendorLib   : string;
-    FProtocol    : string;
+    FFileName: string;
+    FDatabase: string;
+    FServer: string;
+    FUserName: string;
+    FPassword: string;
+    FPort: Integer;
+    FVendorLib: string;
+    FProtocol: string;
     FDriver: TADRDriverConn;
 
     class var FInstance: TADRConnConfigIni;
 
     constructor CreatePrivate;
 
-    function InternalReadString (const Ident: string; const Default: String = ''; const Section: String = SECTION_DATABASE): string;
+    function InternalReadString(const Ident: string; const Default: String = ''; const Section: String = SECTION_DATABASE): string;
     function InternalReadInteger(const Ident: string; const Default: Integer = 0; const Section: String = SECTION_DATABASE): Integer;
-    function InternalReadBool   (const Ident: string; const Default: Boolean = False; const Section: String = SECTION_DATABASE): Boolean;
+    function InternalReadBool(const Ident: string; const Default: Boolean = False; const Section: String = SECTION_DATABASE): Boolean;
 
-    function InternalWriteString (const Ident: string; const Value: string; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
+    function InternalWriteString(const Ident: string; const Value: string; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
     function InternalWriteInteger(const Ident: string; const Value: Integer; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
-    function InternalWriteBool   (const Ident: string; const Value: Boolean; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
+    function InternalWriteBool(const Ident: string; const Value: Boolean; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
 
   protected
     class function GetDefaultInstance: TADRConnConfigIni;
@@ -44,23 +44,23 @@ type TADRConnConfigIni = class
   public
     constructor create;
 
-    property Driver     : TADRDriverConn read FDriver write FDriver;
-    property FileName   : string   read FFileName   write FFileName;
-    property Database   : string   read FDatabase   write FDatabase;
-    property UserName   : string   read FUserName   write FUserName;
-    property Password   : string   read FPassword   write FPassword;
-    property Server     : string   read FServer     write FServer;
-    property Port       : Integer  read FPort       write FPort;
-    property VendorLib  : string   read FVendorLib  write FVendorLib;
-    property Protocol   : string   read FProtocol   write FProtocol;
+    property Driver: TADRDriverConn read FDriver write FDriver;
+    property FileName: string read FFileName write FFileName;
+    property Database: string read FDatabase write FDatabase;
+    property UserName: string read FUserName write FUserName;
+    property Password: string read FPassword write FPassword;
+    property Server: string read FServer write FServer;
+    property Port: Integer  read FPort write FPort;
+    property VendorLib: string read FVendorLib write FVendorLib;
+    property Protocol: string read FProtocol write FProtocol;
 
-    class function ReadString (const Ident: string; const Default: String = ''; const Section: String = SECTION_DATABASE): string;
-    class function ReadBool   (const Ident: string; const Default: Boolean = False; const Section: String = SECTION_DATABASE): Boolean;
+    class function ReadString(const Ident: string; const Default: String = ''; const Section: String = SECTION_DATABASE): string;
+    class function ReadBool(const Ident: string; const Default: Boolean = False; const Section: String = SECTION_DATABASE): Boolean;
     class function ReadInteger(const Ident: string; const Default: Integer; const Section: String = SECTION_DATABASE): Integer;
 
-    class function WriteString (const Ident: string; const Value: string; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
+    class function WriteString(const Ident: string; const Value: string; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
     class function WriteInteger(const Ident: string; const Value: Integer; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
-    class function WriteBool   (const Ident: string; const Value: Boolean; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
+    class function WriteBool(const Ident: string; const Value: Boolean; const Section: String = SECTION_DATABASE): TADRConnConfigIni;
 
     class function GetInstance: TADRConnConfigIni;
     class destructor UnInitialize;
@@ -79,13 +79,13 @@ begin
   try
     FDriver.fromString(IniFile.ReadString(SECTION_DATABASE, 'Driver', 'Firebird'));
 
-    FDatabase    := IniFile.ReadString(SECTION_DATABASE , 'Database'   , FDatabase);
-    FUserName    := IniFile.ReadString(SECTION_DATABASE , 'User_Name'   , FUserName);
-    FPassword    := IniFile.ReadString(SECTION_DATABASE , 'Password'   , FPassword);
-    FServer      := IniFile.ReadString(SECTION_DATABASE , 'Server'     , FServer);
-    FVendorLib   := IniFile.ReadString(SECTION_DATABASE , 'VendorLib'  , FVendorLib);
-    FProtocol    := IniFile.ReadString(SECTION_DATABASE , 'Protocol'   , FProtocol);
-    FPort        := IniFile.ReadInteger(SECTION_DATABASE, 'Port'       , FPort);
+    FDatabase := IniFile.ReadString(SECTION_DATABASE, 'Database', FDatabase);
+    FUserName := IniFile.ReadString(SECTION_DATABASE, 'User_Name', FUserName);
+    FPassword := IniFile.ReadString(SECTION_DATABASE, 'Password', FPassword);
+    FServer := IniFile.ReadString(SECTION_DATABASE, 'Server', FServer);
+    FVendorLib := IniFile.ReadString(SECTION_DATABASE, 'VendorLib', FVendorLib);
+    FProtocol := IniFile.ReadString(SECTION_DATABASE, 'Protocol', FProtocol);
+    FPort := IniFile.ReadInteger(SECTION_DATABASE, 'Port', FPort);
   finally
     IniFile.Free;
   end;
@@ -100,13 +100,13 @@ begin
   try
     FDriver.fromString(IniFile.ReadString(SECTION_DATABASE, 'Driver', 'Firebird'));
 
-    FDatabase    := IniFile.ReadString(SECTION_DATABASE , 'Database'   , FDatabase);
-    FUserName    := IniFile.ReadString(SECTION_DATABASE , 'User_Name'   , FUserName);
-    FPassword    := IniFile.ReadString(SECTION_DATABASE , 'Password'   , FPassword);
-    FServer      := IniFile.ReadString(SECTION_DATABASE , 'Server'     , FServer);
-    FVendorLib   := IniFile.ReadString(SECTION_DATABASE , 'VendorLib'  , FVendorLib);
-    FProtocol    := IniFile.ReadString(SECTION_DATABASE , 'Protocol'   , FProtocol);
-    FPort        := IniFile.ReadInteger(SECTION_DATABASE, 'Port'       , FPort);
+    FDatabase := IniFile.ReadString(SECTION_DATABASE, 'Database', FDatabase);
+    FUserName := IniFile.ReadString(SECTION_DATABASE, 'User_Name', FUserName);
+    FPassword := IniFile.ReadString(SECTION_DATABASE, 'Password', FPassword);
+    FServer := IniFile.ReadString(SECTION_DATABASE, 'Server', FServer);
+    FVendorLib := IniFile.ReadString(SECTION_DATABASE, 'VendorLib', FVendorLib);
+    FProtocol := IniFile.ReadString(SECTION_DATABASE, 'Protocol', FProtocol);
+    FPort := IniFile.ReadInteger(SECTION_DATABASE, 'Port', FPort);
   finally
     IniFile.Free;
   end;
@@ -115,10 +115,7 @@ end;
 class function TADRConnConfigIni.GetDefaultInstance: TADRConnConfigIni;
 begin
   if not Assigned(FInstance) then
-  begin
     FInstance := TADRConnConfigIni.CreatePrivate;
-  end;
-
   result := FInstance;
 end;
 

@@ -19,36 +19,35 @@ type
 
     function Params: IADRConnectionParams;
 
-    function Connect          : IADRConnection;
-    function Disconnect       : IADRConnection;
-    function StartTransaction : IADRConnection;
-    function Commit           : IADRConnection;
-    function Rollback         : IADRConnection;
-    function InTransaction    : Boolean;
+    function Connect: IADRConnection;
+    function Disconnect: IADRConnection;
+    function StartTransaction: IADRConnection;
+    function Commit: IADRConnection;
+    function Rollback: IADRConnection;
+    function InTransaction: Boolean;
   end;
 
   IADRConnectionParams = interface
     ['{439941DC-9841-478E-9E9A-BCAB3015DB9C}']
-    function Database   (Value: string): IADRConnectionParams; overload;
-    function UserName   (Value: string): IADRConnectionParams; overload;
-    function Password   (Value: string): IADRConnectionParams; overload;
-    function Server     (Value: string): IADRConnectionParams; overload;
-    function Schema     (Value: String): IADRConnectionParams; overload;
-    function Lib        (Value: string): IADRConnectionParams; overload;
-    function Port       (Value: Integer): IADRConnectionParams; overload;
-    function AutoCommit (Value: Boolean): IADRConnectionParams; overload;
-    function Driver     (Value: TADRDriverConn): IADRConnectionParams; overload;
-
-    function Database   : string; overload;
-    function UserName   : string; overload;
-    function Password   : string; overload;
-    function Server     : string; overload;
-    function Schema     : string; overload;
-    function Lib        : string; overload;
-    function Port       : Integer; overload;
-    function AutoCommit : Boolean; overload;
-    function Driver     : TADRDriverConn; overload;
-    function Settings   : TFormatSettings;
+    function Database(Value: string): IADRConnectionParams; overload;
+    function Database: string; overload;
+    function UserName(Value: string): IADRConnectionParams; overload;
+    function UserName: string; overload;
+    function Password(Value: string): IADRConnectionParams; overload;
+    function Password: string; overload;
+    function Server(Value: string): IADRConnectionParams; overload;
+    function Server: string; overload;
+    function Schema(Value: String): IADRConnectionParams; overload;
+    function Schema: string; overload;
+    function Lib(Value: string): IADRConnectionParams; overload;
+    function Lib: string; overload;
+    function Port(Value: Integer): IADRConnectionParams; overload;
+    function Port: Integer; overload;
+    function AutoCommit(Value: Boolean): IADRConnectionParams; overload;
+    function AutoCommit: Boolean; overload;
+    function Driver(Value: TADRDriverConn): IADRConnectionParams; overload;
+    function Driver: TADRDriverConn; overload;
+    function Settings: TFormatSettings;
 
     function &End: IADRConnection;
   end;
@@ -58,14 +57,14 @@ type
     function SQL(Value: String): IADRQuery; overload;
     function SQL(Value: string; const Args: array of const): IADRQuery; overload;
 
-    function ParamAsInteger      (Name: String; Value: Integer): IADRQuery;
-    function ParamAsCurrency     (Name: String; Value: Currency): IADRQuery;
-    function ParamAsFloat        (Name: String; Value: Double): IADRQuery;
-    function ParamAsString       (Name: String; Value: String): IADRQuery;
-    function ParamAsDateTime     (Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsDate         (Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsTime         (Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsBoolean      (Name: String; Value: Boolean): IADRQuery;
+    function ParamAsInteger(Name: String; Value: Integer): IADRQuery;
+    function ParamAsCurrency(Name: String; Value: Currency): IADRQuery;
+    function ParamAsFloat(Name: String; Value: Double): IADRQuery;
+    function ParamAsString(Name: String; Value: String): IADRQuery;
+    function ParamAsDateTime(Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsDate(Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsTime(Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsBoolean(Name: String; Value: Boolean): IADRQuery;
 
     function Open: TDataSet;
     function ExecSQL: IADRQuery;

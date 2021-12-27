@@ -16,21 +16,21 @@ type TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
   private
     [Weak]
     FConnection: IADRConnection;
-    FDQuery : TFDQuery;
+    FDQuery: TFDQuery;
     FGenerator: IADRGenerator;
 
   protected
     function SQL(Value: String): IADRQuery; overload;
     function SQL(Value: string; const Args: array of const): IADRQuery; overload;
 
-    function ParamAsInteger      (Name: String; Value: Integer): IADRQuery;
-    function ParamAsCurrency     (Name: String; Value: Currency): IADRQuery;
-    function ParamAsFloat        (Name: String; Value: Double): IADRQuery;
-    function ParamAsString       (Name: String; Value: String): IADRQuery;
-    function ParamAsDateTime     (Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsDate         (Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsTime         (Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsBoolean      (Name: String; Value: Boolean): IADRQuery;
+    function ParamAsInteger(Name: String; Value: Integer): IADRQuery;
+    function ParamAsCurrency(Name: String; Value: Currency): IADRQuery;
+    function ParamAsFloat(Name: String; Value: Double): IADRQuery;
+    function ParamAsString(Name: String; Value: String): IADRQuery;
+    function ParamAsDateTime(Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsDate(Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsTime(Name: String; Value: TDateTime): IADRQuery;
+    function ParamAsBoolean(Name: String; Value: Boolean): IADRQuery;
 
     function Open: TDataSet;
     function ExecSQL: IADRQuery;

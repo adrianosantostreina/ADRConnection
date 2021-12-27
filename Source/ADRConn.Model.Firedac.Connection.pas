@@ -20,26 +20,27 @@ uses
 type TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
 
   private
-    FConnection : TFDConnection;
-    FCursor     : TFDGUIxWaitCursor;
-    FDriver     : TFDPhysDriverLink;
-    FParams     : IADRConnectionParams;
+    FConnection: TFDConnection;
+    FCursor: TFDGUIxWaitCursor;
+    FDriver: TFDPhysDriverLink;
+    FParams: IADRConnectionParams;
 
     procedure Setup;
     procedure CreateDriver;
     function GetDriverId: String;
+
   protected
     function Connection: TCustomConnection;
-    function Component : TComponent;
+    function Component: TComponent;
 
     function Params: IADRConnectionParams;
 
-    function Connect          : IADRConnection;
-    function Disconnect       : IADRConnection;
-    function StartTransaction : IADRConnection;
-    function Commit           : IADRConnection;
-    function Rollback         : IADRConnection;
-    function InTransaction    : Boolean;
+    function Connect: IADRConnection;
+    function Disconnect: IADRConnection;
+    function StartTransaction: IADRConnection;
+    function Commit: IADRConnection;
+    function Rollback: IADRConnection;
+    function InTransaction: Boolean;
 
   public
     constructor create;
@@ -81,8 +82,8 @@ end;
 constructor TADRConnModelFiredacConnection.create;
 begin
   FConnection := TFDConnection.Create(nil);
-  FCursor     := TFDGUIxWaitCursor.Create(nil);
-  FParams     := TADRConnModelParams.New(Self);
+  FCursor := TFDGUIxWaitCursor.Create(nil);
+  FParams := TADRConnModelParams.New(Self);
 end;
 
 procedure TADRConnModelFiredacConnection.CreateDriver;
@@ -110,8 +111,8 @@ function TADRConnModelFiredacConnection.GetDriverId: String;
 begin
   case FParams.Driver of
     adrFirebird : Result := 'FB';
-    adrMySql    : Result := 'MySQL';
-    adrSQLite   : Result := 'SQLite';
+    adrMySql : Result := 'MySQL';
+    adrSQLite : Result := 'SQLite';
     adrPostgres : result := 'PG';
   else
     raise Exception.CreateFmt('Driver Firedac not found for %s.', [FParams.Driver.toString]);
@@ -141,13 +142,13 @@ end;
 
 procedure TADRConnModelFiredacConnection.Setup;
 begin
-  FConnection.DriverName                 := GetDriverId;
-  FConnection.Params.Values['Database']  := FParams.Database;
+  FConnection.DriverName := GetDriverId;
+  FConnection.Params.Values['Database'] := FParams.Database;
   FConnection.Params.Values['User_Name'] := FParams.UserName;
-  FConnection.Params.Values['Password']  := FParams.Password;
-  FConnection.Params.Values['Server']    := FParams.Server;
-  FConnection.Params.Values['Port']      := IntToStr(FParams.Port);
-  FConnection.TxOptions.AutoCommit       := FParams.AutoCommit;
+  FConnection.Params.Values['Password'] := FParams.Password;
+  FConnection.Params.Values['Server'] := FParams.Server;
+  FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+  FConnection.TxOptions.AutoCommit := FParams.AutoCommit;
 
   CreateDriver;
 end;

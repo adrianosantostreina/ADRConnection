@@ -12,38 +12,37 @@ type TADRConnModelParams = class(TInterfacedObject, IADRConnectionParams)
     [WeakAttribute]
     FConnection: IADRConnection;
 
-    FDatabase    : String;
-    FUserName    : String;
-    FPassword    : String;
-    FServer      : String;
-    FSchema      : string;
-    FLib         : string;
+    FDatabase: String;
+    FUserName: String;
+    FPassword: String;
+    FServer: String;
+    FSchema: string;
+    FLib: string;
     FFormatSettings: TFormatSettings;
-    FPort        : Integer;
-    FAutoCommit  : Boolean;
-    FDriver      : TADRDriverConn;
+    FPort: Integer;
+    FAutoCommit: Boolean;
+    FDriver: TADRDriverConn;
 
   protected
-    function Database   (Value: string): IADRConnectionParams; overload;
-    function UserName   (Value: string): IADRConnectionParams; overload;
-    function Password   (Value: string): IADRConnectionParams; overload;
-    function Server     (Value: string): IADRConnectionParams; overload;
-    function Schema     (Value: String): IADRConnectionParams; overload;
-    function Lib        (Value: string): IADRConnectionParams; overload;
-    function Port       (Value: Integer): IADRConnectionParams; overload;
-    function AutoCommit (Value: Boolean): IADRConnectionParams; overload;
-    function Driver     (Value: TADRDriverConn): IADRConnectionParams; overload;
-
-    function Database   : string; overload;
-    function UserName   : string; overload;
-    function Password   : string; overload;
-    function Server     : string; overload;
-    function Schema     : string; overload;
-    function Lib        : string; overload;
-    function Port       : Integer; overload;
-    function AutoCommit : Boolean; overload;
-    function Driver     : TADRDriverConn; overload;
-    function Settings   : TFormatSettings;
+    function Database(Value: string): IADRConnectionParams; overload;
+    function Database: string; overload;
+    function UserName(Value: string): IADRConnectionParams; overload;
+    function UserName: string; overload;
+    function Password(Value: string): IADRConnectionParams; overload;
+    function Password: string; overload;
+    function Server(Value: string): IADRConnectionParams; overload;
+    function Server: string; overload;
+    function Schema(Value: String): IADRConnectionParams; overload;
+    function Schema: string; overload;
+    function Lib(Value: string): IADRConnectionParams; overload;
+    function Lib: string; overload;
+    function Port(Value: Integer): IADRConnectionParams; overload;
+    function Port: Integer; overload;
+    function AutoCommit(Value: Boolean): IADRConnectionParams; overload;
+    function AutoCommit: Boolean; overload;
+    function Driver(Value: TADRDriverConn): IADRConnectionParams; overload;
+    function Driver: TADRDriverConn; overload;
+    function Settings: TFormatSettings;
 
     function &End: IADRConnection;
 
@@ -74,11 +73,11 @@ begin
   FDriver := adrFirebird;
 
   FFormatSettings := TFormatSettings.Create;
-  FFormatSettings.DateSeparator   := '-';
+  FFormatSettings.DateSeparator := '-';
   FFormatSettings.ShortDateFormat := 'yyyy-MM-dd';
-  FFormatSettings.TimeSeparator   := ':';
+  FFormatSettings.TimeSeparator := ':';
   FFormatSettings.ShortTimeFormat := 'hh:mm';
-  FFormatSettings.LongTimeFormat  := 'hh:mm:ss';
+  FFormatSettings.LongTimeFormat := 'hh:mm:ss';
 end;
 
 function TADRConnModelParams.Database(Value: string): IADRConnectionParams;
