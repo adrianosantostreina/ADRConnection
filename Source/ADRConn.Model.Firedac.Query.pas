@@ -92,6 +92,7 @@ var
   LQuery: TFDQuery;
   i: Integer;
 begin
+  result := Self;
   LQuery := TFDQuery.Create(nil);
   try
     LQuery.Connection := TFDConnection(FConnection.Component);
@@ -99,9 +100,7 @@ begin
     for i := 0 to Pred(FParams.Count) do
       LQuery.ParamByName(FParams[i].Name).Value := FParams[i].Value;
 
-    LQuery.Open;
-
-    result := Self;
+    LQuery.ExecSQL;
   finally
     FParams.Clear;
     FSQL.Clear;
