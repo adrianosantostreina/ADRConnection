@@ -1,0 +1,126 @@
+{
+	"hash": "d41d8cd98f00b204e9800998ecf8427e",
+	"updated": "2022-01-24T10:29:51.1717089-03:00",
+	"installedModules": {
+		"github.com/adrianosantostreina/adrconnection": {
+			"name": "adrconnection",
+			"version": "2.0.1",
+			"hash": "c6563f50cc771e8c113408fc552988d7",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/bittencourtthulio/horse-paginate": {
+			"name": "horse-paginate",
+			"version": "master",
+			"hash": "d9a6624e04c51016585420b634234047",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/dliocode/horse-utils-clientip": {
+			"name": "horse-utils-clientip",
+			"version": "0.0.6",
+			"hash": "db4c16721abe55f9f8c42c7990101361",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/gabrielbaltazar/gbswagger": {
+			"name": "gbswagger",
+			"version": "2.1.4",
+			"hash": "e2f15009a75b8c1d8a652a57ff73c828",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/handle-exception": {
+			"name": "handle-exception",
+			"version": "0.1.4",
+			"hash": "1152772d75f59dbb562cc7b7711a8ebe",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/horse": {
+			"name": "horse",
+			"version": "v2.0.14",
+			"hash": "38c6bebdc7b9712d6e5856d299289a26",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/horse-basic-auth": {
+			"name": "horse-basic-auth",
+			"version": "v1.1.6",
+			"hash": "f2a3b8966a6130b795e9e3eaeedbbb9d",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/horse-compression": {
+			"name": "horse-compression",
+			"version": "1.1.3",
+			"hash": "114ff47bbd16ce85fc3ec9d85da462ab",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/horse-logger": {
+			"name": "horse-logger",
+			"version": "2.0.2",
+			"hash": "bfb121c6e85b5cfeedbd445c962a3fed",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/horse-logger-provider-console": {
+			"name": "horse-logger-provider-console",
+			"version": "1.0.3",
+			"hash": "59ed31ebb80012c6f8a2d4d45744d1c5",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/horse-logger-provider-logfile": {
+			"name": "horse-logger-provider-logfile",
+			"version": "1.0.2",
+			"hash": "06662520147a72069aee445b4b73f710",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/horse-octet-stream": {
+			"name": "horse-octet-stream",
+			"version": "1.9.5",
+			"hash": "d6f99e77df3c06466741570d88505bae",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/hashload/jhonson": {
+			"name": "jhonson",
+			"version": "1.1.2",
+			"hash": "85d9b3c97b5144448440d7d26bdd16de",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/viniciussanchez/dataset-serialize": {
+			"name": "dataset-serialize",
+			"version": "v2.3.5",
+			"hash": "08f417d6c8e8bfb1f4855cc1656e3cde",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"github.com/viniciussanchez/restrequest4delphi": {
+			"name": "restrequest4delphi",
+			"version": "v3.0.15",
+			"hash": "26ca24fdb60d0eac62679cc62b1ecc32",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		}
+	}
+}
