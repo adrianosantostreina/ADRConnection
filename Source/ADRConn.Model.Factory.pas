@@ -32,23 +32,19 @@ var
   iniConfig: TADRConnConfigIni;
 begin
   iniConfig := TADRConnConfigIni.GetInstance(ASection);
-  try
-    Result := CreateConnection;
-    Result.Params
-	    .Driver(iniConfig.Driver)
-      .Server(iniConfig.Server)
-      .Database(iniConfig.Database)
-      .UserName(iniConfig.UserName)
-      .Password(iniConfig.Password);
+  Result := CreateConnection;
+  Result.Params
+    .Driver(iniConfig.Driver)
+    .Server(iniConfig.Server)
+    .Database(iniConfig.Database)
+    .UserName(iniConfig.UserName)
+    .Password(iniConfig.Password);
 
-    if iniConfig.Port > 0 then
-      Result.Params.Port(iniConfig.Port);
+  if iniConfig.Port > 0 then
+    Result.Params.Port(iniConfig.Port);
 
-    if not iniConfig.VendorLib.IsEmpty then
-      Result.Params.Lib(iniConfig.VendorLib);
-  finally
-    iniConfig.Free;
-  end;
+  if not iniConfig.VendorLib.IsEmpty then
+    Result.Params.Lib(iniConfig.VendorLib);
 end;
 
 class function TADRConnModelFactory.GetQuery(AConnection: IADRConnection): IADRQuery;

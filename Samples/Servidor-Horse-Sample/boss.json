@@ -6,9 +6,8 @@
 	"mainsrc": "src",
 	"projects": [],
 	"dependencies": {
-		"github.com/adrianosantostreina/adrconnection": "^2.0.1",
-		"github.com/bittencourtthulio/horse-paginate": ">0.0.0",
-		"github.com/gabrielbaltazar/gbswagger": "^2.1.4",
+		"github.com/bittencourtthulio/horse-paginate": "^1.0.0",
+		"github.com/gabrielbaltazar/gbswagger": "3.0.0",
 		"github.com/hashload/handle-exception": "^0.1.4",
 		"github.com/hashload/horse": "^v2.0.14",
 		"github.com/hashload/horse-basic-auth": "^v1.1.6",

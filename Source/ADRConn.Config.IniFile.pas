@@ -249,9 +249,15 @@ begin
 end;
 
 class destructor TADRConnConfigIni.UnInitialize;
+var
+  LKey: string;
 begin
   if Assigned(FInstances) then
+  begin
+    for LKey in FInstances.Keys do
+      FInstances.Items[LKey].Free;
     FreeAndNil(FInstances);
+  end;
 end;
 
 class function TADRConnConfigIni.WriteBool(const Ident: string; const Value: Boolean; const Section: String = ''): TADRConnConfigIni;

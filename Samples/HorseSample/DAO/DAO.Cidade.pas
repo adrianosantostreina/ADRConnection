@@ -24,7 +24,7 @@ var
 begin
   dataSet := FQuery
               .SQL('select * from tb_cidade')
-              .Open;
+              .OpenDataSet;
   try
     result := dataSet.ToJSONArray;
   finally

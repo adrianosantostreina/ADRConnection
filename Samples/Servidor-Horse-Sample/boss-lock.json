@@ -2,122 +2,114 @@
 	"hash": "d41d8cd98f00b204e9800998ecf8427e",
 	"updated": "2022-01-24T10:29:51.1717089-03:00",
 	"installedModules": {
-		"github.com/adrianosantostreina/adrconnection": {
-			"name": "adrconnection",
-			"version": "2.0.1",
-			"hash": "c6563f50cc771e8c113408fc552988d7",
-			"artifacts": {},
-			"failed": false,
-			"changed": false
-		},
 		"github.com/bittencourtthulio/horse-paginate": {
 			"name": "horse-paginate",
-			"version": "master",
-			"hash": "d9a6624e04c51016585420b634234047",
+			"version": "1.0.0",
+			"hash": "e8b42fe6655e9cdc45ab1e6d593a1caf",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/dliocode/horse-utils-clientip": {
 			"name": "horse-utils-clientip",
-			"version": "0.0.6",
-			"hash": "db4c16721abe55f9f8c42c7990101361",
+			"version": "0.0.7",
+			"hash": "3373f47951e1dd191ecdcb99ee387755",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/gabrielbaltazar/gbswagger": {
 			"name": "gbswagger",
-			"version": "2.1.4",
-			"hash": "e2f15009a75b8c1d8a652a57ff73c828",
+			"version": "3.0.0",
+			"hash": "c7e3b65cb60942d84f88a2a2d8328aa7",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/handle-exception": {
 			"name": "handle-exception",
-			"version": "0.1.4",
-			"hash": "1152772d75f59dbb562cc7b7711a8ebe",
+			"version": "0.1.7",
+			"hash": "57eb698379cc2d4c24934e43d71779a9",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/horse": {
 			"name": "horse",
-			"version": "v2.0.14",
-			"hash": "38c6bebdc7b9712d6e5856d299289a26",
+			"version": "3.0.0",
+			"hash": "ed42a9c6388ee6ecedb12e258e748b2d",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/horse-basic-auth": {
 			"name": "horse-basic-auth",
-			"version": "v1.1.6",
-			"hash": "f2a3b8966a6130b795e9e3eaeedbbb9d",
+			"version": "1.2.0",
+			"hash": "dbd8a867f7eb043d057531c6a2e26c0d",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/horse-compression": {
 			"name": "horse-compression",
-			"version": "1.1.3",
-			"hash": "114ff47bbd16ce85fc3ec9d85da462ab",
+			"version": "1.1.7",
+			"hash": "a4d7a127f2df26dba138949588e599d9",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/horse-logger": {
 			"name": "horse-logger",
-			"version": "2.0.2",
-			"hash": "bfb121c6e85b5cfeedbd445c962a3fed",
+			"version": "2.0.5",
+			"hash": "06cfd4b73af8105ef0727fb9361912e6",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/horse-logger-provider-console": {
 			"name": "horse-logger-provider-console",
-			"version": "1.0.3",
-			"hash": "59ed31ebb80012c6f8a2d4d45744d1c5",
+			"version": "1.0.5",
+			"hash": "eec5b558d081e06ce3b9d14eb322dd36",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/horse-logger-provider-logfile": {
 			"name": "horse-logger-provider-logfile",
-			"version": "1.0.2",
-			"hash": "06662520147a72069aee445b4b73f710",
+			"version": "1.0.5",
+			"hash": "98f3c3c37bc2237baadaa7f3595893d3",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/horse-octet-stream": {
 			"name": "horse-octet-stream",
-			"version": "1.9.5",
-			"hash": "d6f99e77df3c06466741570d88505bae",
+			"version": "1.9.7",
+			"hash": "9ffd725b22a51e24a5f4b10e8bbf47d8",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/hashload/jhonson": {
 			"name": "jhonson",
-			"version": "1.1.2",
-			"hash": "85d9b3c97b5144448440d7d26bdd16de",
+			"version": "1.1.4",
+			"hash": "7f48e0509b98505a12fa80ee39b53aea",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/viniciussanchez/dataset-serialize": {
 			"name": "dataset-serialize",
-			"version": "v2.3.5",
-			"hash": "08f417d6c8e8bfb1f4855cc1656e3cde",
+			"version": "v2.3.9",
+			"hash": "97307c25df9e44faaa48dd3fea8b513e",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
 		},
 		"github.com/viniciussanchez/restrequest4delphi": {
 			"name": "restrequest4delphi",
-			"version": "v3.0.15",
-			"hash": "26ca24fdb60d0eac62679cc62b1ecc32",
+			"version": "v3.0.17",
+			"hash": "ea60c6bd97447cd2f162911082301dac",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
