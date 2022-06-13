@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://github.com/adrianosantostreina/ADRConnection/blob/README/image/logo.png">
-    <img alt="ADRConnection" src="https://github.com/adrianosantostreina/ADRConnection/blob/README/image/logo.png">
+  <a href="https://github.com/adrianosantostreina/ADRConnection/blob/README/Images/logo.png">
+    <img alt="ADRConnection" src="https://github.com/adrianosantostreina/ADRConnection/blob/README/Images/logo.png">
   </a>
 </p>
 
