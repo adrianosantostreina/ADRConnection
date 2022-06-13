@@ -1,10 +1,10 @@
 <p align="center">
-  <a href="https://github.com/adrianosantostreina/CustomThread/blob/main/image/logo.png">
-    <img alt="CustomThread" src="https://github.com/adrianosantostreina/CustomThread/blob/main/image/logo.png">
+  <a href="https://github.com/adrianosantostreina/ADRConnection/blob/README/Images/logo.png">
+    <img alt="ADRConnection" src="https://github.com/adrianosantostreina/ADRConnection/blob/README/Images/logo.png">
   </a>
 </p>
 
-# CustomThread
+# ADRConnection
 Classe para facilitar a criação de Threads Anônimos em seu projeto
 
 ## Instalação
