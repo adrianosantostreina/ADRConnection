@@ -74,7 +74,7 @@ procedure TADRConnTestQueryFirebird.TestFindAll;
 var
   dataSet: TdataSet;
 begin
-  dataSet := FQuery.SQL('select * from tb_pessoa').Open;
+  dataSet := FQuery.SQL('select * from tb_pessoa').OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.IsFalse(dataSet.FieldByName('pes_razaosocial').AsString.IsEmpty);
@@ -92,7 +92,7 @@ begin
     .SQL('where pes_dtnascimento = :data')
     .ParamAsDateTime('data', EncodeDate(2018, 1, 1));
 
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.AreEqual(10001, dataSet.FieldByName('pes_id').AsInteger);
@@ -110,7 +110,7 @@ begin
     .SQL('where pes_id = :id')
     .ParamAsInteger('id', 10001);
 
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.AreEqual('Mercado Se 123', dataSet.FieldByName('pes_razaosocial').AsString);
@@ -130,7 +130,7 @@ begin
     .ParamAsString('razaoSocial', 'Empresa do Tio Ze')
     .ParamAsString('nomeFantasia', 'Tio Ze');
 
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.AreEqual('Empresa do Tio Ze', dataSet.FieldByName('pes_razaosocial').AsString);

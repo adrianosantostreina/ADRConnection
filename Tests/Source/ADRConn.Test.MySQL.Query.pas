@@ -72,7 +72,7 @@ procedure TADRConnTestQueryMySQL.TestFindAll;
 var
   dataSet: TdataSet;
 begin
-  dataSet := FQuery.SQL('select * from person').Open;
+  dataSet := FQuery.SQL('select * from person').OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.IsFalse(dataSet.FieldByName('name').AsString.IsEmpty);
@@ -90,7 +90,7 @@ begin
     .SQL('where birthdayDate = :data')
     .ParamAsDateTime('data', EncodeDate(1990, 2, 13));
 
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.AreEqual(1, dataSet.FieldByName('id').AsInteger);
@@ -108,7 +108,7 @@ begin
     .SQL('where id = :id')
     .ParamAsInteger('id', 1);
 
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.AreEqual('person 1', dataSet.FieldByName('name').AsString);
@@ -126,7 +126,7 @@ begin
     .SQL('where name = :name')
     .ParamAsString('name', 'person 1');
 
-  dataSet := FQuery.Open;
+  dataSet := FQuery.OpenDataSet;
   try
     Assert.IsTrue(dataSet.RecordCount > 0);
     Assert.AreEqual('person 1', dataSet.FieldByName('name').AsString);
