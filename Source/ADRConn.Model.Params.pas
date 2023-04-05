@@ -6,50 +6,47 @@ uses
   ADRConn.Model.Interfaces,
   System.SysUtils;
 
-type TADRConnModelParams = class(TInterfacedObject, IADRConnectionParams)
-
+type
+  TADRConnModelParams = class(TInterfacedObject, IADRConnectionParams)
   private
     [WeakAttribute]
     FConnection: IADRConnection;
-
-    FDatabase: String;
-    FUserName: String;
-    FPassword: String;
-    FServer: String;
+    FDatabase: string;
+    FUserName: string;
+    FPassword: string;
+    FServer: string;
     FSchema: string;
     FLib: string;
     FFormatSettings: TFormatSettings;
     FPort: Integer;
     FAutoCommit: Boolean;
     FDriver: TADRDriverConn;
-
   protected
-    function Database(Value: string): IADRConnectionParams; overload;
+    function Database(AValue: string): IADRConnectionParams; overload;
     function Database: string; overload;
-    function UserName(Value: string): IADRConnectionParams; overload;
+    function UserName(AValue: string): IADRConnectionParams; overload;
     function UserName: string; overload;
-    function Password(Value: string): IADRConnectionParams; overload;
+    function Password(AValue: string): IADRConnectionParams; overload;
     function Password: string; overload;
-    function Server(Value: string): IADRConnectionParams; overload;
+    function Server(AValue: string): IADRConnectionParams; overload;
     function Server: string; overload;
-    function Schema(Value: String): IADRConnectionParams; overload;
+    function Schema(AValue: string): IADRConnectionParams; overload;
     function Schema: string; overload;
-    function Lib(Value: string): IADRConnectionParams; overload;
+    function Lib(AValue: string): IADRConnectionParams; overload;
     function Lib: string; overload;
-    function Port(Value: Integer): IADRConnectionParams; overload;
+    function Port(AValue: Integer): IADRConnectionParams; overload;
     function Port: Integer; overload;
-    function AutoCommit(Value: Boolean): IADRConnectionParams; overload;
+    function AutoCommit(AValue: Boolean): IADRConnectionParams; overload;
     function AutoCommit: Boolean; overload;
-    function Driver(Value: TADRDriverConn): IADRConnectionParams; overload;
+    function Driver(AValue: TADRDriverConn): IADRConnectionParams; overload;
     function Driver: TADRDriverConn; overload;
     function Settings: TFormatSettings;
 
     function &End: IADRConnection;
-
   public
-    constructor create(Connection: IADRConnection);
-    class function New(Connection: IADRConnection): IADRConnectionParams;
-end;
+    constructor Create(AConnection: IADRConnection);
+    class function New(AConnection: IADRConnection): IADRConnectionParams;
+  end;
 
 implementation
 
@@ -57,18 +54,18 @@ implementation
 
 function TADRConnModelParams.AutoCommit: Boolean;
 begin
-  result := FAutoCommit;
+  Result := FAutoCommit;
 end;
 
-function TADRConnModelParams.AutoCommit(Value: Boolean): IADRConnectionParams;
+function TADRConnModelParams.AutoCommit(AValue: Boolean): IADRConnectionParams;
 begin
-  result := Self;
-  FAutoCommit := Value;
+  Result := Self;
+  FAutoCommit := AValue;
 end;
 
-constructor TADRConnModelParams.create(Connection: IADRConnection);
+constructor TADRConnModelParams.Create(AConnection: IADRConnection);
 begin
-  FConnection := Connection;
+  FConnection := AConnection;
   FAutoCommit := True;
   FDriver := adrFirebird;
 
@@ -80,26 +77,26 @@ begin
   FFormatSettings.LongTimeFormat := 'hh:mm:ss';
 end;
 
-function TADRConnModelParams.Database(Value: string): IADRConnectionParams;
+function TADRConnModelParams.Database(AValue: string): IADRConnectionParams;
 begin
-  result := Self;
-  FDatabase := Value;
+  Result := Self;
+  FDatabase := AValue;
 end;
 
 function TADRConnModelParams.Database: string;
 begin
-  result := FDatabase;
+  Result := FDatabase;
 end;
 
-function TADRConnModelParams.Driver(Value: TADRDriverConn): IADRConnectionParams;
+function TADRConnModelParams.Driver(AValue: TADRDriverConn): IADRConnectionParams;
 begin
-  result := Self;
-  FDriver := Value;
+  Result := Self;
+  FDriver := AValue;
 end;
 
 function TADRConnModelParams.Driver: TADRDriverConn;
 begin
-  result := FDriver;
+  Result := FDriver;
 end;
 
 function TADRConnModelParams.&End: IADRConnection;
@@ -109,78 +106,78 @@ end;
 
 function TADRConnModelParams.Lib: string;
 begin
-  result := FLib;
+  Result := FLib;
 end;
 
-function TADRConnModelParams.Lib(Value: string): IADRConnectionParams;
+function TADRConnModelParams.Lib(AValue: string): IADRConnectionParams;
 begin
-  result := Self;
-  FLib   := Value;
+  Result := Self;
+  FLib := AValue;
 end;
 
-class function TADRConnModelParams.New(Connection: IADRConnection): IADRConnectionParams;
+class function TADRConnModelParams.New(AConnection: IADRConnection): IADRConnectionParams;
 begin
-  result := Self.create(Connection);
+  Result := Self.create(AConnection);
 end;
 
-function TADRConnModelParams.Password(Value: string): IADRConnectionParams;
+function TADRConnModelParams.Password(AValue: string): IADRConnectionParams;
 begin
-  result := Self;
-  FPassword := Value;
+  Result := Self;
+  FPassword := AValue;
 end;
 
 function TADRConnModelParams.Password: string;
 begin
-  result := FPassword;
+  Result := FPassword;
 end;
 
-function TADRConnModelParams.Port(Value: Integer): IADRConnectionParams;
+function TADRConnModelParams.Port(AValue: Integer): IADRConnectionParams;
 begin
-  result := Self;
-  FPort  := Value;
+  Result := Self;
+  FPort := AValue;
 end;
 
 function TADRConnModelParams.Port: Integer;
 begin
-  result := FPort;
+  Result := FPort;
 end;
 
 function TADRConnModelParams.Schema: string;
 begin
-  result := FSchema;
+  Result := FSchema;
 end;
 
-function TADRConnModelParams.Schema(Value: String): IADRConnectionParams;
+function TADRConnModelParams.Schema(AValue: string): IADRConnectionParams;
 begin
-  result := Self;
-  FSchema := Value;
+  Result := Self;
+  FSchema := AValue;
 end;
 
-function TADRConnModelParams.Server(Value: string): IADRConnectionParams;
+function TADRConnModelParams.Server(AValue: string): IADRConnectionParams;
 begin
-  result := Self;
-  FServer := Value;
+  Result := Self;
+  FServer := AValue;
 end;
 
 function TADRConnModelParams.Server: string;
 begin
-  result := FServer;
+  Result := FServer;
 end;
 
 function TADRConnModelParams.Settings: TFormatSettings;
 begin
-  result := FFormatSettings;
+  Result := FFormatSettings;
 end;
 
 function TADRConnModelParams.UserName: string;
 begin
-  result := FUserName;
+  Result := FUserName;
 end;
 
-function TADRConnModelParams.UserName(Value: string): IADRConnectionParams;
+function TADRConnModelParams.UserName(AValue: string): IADRConnectionParams;
 begin
-  result := Self;
-  FUserName := Value;
+  Result := Self;
+  FUserName := AValue;
 end;
 
 end.

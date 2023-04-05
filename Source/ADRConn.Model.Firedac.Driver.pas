@@ -11,38 +11,40 @@ uses
   FireDAC.Phys.SQLite,
   System.SysUtils;
 
-type TADRConnModelFiredacDriver = class
-
+type
+  TADRConnModelFiredacDriver = class
   private
     class function GetPostgresDriver: TFDPhysDriverLink;
     class function GetMySQLDriver: TFDPhysDriverLink;
     class function GetSQLiteDriver: TFDPhysDriverLink;
     class function GetFirebirdDriver: TFDPhysDriverLink;
-
   public
-    class function GetDriver(Params: IADRConnectionParams): TFDPhysDriverLink;
-
-end;
+    class function GetDriver(AParams: IADRConnectionParams): TFDPhysDriverLink;
+  end;
 
 implementation
 
 { TADRConnModelFiredacDriver }
 
-class function TADRConnModelFiredacDriver.GetDriver(Params: IADRConnectionParams): TFDPhysDriverLink;
+class function TADRConnModelFiredacDriver.GetDriver(AParams: IADRConnectionParams): TFDPhysDriverLink;
 begin
-  case Params.Driver of
-    adrMySql : result := GetMySQLDriver;
-    adrFirebird : result := GetFirebirdDriver;
-    adrPostgres : result := GetPostgresDriver;
-    adrSQLite : result := GetSQLiteDriver;
+  case AParams.Driver of
+    adrMySql:
+      Result := GetMySQLDriver;
+    adrFirebird:
+      Result := GetFirebirdDriver;
+    adrPostgres:
+      Result := GetPostgresDriver;
+    adrSQLite:
+      Result := GetSQLiteDriver;
   else
-    raise Exception.CreateFmt('Driver %s not found.', [Params.Driver.toString]);
+    raise Exception.CreateFmt('Driver %s not found.', [AParams.Driver.ToString]);
   end;
 end;
 
 class function TADRConnModelFiredacDriver.GetFirebirdDriver: TFDPhysDriverLink;
 begin
-  result := TFDPhysFBDriverLink.Create(nil);
+  Result := TFDPhysFBDriverLink.Create(nil);
   Result.VendorLib := 'fbclient.dll';
 end;
 
@@ -54,14 +56,14 @@ end;
 
 class function TADRConnModelFiredacDriver.GetPostgresDriver: TFDPhysDriverLink;
 begin
-  result := TFDPhysPgDriverLink.Create(nil);
+  Result := TFDPhysPgDriverLink.Create(nil);
   Result.VendorLib := '';
 end;
 
 class function TADRConnModelFiredacDriver.GetSQLiteDriver: TFDPhysDriverLink;
 begin
-  result := TFDPhysSQLiteDriverLink.Create(nil);
-  result.VendorLib := 'sqlite3.dll';
+  Result := TFDPhysSQLiteDriverLink.Create(nil);
+  Result.VendorLib := 'sqlite3.dll';
 end;
 
 end.

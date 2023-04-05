@@ -15,7 +15,7 @@ type
   IADRConnection = interface
     ['{681E59C7-6AAC-47DE-AE6D-F649C1922565}']
     function Connection: TCustomConnection;
-    function Component : TComponent;
+    function Component: TComponent;
 
     function Params: IADRConnectionParams;
 
@@ -29,23 +29,23 @@ type
 
   IADRConnectionParams = interface
     ['{439941DC-9841-478E-9E9A-BCAB3015DB9C}']
-    function Database(Value: string): IADRConnectionParams; overload;
+    function Database(AValue: string): IADRConnectionParams; overload;
     function Database: string; overload;
-    function UserName(Value: string): IADRConnectionParams; overload;
+    function UserName(AValue: string): IADRConnectionParams; overload;
     function UserName: string; overload;
-    function Password(Value: string): IADRConnectionParams; overload;
+    function Password(AValue: string): IADRConnectionParams; overload;
     function Password: string; overload;
-    function Server(Value: string): IADRConnectionParams; overload;
+    function Server(AValue: string): IADRConnectionParams; overload;
     function Server: string; overload;
-    function Schema(Value: String): IADRConnectionParams; overload;
+    function Schema(AValue: string): IADRConnectionParams; overload;
     function Schema: string; overload;
-    function Lib(Value: string): IADRConnectionParams; overload;
+    function Lib(AValue: string): IADRConnectionParams; overload;
     function Lib: string; overload;
-    function Port(Value: Integer): IADRConnectionParams; overload;
+    function Port(AValue: Integer): IADRConnectionParams; overload;
     function Port: Integer; overload;
-    function AutoCommit(Value: Boolean): IADRConnectionParams; overload;
+    function AutoCommit(AValue: Boolean): IADRConnectionParams; overload;
     function AutoCommit: Boolean; overload;
-    function Driver(Value: TADRDriverConn): IADRConnectionParams; overload;
+    function Driver(AValue: TADRDriverConn): IADRConnectionParams; overload;
     function Driver: TADRDriverConn; overload;
     function Settings: TFormatSettings;
 
@@ -54,19 +54,20 @@ type
 
   IADRQuery = interface
     ['{AE3BE608-658C-46D4-AC60-6F4EDB6AF90D}']
-    function SQL(Value: String): IADRQuery; overload;
-    function SQL(Value: string; const Args: array of const): IADRQuery; overload;
+    function SQL(AValue: string): IADRQuery; overload;
+    function SQL(AValue: string; const Args: array of const): IADRQuery; overload;
 
-    function DataSource(Value: TDataSource): IADRQuery;
+    function DataSet: TDataSet;
+    function DataSource(AValue: TDataSource): IADRQuery;
 
-    function ParamAsInteger(Name: String; Value: Integer): IADRQuery;
-    function ParamAsCurrency(Name: String; Value: Currency): IADRQuery;
-    function ParamAsFloat(Name: String; Value: Double): IADRQuery;
-    function ParamAsString(Name: String; Value: String): IADRQuery;
-    function ParamAsDateTime(Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsDate(Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsTime(Name: String; Value: TDateTime): IADRQuery;
-    function ParamAsBoolean(Name: String; Value: Boolean): IADRQuery;
+    function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery;
+    function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery;
+    function ParamAsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery;
+    function ParamAsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQuery;
+    function ParamAsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery;
+    function ParamAsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery;
+    function ParamAsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery;
+    function ParamAsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQuery;
 
     function OpenDataSet: TDataSet;
     function Open: IADRQuery;
@@ -78,18 +79,18 @@ type
 
   IADRGenerator = interface
     ['{ABAB66A1-F210-4BD4-8594-F67F1781158A}']
-    function GetCurrentSequence(Name: String): Double;
-    function GetNextSequence(Name: String): Double;
+    function GetCurrentSequence(AName: string): Double;
+    function GetNextSequence(AName: string): Double;
   end;
 
   TADRDriverConnHelper = record helper for TADRDriverConn
   public
-    function toString: String;
-    procedure fromString(Value: String);
+    function ToString: string;
+    procedure fromString(AValue: string);
   end;
 
 function CreateConnection: IADRConnection;
-function CreateQuery(Connection: IADRConnection): IADRQuery;
+function CreateQuery(AConnection: IADRConnection): IADRQuery;
 
 implementation
 
@@ -99,53 +100,57 @@ uses
 
 function CreateConnection: IADRConnection;
 begin
-  result := TADRConnModelFiredacConnection.New;
+  Result := TADRConnModelFiredacConnection.New;
 end;
 
-function CreateQuery(Connection: IADRConnection): IADRQuery;
+function CreateQuery(AConnection: IADRConnection): IADRQuery;
 begin
-  result := TADRConnModelFiredacQuery.New(Connection);
+  Result := TADRConnModelFiredacQuery.New(AConnection);
 end;
 
 { TADRDriverConnHelper }
 
-procedure TADRDriverConnHelper.fromString(Value: String);
+procedure TADRDriverConnHelper.fromString(AValue: string);
 var
-  driver: string;
+  LDriver: string;
 begin
-  driver := Value.Trim.ToLower;
-  if driver.Equals('firebird') then
+  LDriver := AValue.Trim.ToLower;
+  if LDriver.Equals('firebird') then
   begin
     Self := adrFirebird;
     Exit;
   end;
 
-  if driver.Equals('postgres') then
+  if LDriver.Equals('postgres') then
   begin
     Self := adrPostgres;
     Exit;
   end;
 
-  if driver.Equals('mysql') then
+  if LDriver.Equals('mysql') then
   begin
     Self := adrMySql;
     Exit;
   end;
 
-  if driver.Equals('sqlite') then
+  if LDriver.Equals('sqlite') then
   begin
     Self := adrSQLite;
     Exit;
   end;
 end;
 
-function TADRDriverConnHelper.toString: String;
+function TADRDriverConnHelper.ToString: string;
 begin
   case Self of
-    adrFirebird : result := 'Firebird';
-    adrPostgres : result := 'Postgres';
-    adrMySql    : result := 'MySQL';
-    adrSQLite   : result := 'SQLite';
+    adrFirebird:
+      Result := 'Firebird';
+    adrPostgres:
+      Result := 'Postgres';
+    adrMySql:
+      Result := 'MySQL';
+    adrSQLite:
+      Result := 'SQLite';
   end;
 end;
 

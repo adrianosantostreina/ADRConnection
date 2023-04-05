@@ -8,8 +8,8 @@ uses
   System.Generics.Collections,
   System.SysUtils;
 
-type TADRConnConfigIni = class
-
+type
+  TADRConnConfigIni = class
   private
     FFileName: string;
     FDatabase: string;
@@ -21,27 +21,35 @@ type TADRConnConfigIni = class
     FProtocol: string;
     FDriver: TADRDriverConn;
 
-    class var FInstances: TObjectDictionary<String, TADRConnConfigIni>;
+    class var FInstances: TObjectDictionary<string, TADRConnConfigIni>;
 
-    constructor CreatePrivate(ASection: String);
+    constructor CreatePrivate(ASection: string);
 
-    function InternalReadString(const Ident: string; const Default: String = ''; const Section: String = ''): string;
-    function InternalReadInteger(const Ident: string; const Default: Integer = 0; const Section: String = ''): Integer;
-    function InternalReadBool(const Ident: string; const Default: Boolean = False; const Section: String = ''): Boolean;
+    function InternalReadString(const AIdent: string; const ADefault: string = ''; const ASection: string = ''): string;
+    function InternalReadInteger(const AIdent: string; const ADefault: Integer = 0; const ASection: string = ''): Integer;
+    function InternalReadBool(const AIdent: string; const ADefault: Boolean = False; const ASection: string = ''): Boolean;
 
-    function InternalWriteString(const Ident: string; const Value: string; const Section: String = ''): TADRConnConfigIni;
-    function InternalWriteInteger(const Ident: string; const Value: Integer; const Section: String = ''): TADRConnConfigIni;
-    function InternalWriteBool(const Ident: string; const Value: Boolean; const Section: String = ''): TADRConnConfigIni;
-
+    function InternalWriteString(const AIdent: string; const AValue: string; const ASection: string = ''): TADRConnConfigIni;
+    function InternalWriteInteger(const AIdent: string; const AValue: Integer; const ASection: string = ''): TADRConnConfigIni;
+    function InternalWriteBool(const AIdent: string; const AValue: Boolean; const ASection: string = ''): TADRConnConfigIni;
   protected
-    class function GetDefaultInstance(ASection: String): TADRConnConfigIni;
+    class function GetDefaultInstance(ASection: string): TADRConnConfigIni;
     function GetIniFileName: string;
     function GetIniFile: TIniFile; virtual;
 
-    procedure Initialize(ASection: String);
-
+    procedure Initialize(ASection: string);
   public
-    constructor create;
+    constructor Create;
+    class function GetInstance(ASection: string = ''): TADRConnConfigIni;
+    class destructor UnInitialize;
+
+    class function ReadString(const AIdent: string; const ADefault: string = ''; const ASection: string = ''): string;
+    class function ReadBool(const AIdent: string; const ADefault: Boolean = False; const ASection: string = ''): Boolean;
+    class function ReadInteger(const AIdent: string; const ADefault: Integer; const ASection: string = ''): Integer;
+
+    class function WriteString(const AIdent: string; const AValue: string; const ASection: string = ''): TADRConnConfigIni;
+    class function WriteInteger(const AIdent: string; const AValue: Integer; const ASection: string = ''): TADRConnConfigIni;
+    class function WriteBool(const AIdent: string; const AValue: Boolean; const ASection: string = ''): TADRConnConfigIni;
 
     property Driver: TADRDriverConn read FDriver write FDriver;
     property FileName: string read FFileName write FFileName;
@@ -52,18 +60,7 @@ type TADRConnConfigIni = class
     property Port: Integer  read FPort write FPort;
     property VendorLib: string read FVendorLib write FVendorLib;
     property Protocol: string read FProtocol write FProtocol;
-
-    class function ReadString(const Ident: string; const Default: String = ''; const Section: String = ''): string;
-    class function ReadBool(const Ident: string; const Default: Boolean = False; const Section: String = ''): Boolean;
-    class function ReadInteger(const Ident: string; const Default: Integer; const Section: String = ''): Integer;
-
-    class function WriteString(const Ident: string; const Value: string; const Section: String = ''): TADRConnConfigIni;
-    class function WriteInteger(const Ident: string; const Value: Integer; const Section: String = ''): TADRConnConfigIni;
-    class function WriteBool(const Ident: string; const Value: Boolean; const Section: String = ''): TADRConnConfigIni;
-
-    class function GetInstance(ASection: string = ''): TADRConnConfigIni;
-    class destructor UnInitialize;
-end;
+  end;
 
 implementation
 
@@ -77,7 +74,7 @@ begin
   raise Exception.Create('Use GetInstance...');
 end;
 
-constructor TADRConnConfigIni.CreatePrivate(ASection: String);
+constructor TADRConnConfigIni.CreatePrivate(ASection: string);
 var
   LIniFile: TIniFile;
 begin
@@ -98,154 +95,154 @@ begin
   end;
 end;
 
-class function TADRConnConfigIni.GetDefaultInstance(ASection: String): TADRConnConfigIni;
+class function TADRConnConfigIni.GetDefaultInstance(ASection: string): TADRConnConfigIni;
 begin
   if not Assigned(FInstances) then
     FInstances := TObjectDictionary<string, TADRConnConfigIni>.create;
 
-  if not FInstances.TryGetValue(ASection, result) then
+  if not FInstances.TryGetValue(ASection, Result) then
   begin
-    result := TADRConnConfigIni.CreatePrivate(ASection);
-    FInstances.Add(ASection, result);
+    Result := TADRConnConfigIni.CreatePrivate(ASection);
+    FInstances.Add(ASection, Result);
   end;
 end;
 
 function TADRConnConfigIni.GetIniFile: TIniFile;
 begin
-  result := TIniFile.Create(GetIniFileName);
+  Result := TIniFile.Create(GetIniFileName);
 end;
 
 function TADRConnConfigIni.GetIniFileName: string;
 begin
-  result := ChangeFileExt(GetModuleName(HInstance), '.ini');
+  Result := ChangeFileExt(GetModuleName(HInstance), '.ini');
 end;
 
 class function TADRConnConfigIni.GetInstance(ASection: string): TADRConnConfigIni;
 var
-  LSection: String;
+  LSection: string;
 begin
   LSection := ASection;
   if LSection = EmptyStr then
     LSection := SECTION_DATABASE;
 
-  result := TADRConnConfigIni.GetDefaultInstance(LSection);
+  Result := TADRConnConfigIni.GetDefaultInstance(LSection);
 end;
 
-procedure TADRConnConfigIni.Initialize(ASection: String);
+procedure TADRConnConfigIni.Initialize(ASection: string);
 var
-  fileName: String;
-  iniFile : TIniFile;
+  LFileName: string;
+  LIniFile: TIniFile;
 begin
-  fileName := GetIniFileName;
-  if not FileExists(fileName) then
+  LFileName := GetIniFileName;
+  if not FileExists(LFileName) then
   begin
-    iniFile := GetIniFile;
+    LIniFile := GetIniFile;
     try
-      iniFile.WriteString(ASection, 'Driver', FDriver.toString);
-      iniFile.WriteString(ASection, 'Database', 'adrconntest');
-      iniFile.WriteString(ASection, 'User_Name', 'sysdba');
-      iniFile.WriteString(ASection, 'Password', 'masterkey');
-      iniFile.WriteString(ASection, 'Server', '127.0.0.1');
-      iniFile.WriteString(ASection, 'VendorLib', 'fbclient.dll');
-      iniFile.WriteString(ASection, 'Protocol', 'http');
-      iniFile.WriteInteger(ASection, 'Port', 3050);
+      LIniFile.WriteString(ASection, 'Driver', FDriver.toString);
+      LIniFile.WriteString(ASection, 'Database', 'adrconntest');
+      LIniFile.WriteString(ASection, 'User_Name', 'sysdba');
+      LIniFile.WriteString(ASection, 'Password', 'masterkey');
+      LIniFile.WriteString(ASection, 'Server', '127.0.0.1');
+      LIniFile.WriteString(ASection, 'VendorLib', 'fbclient.dll');
+      LIniFile.WriteString(ASection, 'Protocol', 'http');
+      LIniFile.WriteInteger(ASection, 'Port', 3050);
     finally
-      iniFile.Free;
+      LIniFile.Free;
     end;
   end;
 end;
 
-class function TADRConnConfigIni.ReadBool(const Ident: string; const Default: Boolean = False; const Section: String = ''): Boolean;
+class function TADRConnConfigIni.ReadBool(const AIdent: string; const ADefault: Boolean = False; const ASection: string = ''): Boolean;
 begin
-  result := Self.GetInstance.InternalReadBool(Ident, Default, Section);
+  Result := Self.GetInstance.InternalReadBool(AIdent, ADefault, ASection);
 end;
 
-class function TADRConnConfigIni.ReadInteger(const Ident: string; const Default: Integer; const Section: String = ''): Integer;
+class function TADRConnConfigIni.ReadInteger(const AIdent: string; const ADefault: Integer; const ASection: string = ''): Integer;
 begin
-  result := Self.GetInstance.InternalReadInteger(Ident, Default, Section);
+  Result := Self.GetInstance.InternalReadInteger(AIdent, ADefault, ASection);
 end;
 
-function TADRConnConfigIni.InternalReadBool(const Ident: string; const Default: Boolean = False; const Section: String = ''): Boolean;
+function TADRConnConfigIni.InternalReadBool(const AIdent: string; const ADefault: Boolean = False; const ASection: string = ''): Boolean;
 var
-  iniFile: TIniFile;
+  LIniFile: TIniFile;
 begin
-  iniFile := GetIniFile;
+  LIniFile := GetIniFile;
   try
-    result := iniFile.ReadBool(Section, Ident, Default);
-    iniFile.WriteBool(Section, Ident, Result);
+    Result := LIniFile.ReadBool(ASection, AIdent, ADefault);
+    LIniFile.WriteBool(ASection, AIdent, Result);
   finally
-    iniFile.Free;
+    LIniFile.Free;
   end;
 end;
 
-function TADRConnConfigIni.InternalReadInteger(const Ident: string; const Default: Integer = 0; const Section: String = ''): Integer;
+function TADRConnConfigIni.InternalReadInteger(const AIdent: string; const ADefault: Integer = 0; const ASection: string = ''): Integer;
 var
-  iniFile: TIniFile;
+  LIniFile: TIniFile;
 begin
-  iniFile := GetIniFile;
+  LIniFile := GetIniFile;
   try
-    result := iniFile.ReadInteger(Section, Ident, Default);
-    iniFile.WriteInteger(Section, Ident, result);
+    Result := LIniFile.ReadInteger(ASection, AIdent, ADefault);
+    LIniFile.WriteInteger(ASection, AIdent, Result);
   finally
-    iniFile.Free;
+    LIniFile.Free;
   end;
 end;
 
-function TADRConnConfigIni.InternalReadString(const Ident: string; const Default: String = ''; const Section: String = ''): string;
+function TADRConnConfigIni.InternalReadString(const AIdent: string; const ADefault: string = ''; const ASection: string = ''): string;
 var
-  iniFile: TIniFile;
+  LIniFile: TIniFile;
 begin
-  iniFile := GetIniFile;
+  LIniFile := GetIniFile;
   try
-    result := iniFile.ReadString(Section, Ident, Default);
-    iniFile.WriteString(Section, Ident, result);
+    Result := LIniFile.ReadString(ASection, AIdent, ADefault);
+    LIniFile.WriteString(ASection, AIdent, Result);
   finally
-    iniFile.Free;
+    LIniFile.Free;
   end;
 end;
 
-function TADRConnConfigIni.InternalWriteBool(const Ident: string; const Value: Boolean; const Section: String = ''): TADRConnConfigIni;
+function TADRConnConfigIni.InternalWriteBool(const AIdent: string; const AValue: Boolean; const ASection: string = ''): TADRConnConfigIni;
 var
-  iniFile: TIniFile;
+  LIniFile: TIniFile;
 begin
-  result := Self;
-  iniFile := GetIniFile;
+  Result := Self;
+  LIniFile := GetIniFile;
   try
-    iniFile.WriteBool(Section, Ident, Value);
+    LIniFile.WriteBool(ASection, AIdent, AValue);
   finally
-    iniFile.Free;
+    LIniFile.Free;
   end;
 end;
 
-function TADRConnConfigIni.InternalWriteInteger(const Ident: string; const Value: Integer; const Section: String = ''): TADRConnConfigIni;
+function TADRConnConfigIni.InternalWriteInteger(const AIdent: string; const AValue: Integer; const ASection: string = ''): TADRConnConfigIni;
 var
-  iniFile: TIniFile;
+  LIniFile: TIniFile;
 begin
-  result := Self;
-  iniFile := GetIniFile;
+  Result := Self;
+  LIniFile := GetIniFile;
   try
-    iniFile.WriteInteger(Section, Ident, Value);
+    LIniFile.WriteInteger(ASection, AIdent, AValue);
   finally
-    iniFile.Free;
+    LIniFile.Free;
   end;
 end;
 
-function TADRConnConfigIni.InternalWriteString(const Ident: string; const Value: string; const Section: String = ''): TADRConnConfigIni;
+function TADRConnConfigIni.InternalWriteString(const AIdent: string; const AValue: string; const ASection: string = ''): TADRConnConfigIni;
 var
-  iniFile: TIniFile;
+  LIniFile: TIniFile;
 begin
-  result := Self;
-  iniFile := GetIniFile;
+  Result := Self;
+  LIniFile := GetIniFile;
   try
-    iniFile.WriteString(Section, Ident, Value);
+    LIniFile.WriteString(ASection, AIdent, AValue);
   finally
-    iniFile.Free;
+    LIniFile.Free;
   end;
 end;
 
-class function TADRConnConfigIni.ReadString(const Ident: string; const Default: String = ''; const Section: String = ''): string;
+class function TADRConnConfigIni.ReadString(const AIdent: string; const ADefault: string = ''; const ASection: string = ''): string;
 begin
-  result := Self.GetInstance.InternalReadString(Ident, Default, Section);
+  Result := Self.GetInstance.InternalReadString(AIdent, ADefault, ASection);
 end;
 
 class destructor TADRConnConfigIni.UnInitialize;
@@ -260,19 +257,19 @@ begin
   end;
 end;
 
-class function TADRConnConfigIni.WriteBool(const Ident: string; const Value: Boolean; const Section: String = ''): TADRConnConfigIni;
+class function TADRConnConfigIni.WriteBool(const AIdent: string; const AValue: Boolean; const ASection: string = ''): TADRConnConfigIni;
 begin
-  result := Self.GetInstance.InternalWriteBool(Ident, Value, Section);
+  Result := Self.GetInstance.InternalWriteBool(AIdent, AValue, ASection);
 end;
 
-class function TADRConnConfigIni.WriteInteger(const Ident: string; const Value: Integer; const Section: String = ''): TADRConnConfigIni;
+class function TADRConnConfigIni.WriteInteger(const AIdent: string; const AValue: Integer; const ASection: string = ''): TADRConnConfigIni;
 begin
-  result := Self.GetInstance.InternalWriteInteger(Ident, Value, Section);
+  Result := Self.GetInstance.InternalWriteInteger(AIdent, AValue, ASection);
 end;
 
-class function TADRConnConfigIni.WriteString(const Ident: string; const Value: string; const Section: String = ''): TADRConnConfigIni;
+class function TADRConnConfigIni.WriteString(const AIdent: string; const AValue: string; const ASection: string = ''): TADRConnConfigIni;
 begin
-  result := Self.GetInstance.InternalWriteString(Ident, Value, Section);
+  Result := Self.GetInstance.InternalWriteString(AIdent, AValue, ASection);
 end;
 
 end.

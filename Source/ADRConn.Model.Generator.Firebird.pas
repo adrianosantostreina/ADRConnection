@@ -7,40 +7,38 @@ uses
   ADRConn.Model.Generator,
   System.SysUtils;
 
-type TADRConnModelGeneratorFirebird = class(TADRConnModelGenerator, IADRGenerator)
-
+type
+  TADRConnModelGeneratorFirebird = class(TADRConnModelGenerator, IADRGenerator)
   protected
-    function GetCurrentSequence(Name: String): Double; override;
-    function GetNextSequence(Name: String): Double; override;
-
+    function GetCurrentSequence(AName: string): Double; override;
+    function GetNextSequence(AName: string): Double; override;
   public
-    class function New(Query: IADRQuery): IADRGenerator;
-
-end;
+    class function New(AQuery: IADRQuery): IADRGenerator;
+  end;
 
 implementation
 
 { TADRConnModelGeneratorFirebird }
 
-function TADRConnModelGeneratorFirebird.GetCurrentSequence(Name: String): Double;
+function TADRConnModelGeneratorFirebird.GetCurrentSequence(AName: string): Double;
 begin
   FQuery
-    .SQL('SELECT GEN_ID(%s, 0) FROM RDB$DATABASE;', [Name]);
+    .SQL('SELECT GEN_ID(%s, 0) FROM RDB$DATABASE;', [AName]);
 
-  result := GetSequence;
+  Result := GetSequence;
 end;
 
-function TADRConnModelGeneratorFirebird.GetNextSequence(Name: String): Double;
+function TADRConnModelGeneratorFirebird.GetNextSequence(AName: string): Double;
 begin
   FQuery
-    .SQL('SELECT GEN_ID(%s, %s) FROM RDB$DATABASE;', [Name, '1']);
+    .SQL('SELECT GEN_ID(%s, %s) FROM RDB$DATABASE;', [AName, '1']);
 
-  result := GetSequence;
+  Result := GetSequence;
 end;
 
-class function TADRConnModelGeneratorFirebird.New(Query: IADRQuery): IADRGenerator;
+class function TADRConnModelGeneratorFirebird.New(AQuery: IADRQuery): IADRGenerator;
 begin
-  result := Self.create(Query);
+  Result := Self.Create(AQuery);
 end;
 
 end.

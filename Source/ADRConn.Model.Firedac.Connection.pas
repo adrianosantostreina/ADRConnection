@@ -10,21 +10,21 @@ uses
   FireDAC.Comp.Client,
   FireDAC.Stan.Def,
   FireDAC.Stan.Async,
-  {$IFDEF MSWINDOWS}
+{$IFDEF MSWINDOWS}
   FireDAC.Comp.UI,
   FireDAC.VCLUI.Wait,
   FireDAC.UI.Intf,
-  {$ENDIF}
-  {$IFDEF LINUX}
+{$ENDIF}
+{$IFDEF LINUX}
   FireDAC.ConsoleUI.Wait,
-  {$ENDIF}
+{$ENDIF}
   Firedac.Phys,
   FireDAC.DApt,
   System.Classes,
   System.SysUtils;
 
-type TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
-
+type
+  TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
   private
     FConnection: TFDConnection;
     FCursor: TFDGUIxWaitCursor;
@@ -33,8 +33,7 @@ type TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
 
     procedure Setup;
     procedure CreateDriver;
-    function GetDriverId: String;
-
+    function GetDriverId: string;
   protected
     function Connection: TCustomConnection;
     function Component: TComponent;
@@ -47,13 +46,11 @@ type TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
     function Commit: IADRConnection;
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
-
   public
-    constructor create;
+    constructor Create;
     destructor Destroy; override;
     class function New: IADRConnection;
-
-end;
+  end;
 
 implementation
 
@@ -61,18 +58,18 @@ implementation
 
 function TADRConnModelFiredacConnection.Commit: IADRConnection;
 begin
-  result := Self;
+  Result := Self;
   FConnection.Commit;
 end;
 
 function TADRConnModelFiredacConnection.Component: TComponent;
 begin
-  result := FConnection;
+  Result := FConnection;
 end;
 
 function TADRConnModelFiredacConnection.Connect: IADRConnection;
 begin
-  result := Self;
+  Result := Self;
   if not FConnection.Connected then
   begin
     Setup;
@@ -82,10 +79,10 @@ end;
 
 function TADRConnModelFiredacConnection.Connection: TCustomConnection;
 begin
-  result := FConnection;
+  Result := FConnection;
 end;
 
-constructor TADRConnModelFiredacConnection.create;
+constructor TADRConnModelFiredacConnection.Create;
 begin
   FConnection := TFDConnection.Create(nil);
   FCursor := TFDGUIxWaitCursor.Create(nil);
@@ -109,17 +106,21 @@ end;
 
 function TADRConnModelFiredacConnection.Disconnect: IADRConnection;
 begin
-  result := Self;
+  Result := Self;
   FConnection.Connected := False;
 end;
 
-function TADRConnModelFiredacConnection.GetDriverId: String;
+function TADRConnModelFiredacConnection.GetDriverId: string;
 begin
   case FParams.Driver of
-    adrFirebird : Result := 'FB';
-    adrMySql : Result := 'MySQL';
-    adrSQLite : Result := 'SQLite';
-    adrPostgres : result := 'PG';
+    adrFirebird:
+      Result := 'FB';
+    adrMySql:
+      Result := 'MySQL';
+    adrSQLite:
+      Result := 'SQLite';
+    adrPostgres:
+      Result := 'PG';
   else
     raise Exception.CreateFmt('Driver Firedac not found for %s.', [FParams.Driver.toString]);
   end;
@@ -132,7 +133,7 @@ end;
 
 class function TADRConnModelFiredacConnection.New: IADRConnection;
 begin
-  result := Self.create;
+  Result := Self.Create;
 end;
 
 function TADRConnModelFiredacConnection.Params: IADRConnectionParams;

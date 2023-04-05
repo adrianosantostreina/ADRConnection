@@ -7,34 +7,32 @@ uses
   ADRConn.Model.Generator,
   System.SysUtils;
 
-type TADRConnModelGeneratorSQLite = class(TADRConnModelGenerator, IADRGenerator)
-
+type
+  TADRConnModelGeneratorSQLite = class(TADRConnModelGenerator, IADRGenerator)
   protected
-    function GetCurrentSequence(Name: String): Double; override;
-    function GetNextSequence(Name: String): Double; override;
-
+    function GetCurrentSequence(AName: string): Double; override;
+    function GetNextSequence(AName: string): Double; override;
   public
-    class function New(Query: IADRQuery): IADRGenerator;
-
-end;
+    class function New(AQuery: IADRQuery): IADRGenerator;
+  end;
 
 implementation
 
 { TADRConnModelGeneratorSQLite }
 
-function TADRConnModelGeneratorSQLite.GetCurrentSequence(Name: String): Double;
+function TADRConnModelGeneratorSQLite.GetCurrentSequence(AName: string): Double;
 begin
   raise Exception.CreateFmt('Not implemented yet.', []);
 end;
 
-function TADRConnModelGeneratorSQLite.GetNextSequence(Name: String): Double;
+function TADRConnModelGeneratorSQLite.GetNextSequence(AName: string): Double;
 begin
   raise Exception.CreateFmt('Not implemented yet.', []);
 end;
 
-class function TADRConnModelGeneratorSQLite.New(Query: IADRQuery): IADRGenerator;
+class function TADRConnModelGeneratorSQLite.New(AQuery: IADRQuery): IADRGenerator;
 begin
-  result := Self.create(Query);
+  Result := Self.Create(AQuery);
 end;
 
 end.
