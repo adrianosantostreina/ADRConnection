@@ -4,6 +4,7 @@ interface
 
 uses
   ADRConn.Model.Interfaces,
+  System.Generics.Collections,
   System.SysUtils;
 
 type
@@ -21,6 +22,7 @@ type
     FPort: Integer;
     FAutoCommit: Boolean;
     FDriver: TADRDriverConn;
+    FParams: TDictionary<string, string>;
   protected
     function Database(AValue: string): IADRConnectionParams; overload;
     function Database: string; overload;
@@ -42,15 +44,25 @@ type
     function Driver: TADRDriverConn; overload;
     function Settings: TFormatSettings;
 
+    function AddParam(AName, AValue: string): IADRConnectionParams;
+    function ParamNames: TArray<string>;
+    function ParamByName(AName: string): string;
     function &End: IADRConnection;
   public
     constructor Create(AConnection: IADRConnection);
     class function New(AConnection: IADRConnection): IADRConnectionParams;
+    destructor Destroy; override;
   end;
 
 implementation
 
 { TADRConnModelParams }
+
+function TADRConnModelParams.AddParam(AName, AValue: string): IADRConnectionParams;
+begin
+  Result := Self;
+  FParams.AddOrSetValue(AName, AValue);
+end;
 
 function TADRConnModelParams.AutoCommit: Boolean;
 begin
@@ -66,6 +78,7 @@ end;
 constructor TADRConnModelParams.Create(AConnection: IADRConnection);
 begin
   FConnection := AConnection;
+  FParams := TDictionary<string, string>.Create;
   FAutoCommit := True;
   FDriver := adrFirebird;
 
@@ -86,6 +99,12 @@ end;
 function TADRConnModelParams.Database: string;
 begin
   Result := FDatabase;
+end;
+
+destructor TADRConnModelParams.Destroy;
+begin
+  FParams.Free;
+  inherited;
 end;
 
 function TADRConnModelParams.Driver(AValue: TADRDriverConn): IADRConnectionParams;
@@ -124,6 +143,18 @@ function TADRConnModelParams.Password(AValue: string): IADRConnectionParams;
 begin
   Result := Self;
   FPassword := AValue;
+end;
+
+function TADRConnModelParams.ParamByName(AName: string): string;
+begin
+  Result := EmptyStr;
+  if FParams.ContainsKey(AName) then
+    Result := FParams.Items[AName];
+end;
+
+function TADRConnModelParams.ParamNames: TArray<string>;
+begin
+  Result := FParams.Keys.ToArray;
 end;
 
 function TADRConnModelParams.Password: string;

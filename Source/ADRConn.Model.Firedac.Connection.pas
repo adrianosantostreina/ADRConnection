@@ -148,6 +148,10 @@ begin
 end;
 
 procedure TADRConnModelFiredacConnection.Setup;
+var
+  LParams: TArray<string>;
+  LName: string;
+  LValue: string;
 begin
   FConnection.DriverName := GetDriverId;
   FConnection.Params.Values['Database'] := FParams.Database;
@@ -156,6 +160,13 @@ begin
   FConnection.Params.Values['Server'] := FParams.Server;
   FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
   FConnection.TxOptions.AutoCommit := FParams.AutoCommit;
+
+  LParams := FParams.ParamNames;
+  for LName in LParams do
+  begin
+    LValue := FParams.ParamByName(LName);
+    FConnection.Params.Values[LName] := LValue;
+  end;
 
   CreateDriver;
 end;
