@@ -64,6 +64,7 @@
         <VerInfo_Locale>1046</VerInfo_Locale>
         <SanitizedProjectName>TestADRConnection</SanitizedProjectName>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_Define>TESTINSIGHT;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
@@ -122,12 +123,9 @@
         <DCCReference Include="..\Source\ADRConn.DAO.Base.pas"/>
         <DCCReference Include="..\Source\ADRConn.Config.IniFile.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.Factory.pas"/>
-        <DCCReference Include="Source\ADRConn.Test.Firebird.Connection.pas"/>
-        <DCCReference Include="Source\ADRConn.Test.Firebird.Query.pas"/>
-        <DCCReference Include="Source\ADRConn.Test.MySQL.Connection.pas"/>
-        <DCCReference Include="Source\ADRConn.Test.MySQL.Query.pas"/>
         <DCCReference Include="Source\ADRConn.Test.Query.Base.pas"/>
         <DCCReference Include="Source\ADRConn.Test.SQLite.Connection.pas"/>
+        <DCCReference Include="Source\ADRConn.Test.Query.Firedac.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -172,6 +170,12 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="TestADRConnection.exe" Configuration="Debug" Class="ProjectOutput"/>
+                <DeployFile LocalName="TestADRConnection.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>TestADRConnection.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="OSX32">
                         <Operation>1</Operation>

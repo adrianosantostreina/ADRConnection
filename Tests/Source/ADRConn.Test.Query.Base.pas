@@ -7,23 +7,23 @@ uses
   ADRConn.Test.Base,
   System.SysUtils;
 
-type TADRConnTestBaseQuery = class(TADRConnTestBase)
-
+type
+  TADRConnTestBaseQuery = class(TADRConnTestBase)
   protected
     FQuery: IADRQuery;
     FConnection: IADRConnection;
 
-    function getConnection: IADRConnection; virtual; abstract;
-    procedure initializeQuery;
-end;
+    function GetConnection: IADRConnection; virtual; abstract;
+    procedure InitializeQuery;
+  end;
 
 implementation
 
 { TADRConnTestBaseQuery }
 
-procedure TADRConnTestBaseQuery.initializeQuery;
+procedure TADRConnTestBaseQuery.InitializeQuery;
 begin
-  FConnection := getConnection;
+  FConnection := GetConnection;
   FQuery := CreateQuery(FConnection);
 end;
 
