@@ -11,12 +11,10 @@ uses
 type
   [TestFixture]
   TADRConnTestMySQL = class(TADRConnTestBase)
-
   public
     [Test]
     procedure TestConnection;
   end;
-
 
 implementation
 
@@ -26,10 +24,11 @@ procedure TADRConnTestMySQL.TestConnection;
 begin
   FConnection := CreateConnection;
   FConnection.Params
+    .Lib('D:\Desenvolvimento\workspace\Delphi\Frameworks\ADRFrameworks\ADRLicense\Bin\libmysql.dll')
     .Driver(adrMySql)
-    .Database('adrconntest')
+    .Database('adrconn')
     .UserName('root')
-    .Password('rootg')
+    .Password('root')
     .Port(3306)
   .&End;
 

@@ -24,7 +24,8 @@ uses
   ADRConn.Model.Factory in '..\Source\ADRConn.Model.Factory.pas',
   ADRConn.Test.Query.Base in 'Source\ADRConn.Test.Query.Base.pas',
   ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas',
-  ADRConn.Test.Query.Firedac in 'Source\ADRConn.Test.Query.Firedac.pas';
+  ADRConn.Test.Query.Firedac in 'Source\ADRConn.Test.Query.Firedac.pas',
+  ADRConn.Test.MySQL.Connection in 'Source\ADRConn.Test.MySQL.Connection.pas';
 
 begin
   IsConsole := False;
