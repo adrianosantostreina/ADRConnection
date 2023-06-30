@@ -70,3 +70,5 @@ modules/
 Tests/Win32/Debug/dunitx-results.xml
 Tests/dunitx-results.xml
 Tests/TURBOMOBILE.FDB
+Tests/TestInsightSettings.ini
+Tests/TestADRConnection.db3
