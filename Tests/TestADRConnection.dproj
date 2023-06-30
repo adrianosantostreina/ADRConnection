@@ -125,6 +125,7 @@
         <DCCReference Include="..\Source\ADRConn.Model.Factory.pas"/>
         <DCCReference Include="Source\ADRConn.Test.Query.Base.pas"/>
         <DCCReference Include="Source\ADRConn.Test.SQLite.Connection.pas"/>
+        <DCCReference Include="Source\ADRConn.Test.Query.Firedac.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

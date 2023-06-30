@@ -23,7 +23,8 @@ uses
   ADRConn.Config.IniFile in '..\Source\ADRConn.Config.IniFile.pas',
   ADRConn.Model.Factory in '..\Source\ADRConn.Model.Factory.pas',
   ADRConn.Test.Query.Base in 'Source\ADRConn.Test.Query.Base.pas',
-  ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas';
+  ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas',
+  ADRConn.Test.Query.Firedac in 'Source\ADRConn.Test.Query.Firedac.pas';
 
 begin
   IsConsole := False;
