@@ -27,7 +27,9 @@ type
   TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
   private
     FConnection: TFDConnection;
+{$IF (not Defined(ANDROID)) and (not Defined(IOS))}
     FCursor: TFDGUIxWaitCursor;
+{$ENDIF}
     FDriver: TFDPhysDriverLink;
     FParams: IADRConnectionParams;
 
@@ -85,8 +87,10 @@ end;
 constructor TADRConnModelFiredacConnection.Create;
 begin
   FConnection := TFDConnection.Create(nil);
-  FCursor := TFDGUIxWaitCursor.Create(nil);
   FParams := TADRConnModelParams.New(Self);
+{$IF (not Defined(ANDROID)) and (not Defined(IOS))}
+  FCursor := TFDGUIxWaitCursor.Create(nil);
+{$ENDIF}
 end;
 
 procedure TADRConnModelFiredacConnection.CreateDriver;
@@ -100,7 +104,9 @@ destructor TADRConnModelFiredacConnection.Destroy;
 begin
   FConnection.Free;
   FDriver.Free;
+{$IF (not Defined(ANDROID)) and (not Defined(IOS))}
   FCursor.Free;
+{$ENDIF}
   inherited;
 end;
 
