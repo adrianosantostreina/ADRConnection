@@ -269,7 +269,6 @@ begin
         LQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
         LQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
       end;
-
       LQuery.Open;
       Result := LQuery;
     except
