@@ -128,6 +128,8 @@
         <DCCReference Include="Source\ADRConn.Test.SQLite.Connection.pas"/>
         <DCCReference Include="Source\ADRConn.Test.Query.Firedac.pas"/>
         <DCCReference Include="Source\ADRConn.Test.MySQL.Connection.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.PGDac.Connection.pas"/>
+        <DCCReference Include="Source\ADRConn.Model.PGDac.Connection.Test.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

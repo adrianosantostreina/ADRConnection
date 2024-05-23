@@ -42,6 +42,7 @@ type
 
     function Params: IADRConnectionParams;
 
+    function Connected: Boolean;
     function Connect: IADRConnection;
     function Disconnect: IADRConnection;
     function StartTransaction: IADRConnection;
@@ -77,6 +78,11 @@ begin
     Setup;
     FConnection.Connected := True;
   end;
+end;
+
+function TADRConnModelFiredacConnection.Connected: Boolean;
+begin
+  Result := (Assigned(FConnection)) and (FConnection.Connected);
 end;
 
 function TADRConnModelFiredacConnection.Connection: TCustomConnection;

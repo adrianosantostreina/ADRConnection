@@ -19,6 +19,7 @@ type
 
     function Params: IADRConnectionParams;
 
+    function Connected: Boolean;
     function Connect: IADRConnection;
     function Disconnect: IADRConnection;
     function StartTransaction: IADRConnection;
