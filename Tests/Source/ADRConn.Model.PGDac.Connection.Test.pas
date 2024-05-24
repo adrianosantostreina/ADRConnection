@@ -2,6 +2,7 @@ unit ADRConn.Model.PGDac.Connection.Test;
 
 interface
 
+{$IFDEF ADRCONN_PGDAC}
 uses
   DUnitX.TestFramework,
   ADRConn.Model.Interfaces,
@@ -27,8 +28,11 @@ type
     [Test]
     procedure PostgresConnectionError;
   end;
+{$ENDIF}
 
 implementation
+
+{$IFDEF ADRCONN_PGDAC}
 
 { TADRConnModelPGDacConnectionTest }
 
@@ -68,5 +72,7 @@ end;
 procedure TADRConnModelPGDacConnectionTest.TearDown;
 begin
 end;
+
+{$ENDIF}
 
 end.

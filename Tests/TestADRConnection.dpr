@@ -27,7 +27,9 @@ uses
   ADRConn.Test.Query.Firedac in 'Source\ADRConn.Test.Query.Firedac.pas',
   ADRConn.Test.MySQL.Connection in 'Source\ADRConn.Test.MySQL.Connection.pas',
   ADRConn.Model.PGDac.Connection in '..\Source\ADRConn.Model.PGDac.Connection.pas',
-  ADRConn.Model.PGDac.Connection.Test in 'Source\ADRConn.Model.PGDac.Connection.Test.pas';
+  ADRConn.Model.PGDac.Connection.Test in 'Source\ADRConn.Model.PGDac.Connection.Test.pas',
+  ADRConn.Model.PGDac.Query in '..\Source\ADRConn.Model.PGDac.Query.pas',
+  ADRConn.Model.PGDac.Query.Test in 'Source\ADRConn.Model.PGDac.Query.Test.pas';
 
 begin
   IsConsole := False;
