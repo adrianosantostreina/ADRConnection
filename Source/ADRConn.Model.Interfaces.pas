@@ -19,6 +19,7 @@ type
 
     function Params: IADRConnectionParams;
 
+    function Connected: Boolean;
     function Connect: IADRConnection;
     function Disconnect: IADRConnection;
     function StartTransaction: IADRConnection;
@@ -109,18 +110,39 @@ function CreateQuery(AConnection: IADRConnection): IADRQuery;
 
 implementation
 
+const
+  DirectiveMessage = 'Use the ADRCONN_FIREDAC diretive to use Firedac, ADRCONN_PGDAC to use PGDAC...';
+
+{$IFDEF ADRCONN_FIREDAC}
 uses
   ADRConn.Model.Firedac.Connection,
   ADRConn.Model.Firedac.Query;
-
+{$ENDIF}
+{$IFDEF ADRCONN_PGDAC}
+uses
+  ADRConn.Model.PGDac.Connection,
+  ADRConn.Model.PGDac.Query;
+{$ENDIF}
 function CreateConnection: IADRConnection;
 begin
+{$IFDEF ADRCONN_FIREDAC}
   Result := TADRConnModelFiredacConnection.New;
+{$ELSEIF Defined(ADRCONN_PGDAC)}
+  Result := TADRConnModelPGDacConnection.New;
+{$ELSE}
+  raise Exception.Create(DirectiveMessage);
+{$ENDIF}
 end;
 
 function CreateQuery(AConnection: IADRConnection): IADRQuery;
 begin
+{$IFDEF ADRCONN_FIREDAC}
   Result := TADRConnModelFiredacQuery.New(AConnection);
+{$ELSEIF Defined(ADRCONN_PGDAC)}
+  Result := TADRConnModelPGDacQuery.New(AConnection);
+{$ELSE}
+  raise Exception.Create(DirectiveMessage);
+{$ENDIF}
 end;
 
 { TADRDriverConnHelper }
