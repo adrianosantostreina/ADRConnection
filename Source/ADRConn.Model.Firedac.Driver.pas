@@ -9,6 +9,10 @@ uses
   FireDAC.Phys.FB,
   FireDAC.Phys.MySQL,
   FireDAC.Phys.PG,
+  {$IFNDEF COMMUNITY}
+  FireDAC.Phys.MSSQL,
+  FireDAC.Phys.Oracle,
+  {$ENDIF}
 {$ENDIF}
   FireDAC.Phys.SQLite,
   System.SysUtils;
@@ -20,6 +24,10 @@ type
     class function GetFirebirdDriver: TFDPhysDriverLink;
     class function GetPostgresDriver: TFDPhysDriverLink;
     class function GetMySQLDriver: TFDPhysDriverLink;
+  {$IFNDEF COMMUNITY}
+    class function GetMSSQLDriver: TFDPhysDriverLink;
+    class function GetOracleDriver: TFDPhysDriverLink;
+  {$ENDIF}
 {$ENDIF}
     class function GetSQLiteDriver: TFDPhysDriverLink;
   public
@@ -34,12 +42,18 @@ class function TADRConnModelFiredacDriver.GetDriver(AParams: IADRConnectionParam
 begin
   case AParams.Driver of
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
-  adrMySql:
+    adrMySql:
       Result := GetMySQLDriver;
     adrFirebird:
       Result := GetFirebirdDriver;
     adrPostgres:
       Result := GetPostgresDriver;
+  {$IFNDEF COMMUNITY}
+    adrMSSQL:
+      Result := GetMSSQLDriver;
+    adrOracle:
+      Result := GetOracleDriver;
+  {$ENDIF}
 {$ENDIF}
     adrSQLite:
       Result := GetSQLiteDriver;
@@ -70,6 +84,24 @@ begin
   Result := TFDPhysPgDriverLink.Create(nil);
   Result.VendorLib := '';
 end;
+{$ENDIF}
+
+{$IF (not Defined(ANDROID)) and (not Defined(IOS))}
+{$IFNDEF COMMUNITY}
+class function TADRConnModelFiredacDriver.GetMSSQLDriver: TFDPhysDriverLink;
+begin
+  Result := TFDPhysMSSQLDriverLink.Create(nil);
+end;
+{$ENDIF}
+{$ENDIF}
+
+{$IF (not Defined(ANDROID)) and (not Defined(IOS))}
+{$IFNDEF COMMUNITY}
+class function TADRConnModelFiredacDriver.GetOracleDriver: TFDPhysDriverLink;
+begin
+  Result := TFDPhysOracleDriverLink.Create(nil);
+end;
+{$ENDIF}
 {$ENDIF}
 
 class function TADRConnModelFiredacDriver.GetSQLiteDriver: TFDPhysDriverLink;
