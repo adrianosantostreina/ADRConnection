@@ -102,7 +102,7 @@ type
   TADRDriverConnHelper = record helper for TADRDriverConn
   public
     function ToString: string;
-    procedure fromString(AValue: string);
+    procedure FromString(AValue: string);
   end;
 
 function CreateConnection: IADRConnection;
@@ -157,7 +157,7 @@ end;
 
 { TADRDriverConnHelper }
 
-procedure TADRDriverConnHelper.fromString(AValue: string);
+procedure TADRDriverConnHelper.FromString(AValue: string);
 var
   LDriver: string;
 begin
@@ -185,6 +185,18 @@ begin
     Self := adrSQLite;
     Exit;
   end;
+
+  if LDriver.Equals('oracle') then
+  begin
+    Self := adrOracle;
+    Exit;
+  end;
+
+  if LDriver.Equals('mssql') then
+  begin
+    Self := adrMSSQL;
+    Exit;
+  end;
 end;
 
 function TADRDriverConnHelper.ToString: string;
@@ -198,6 +210,10 @@ begin
       Result := 'MySQL';
     adrSQLite:
       Result := 'SQLite';
+    adrMSSQL:
+      Result := 'MSSQL';
+    adrOracle:
+      Result := 'Oracle';
   end;
 end;
 
