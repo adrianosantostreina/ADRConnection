@@ -117,8 +117,8 @@ uses
 {$ENDIF}
 {$IFDEF ADRCONN_PGDAC}
 uses
-  ADRConn.Model.PGDac.Connection,
-  ADRConn.Model.PGDac.Query;
+  ADRConn.Model.PgDAC.Connection,
+  ADRConn.Model.PgDAC.Query;
 {$ENDIF}
 
 const
@@ -129,7 +129,7 @@ begin
 {$IFDEF ADRCONN_FIREDAC}
   Result := TADRConnModelFiredacConnection.New;
 {$ELSEIF Defined(ADRCONN_PGDAC)}
-  Result := TADRConnModelPGDacConnection.New;
+  Result := TADRConnModelPgDACConnection.New;
 {$ELSE}
   raise Exception.Create(DirectiveMessage);
 {$ENDIF}
@@ -140,7 +140,7 @@ begin
 {$IFDEF ADRCONN_FIREDAC}
   Result := TADRConnModelFiredacQuery.New(AConnection);
 {$ELSEIF Defined(ADRCONN_PGDAC)}
-  Result := TADRConnModelPGDacQuery.New(AConnection);
+  Result := TADRConnModelPgDACQuery.New(AConnection);
 {$ELSE}
   raise Exception.Create(DirectiveMessage);
 {$ENDIF}

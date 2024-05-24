@@ -1,4 +1,4 @@
-unit ADRConn.Model.PgDAC.Query.Test;
+unit ADRConn.Model.PGDac.Query.Test1;
 
 interface
 

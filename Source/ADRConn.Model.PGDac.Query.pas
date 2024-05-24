@@ -1,4 +1,4 @@
-unit ADRConn.Model.PGDac.Query;
+unit ADRConn.Model.PgDAC.Query;
 
 interface
 
@@ -16,7 +16,7 @@ uses
   PgAccess;
 
 type
-  TADRConnModelPGDacQuery = class(TInterfacedObject, IADRQuery)
+  TADRConnModelPgDACQuery = class(TInterfacedObject, IADRQuery)
   private
     [Weak]
     FConnection: IADRConnection;
@@ -74,9 +74,9 @@ type
 
 implementation
 
-{ TADRConnModelPGDacQuery }
+{ TADRConnModelPgDACQuery }
 
-function TADRConnModelPGDacQuery.AddParam(AParams: TParams; AName: string;
+function TADRConnModelPgDACQuery.AddParam(AParams: TParams; AName: string;
   AValue: Variant; AType: TFieldType; ANullIfEmpty: Boolean): TParam;
 begin
   Result := AParams.AddParameter;
@@ -86,23 +86,23 @@ begin
   Result.Value := AValue;
 end;
 
-function TADRConnModelPGDacQuery.AddParam(AName: string; AValue: Variant;
+function TADRConnModelPgDACQuery.AddParam(AName: string; AValue: Variant;
   AType: TFieldType; ANullIfEmpty: Boolean): TParam;
 begin
   Result := AddParam(FParams, AName, AValue, AType, ANullIfEmpty);
 end;
 
-function TADRConnModelPGDacQuery.ArraySize(AValue: Integer): IADRQuery;
+function TADRConnModelPgDACQuery.ArraySize(AValue: Integer): IADRQuery;
 begin
   Result := Self;
 end;
 
-function TADRConnModelPGDacQuery.Component: TComponent;
+function TADRConnModelPgDACQuery.Component: TComponent;
 begin
   Result := FDQuery;
 end;
 
-constructor TADRConnModelPGDacQuery.Create(AConnection: IADRConnection);
+constructor TADRConnModelPgDACQuery.Create(AConnection: IADRConnection);
 begin
   FConnection := AConnection;
   FDQuery := TPgQuery.Create(nil);
@@ -111,19 +111,19 @@ begin
   FParams := TParams.Create(nil);
 end;
 
-function TADRConnModelPGDacQuery.DataSet: TDataSet;
+function TADRConnModelPgDACQuery.DataSet: TDataSet;
 begin
   Result := FDQuery;
 end;
 
-function TADRConnModelPGDacQuery.DataSource(AValue: TDataSource): IADRQuery;
+function TADRConnModelPgDACQuery.DataSource(AValue: TDataSource): IADRQuery;
 begin
   Result := Self;
   if Assigned(AValue) then
     AValue.DataSet := FDQuery;
 end;
 
-destructor TADRConnModelPGDacQuery.Destroy;
+destructor TADRConnModelPgDACQuery.Destroy;
 begin
   FDQuery.Free;
   FSQL.Free;
@@ -132,7 +132,7 @@ begin
   inherited;
 end;
 
-function TADRConnModelPGDacQuery.ExecSQL: IADRQuery;
+function TADRConnModelPgDACQuery.ExecSQL: IADRQuery;
 begin
   Result := Self;
   if Assigned(FBatchParams) then
@@ -141,7 +141,7 @@ begin
     ExecSQLDefault;
 end;
 
-function TADRConnModelPGDacQuery.ExecSQLAndCommit: IADRQuery;
+function TADRConnModelPgDACQuery.ExecSQLAndCommit: IADRQuery;
 begin
   Result := Self;
   try
@@ -158,7 +158,7 @@ begin
   end;
 end;
 
-procedure TADRConnModelPGDacQuery.ExecSQLBatch;
+procedure TADRConnModelPgDACQuery.ExecSQLBatch;
 var
   I, J: Integer;
   LQuery: TPgQuery;
@@ -196,7 +196,7 @@ begin
   end;
 end;
 
-procedure TADRConnModelPGDacQuery.ExecSQLDefault;
+procedure TADRConnModelPgDACQuery.ExecSQLDefault;
 var
   LQuery: TPgQuery;
   I: Integer;
@@ -219,14 +219,14 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.Generator: IADRGenerator;
+function TADRConnModelPgDACQuery.Generator: IADRGenerator;
 begin
   if not Assigned(FGenerator) then
     FGenerator := TADRConnModelGeneratorPostgres.New(Self);
   Result := FGenerator;
 end;
 
-function TADRConnModelPGDacQuery.GetBatchParams(AIndex: Integer): TParams;
+function TADRConnModelPgDACQuery.GetBatchParams(AIndex: Integer): TParams;
 begin
   if not Assigned(FBatchParams) then
     FBatchParams := TObjectList<TParams>.Create;
@@ -235,12 +235,12 @@ begin
   Result := FBatchParams.Last;
 end;
 
-class function TADRConnModelPGDacQuery.New(AConnection: IADRConnection): IADRQuery;
+class function TADRConnModelPgDACQuery.New(AConnection: IADRConnection): IADRQuery;
 begin
   Result := Self.Create(AConnection);
 end;
 
-function TADRConnModelPGDacQuery.Open: IADRQuery;
+function TADRConnModelPgDACQuery.Open: IADRQuery;
 var
   I: Integer;
 begin
@@ -262,7 +262,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.OpenDataSet: TDataSet;
+function TADRConnModelPgDACQuery.OpenDataSet: TDataSet;
 var
   LQuery: TPgQuery;
   I: Integer;
@@ -289,7 +289,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.ParamAsBoolean(AIndex: Integer;
+function TADRConnModelPgDACQuery.ParamAsBoolean(AIndex: Integer;
   AName: string; AValue, ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -299,14 +299,14 @@ begin
   AddParam(LParams, AName, AValue, ftBoolean, ANullIfEmpty);
 end;
 
-function TADRConnModelPGDacQuery.ParamAsBoolean(AName: string; AValue,
+function TADRConnModelPgDACQuery.ParamAsBoolean(AName: string; AValue,
   ANullIfEmpty: Boolean): IADRQuery;
 begin
   Result := Self;
   AddParam(AName, AValue, ftBoolean, ANullIfEmpty);
 end;
 
-function TADRConnModelPGDacQuery.ParamAsCurrency(AName: string;
+function TADRConnModelPgDACQuery.ParamAsCurrency(AName: string;
   AValue: Currency; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -320,7 +320,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.ParamAsCurrency(AIndex: Integer;
+function TADRConnModelPgDACQuery.ParamAsCurrency(AIndex: Integer;
   AName: string; AValue: Currency; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -336,7 +336,7 @@ begin
   end
 end;
 
-function TADRConnModelPGDacQuery.ParamAsDate(AIndex: Integer;
+function TADRConnModelPgDACQuery.ParamAsDate(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -352,7 +352,7 @@ begin
   end
 end;
 
-function TADRConnModelPGDacQuery.ParamAsDate(AName: string;
+function TADRConnModelPgDACQuery.ParamAsDate(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -366,7 +366,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.ParamAsDateTime(AName: string;
+function TADRConnModelPgDACQuery.ParamAsDateTime(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -380,7 +380,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.ParamAsDateTime(AIndex: Integer;
+function TADRConnModelPgDACQuery.ParamAsDateTime(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -396,7 +396,7 @@ begin
   end
 end;
 
-function TADRConnModelPGDacQuery.ParamAsFloat(AIndex: Integer;
+function TADRConnModelPgDACQuery.ParamAsFloat(AIndex: Integer;
   AName: string; AValue: Double; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -412,7 +412,7 @@ begin
   end
 end;
 
-function TADRConnModelPGDacQuery.ParamAsFloat(AName: string;
+function TADRConnModelPgDACQuery.ParamAsFloat(AName: string;
   AValue: Double; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -426,7 +426,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.ParamAsInteger(AIndex: Integer;
+function TADRConnModelPgDACQuery.ParamAsInteger(AIndex: Integer;
   AName: string; AValue: Integer; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -442,7 +442,7 @@ begin
   end
 end;
 
-function TADRConnModelPGDacQuery.ParamAsInteger(AName: string;
+function TADRConnModelPgDACQuery.ParamAsInteger(AName: string;
   AValue: Integer; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -456,7 +456,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.ParamAsString(AName, AValue: string;
+function TADRConnModelPgDACQuery.ParamAsString(AName, AValue: string;
   ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -470,7 +470,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.ParamAsString(AIndex: Integer; AName,
+function TADRConnModelPgDACQuery.ParamAsString(AIndex: Integer; AName,
   AValue: string; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -486,7 +486,7 @@ begin
   end
 end;
 
-function TADRConnModelPGDacQuery.ParamAsTime(AIndex: Integer;
+function TADRConnModelPgDACQuery.ParamAsTime(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -502,7 +502,7 @@ begin
   end
 end;
 
-function TADRConnModelPGDacQuery.ParamAsTime(AName: string;
+function TADRConnModelPgDACQuery.ParamAsTime(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -516,13 +516,13 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacQuery.SQL(AValue: string): IADRQuery;
+function TADRConnModelPgDACQuery.SQL(AValue: string): IADRQuery;
 begin
   Result := Self;
   FSQL.Add(AValue);
 end;
 
-function TADRConnModelPGDacQuery.SQL(AValue: string;
+function TADRConnModelPgDACQuery.SQL(AValue: string;
   const Args: array of const): IADRQuery;
 begin
   Result := Self;

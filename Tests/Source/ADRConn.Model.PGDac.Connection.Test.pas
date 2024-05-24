@@ -1,4 +1,4 @@
-unit ADRConn.Model.PGDac.Connection.Test;
+unit ADRConn.Model.PgDAC.Connection.Test;
 
 interface
 
@@ -12,7 +12,7 @@ uses
 
 type
   [TestFixture]
-  TADRConnModelPGDacConnectionTest = class
+  TADRConnModelPgDACConnectionTest = class
   private
     FConnection: IADRConnection;
   public
@@ -34,9 +34,9 @@ implementation
 
 {$IFDEF ADRCONN_PGDAC}
 
-{ TADRConnModelPGDacConnectionTest }
+{ TADRConnModelPgDACConnectionTest }
 
-procedure TADRConnModelPGDacConnectionTest.PostgresConnection;
+procedure TADRConnModelPgDACConnectionTest.PostgresConnection;
 begin
   FConnection.Params
     .Database('RP')
@@ -48,7 +48,7 @@ begin
   Assert.IsTrue(FConnection.Connected);
 end;
 
-procedure TADRConnModelPGDacConnectionTest.PostgresConnectionError;
+procedure TADRConnModelPgDACConnectionTest.PostgresConnectionError;
 begin
   FConnection.Params
     .Database('RP123')
@@ -64,12 +64,12 @@ begin
     EPgError);
 end;
 
-procedure TADRConnModelPGDacConnectionTest.Setup;
+procedure TADRConnModelPgDACConnectionTest.Setup;
 begin
   FConnection := TADRConnModelPGDacConnection.New;
 end;
 
-procedure TADRConnModelPGDacConnectionTest.TearDown;
+procedure TADRConnModelPgDACConnectionTest.TearDown;
 begin
 end;
 
