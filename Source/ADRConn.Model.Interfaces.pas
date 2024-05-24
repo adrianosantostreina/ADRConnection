@@ -123,6 +123,10 @@ uses
   ADRConn.Model.UniDAC.Connection,
   ADRConn.Model.UniDAC.Query,
 {$ENDIF}
+{$IFDEF ADRCONN_ZEOS}
+  ADRConn.Model.Zeos.Connection,
+//  ADRConn.Model.UniDAC.Query,
+{$ENDIF}
   ADRConn.Model.Factory;
 
 const
@@ -137,6 +141,8 @@ begin
   Result := TADRConnModelPgDACConnection.New;
 {$ELSEIF Defined(ADRCONN_UNIDAC)}
   Result := TADRConnModelUniDACConnection.New;
+{$ELSEIF Defined(ADRCONN_ZEOS)}
+  Result := TADRConnModelZeosConnection.New;
 {$ELSE}
   raise Exception.Create(DirectiveMessage);
 {$ENDIF}

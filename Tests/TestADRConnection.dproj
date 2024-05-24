@@ -61,11 +61,11 @@
         <UsingDelphiRTL>true</UsingDelphiRTL>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <DCC_UnitSearchPath>$(DUnitX);C:\ProjetosHOTAL10_2\DocFiscAll\backend\Source\Libs\Shared\Plugin\Biblioteca\DUnitX\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(DUnitX);C:\ProjetosHOTAL10_2\DocFiscAll\backend\Source\Libs\Shared\Plugin\Biblioteca\DUnitX\Source;modules\.dcp;modules\.dcu;modules;modules\zeoslib\examples\android and firebird embedded;modules\zeoslib\examples\android and sqlite;modules\zeoslib\examples\blobs;modules\zeoslib\examples\component;modules\zeoslib\examples\controls;modules\zeoslib\examples\dbc;modules\zeoslib\examples\design;modules\zeoslib\examples\embedded;modules\zeoslib\examples\simple;modules\zeoslib\packages\Delphi11;modules\zeoslib\packages\Delphi12;modules\zeoslib\packages\Delphi2005;modules\zeoslib\packages\Delphi2007;modules\zeoslib\packages\Delphi2009;modules\zeoslib\packages\Delphi2010;modules\zeoslib\packages\DelphiXE;modules\zeoslib\packages\DelphiXE10;modules\zeoslib\packages\DelphiXE10.1;modules\zeoslib\packages\DelphiXE10.2;modules\zeoslib\packages\DelphiXE10.3;modules\zeoslib\packages\DelphiXE10.4;modules\zeoslib\packages\DelphiXE2;modules\zeoslib\packages\DelphiXE3;modules\zeoslib\packages\DelphiXE4;modules\zeoslib\packages\DelphiXE5;modules\zeoslib\packages\DelphiXE6;modules\zeoslib\packages\DelphiXE7;modules\zeoslib\packages\DelphiXE8;modules\zeoslib\packages\delphi7;modules\zeoslib\packages\delphi9;modules\zeoslib\packages\lazarus;modules\zeoslib\src;modules\zeoslib\src\component;modules\zeoslib\src\core;modules\zeoslib\src\dbc;modules\zeoslib\src\parsesql;modules\zeoslib\src\plain;modules\zeoslib\src\webservice\client;modules\zeoslib\src\webservice\server\DelphiOTP;modules\zeoslib\src\webservice\server;modules\zeoslib\src\webservice\server\service;modules\zeoslib\src\webservice\wsdl;modules\zeoslib\test;modules\zeoslib\test\bugreport;modules\zeoslib\test\component;modules\zeoslib\test\core;modules\zeoslib\test\dbc;modules\zeoslib\test\external;modules\zeoslib\test\framework;modules\zeoslib\test\parsesql;modules\zeoslib\test\performance;modules\zeoslib\test\zsql;modules\zeoslib\zeosbugtemplate\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <SanitizedProjectName>TestADRConnection</SanitizedProjectName>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_Define>TESTINSIGHT;ADRCONN_FIREDAC;ADRCONN_PGDAC;ADRCONN_UNIDAC;$(DCC_Define)</DCC_Define>
+        <DCC_Define>TESTINSIGHT;ADRCONN_FIREDAC;ADRCONN_PGDAC;ADRCONN_UNIDAC;ADRCONN_ZEOS;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
@@ -137,6 +137,10 @@
         <DCCReference Include="Source\ADRConn.Model.UniDAC.Connection.Test.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.UniDAC.Query.pas"/>
         <DCCReference Include="Source\ADRConn.Model.UniDAC.Query.Test.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Zeos.Connection.pas"/>
+        <DCCReference Include="Source\ADRConn.Model.Zeos.Connection.Test.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Zeos.Query.pas"/>
+        <DCCReference Include="Source\ADRConn.Model.Zeos.Query.Test.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
