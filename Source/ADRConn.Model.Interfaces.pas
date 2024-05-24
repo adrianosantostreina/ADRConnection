@@ -110,9 +110,6 @@ function CreateQuery(AConnection: IADRConnection): IADRQuery;
 
 implementation
 
-const
-  DirectiveMessage = 'Use the ADRCONN_FIREDAC diretive to use Firedac, ADRCONN_PGDAC to use PGDAC...';
-
 {$IFDEF ADRCONN_FIREDAC}
 uses
   ADRConn.Model.Firedac.Connection,
@@ -123,6 +120,10 @@ uses
   ADRConn.Model.PGDac.Connection,
   ADRConn.Model.PGDac.Query;
 {$ENDIF}
+
+const
+  DirectiveMessage = 'Use the ADRCONN_FIREDAC diretive to use Firedac, ADRCONN_PGDAC to use PGDAC...';
+
 function CreateConnection: IADRConnection;
 begin
 {$IFDEF ADRCONN_FIREDAC}
