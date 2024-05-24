@@ -1,4 +1,4 @@
-unit ADRConn.Model.PGDac.Connection;
+unit ADRConn.Model.PgDAC.Connection;
 
 interface
 
@@ -13,7 +13,7 @@ uses
   PgAccess;
 
 type
-  TADRConnModelPGDacConnection = class(TInterfacedObject, IADRConnection)
+  TADRConnModelPgDACConnection = class(TInterfacedObject, IADRConnection)
   private
     FConnection: TPgConnection;
     FParams: IADRConnectionParams;
@@ -40,20 +40,20 @@ type
 
 implementation
 
-{ TADRConnModelPGDacConnection }
+{ TADRConnModelPgDACConnection }
 
-function TADRConnModelPGDacConnection.Commit: IADRConnection;
+function TADRConnModelPgDACConnection.Commit: IADRConnection;
 begin
   Result := Self;
   FConnection.Commit;
 end;
 
-function TADRConnModelPGDacConnection.Component: TComponent;
+function TADRConnModelPgDACConnection.Component: TComponent;
 begin
   Result := FConnection;
 end;
 
-function TADRConnModelPGDacConnection.Connect: IADRConnection;
+function TADRConnModelPgDACConnection.Connect: IADRConnection;
 begin
   Result := Self;
   if not FConnection.Connected then
@@ -63,56 +63,56 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacConnection.Connected: Boolean;
+function TADRConnModelPgDACConnection.Connected: Boolean;
 begin
   Result := (Assigned(FConnection)) and (FConnection.Connected);
 end;
 
-function TADRConnModelPGDacConnection.Connection: TCustomConnection;
+function TADRConnModelPgDACConnection.Connection: TCustomConnection;
 begin
   Result := FConnection;
 end;
 
-constructor TADRConnModelPGDacConnection.Create;
+constructor TADRConnModelPgDACConnection.Create;
 begin
   FConnection := TPgConnection.Create(nil);
   FParams := TADRConnModelParams.New(Self);
 end;
 
-destructor TADRConnModelPGDacConnection.Destroy;
+destructor TADRConnModelPgDACConnection.Destroy;
 begin
   FConnection.Free;
   inherited;
 end;
 
-function TADRConnModelPGDacConnection.Disconnect: IADRConnection;
+function TADRConnModelPgDACConnection.Disconnect: IADRConnection;
 begin
   Result := Self;
   FConnection.Connected := False;
 end;
 
-function TADRConnModelPGDacConnection.InTransaction: Boolean;
+function TADRConnModelPgDACConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
 end;
 
-class function TADRConnModelPGDacConnection.New: IADRConnection;
+class function TADRConnModelPgDACConnection.New: IADRConnection;
 begin
   Result := Self.Create;
 end;
 
-function TADRConnModelPGDacConnection.Params: IADRConnectionParams;
+function TADRConnModelPgDACConnection.Params: IADRConnectionParams;
 begin
   Result := FParams;
 end;
 
-function TADRConnModelPGDacConnection.Rollback: IADRConnection;
+function TADRConnModelPgDACConnection.Rollback: IADRConnection;
 begin
   Result := Self;
   FConnection.Rollback;
 end;
 
-procedure TADRConnModelPGDacConnection.Setup;
+procedure TADRConnModelPgDACConnection.Setup;
 var
   LParams: TArray<string>;
   LName: string;
@@ -133,7 +133,7 @@ begin
   end;
 end;
 
-function TADRConnModelPGDacConnection.StartTransaction: IADRConnection;
+function TADRConnModelPgDACConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;

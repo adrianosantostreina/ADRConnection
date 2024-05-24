@@ -1,21 +1,21 @@
-unit ADRConn.Model.PgDAC.Query.Test;
+unit ADRConn.Model.UniDAC.Query.Test;
 
 interface
 
-{$IFDEF ADRCONN_PGDAC}
+{$IFDEF ADRCONN_UNIDAC}
 
 uses
   DUnitX.TestFramework,
   ADRConn.Model.Interfaces,
-  ADRConn.Model.PGDac.Connection,
-  ADRConn.Model.PGDac.Query,
+  ADRConn.Model.UniDAC.Connection,
+  ADRConn.Model.UniDAC.Query,
   Data.DB,
   System.SysUtils,
   System.Classes;
 
 type
   [TestFixture]
-  TADRConnModelPgDACQueryTest = class
+  TADRConnModelUniDACQueryTest = class
   private
     FConnection: IADRConnection;
     FQuery: IADRQuery;
@@ -43,11 +43,11 @@ type
 
 implementation
 
-{$IFDEF ADRCONN_PGDAC}
+{$IFDEF ADRCONN_UNIDAC}
 
-{ TADRConnModelPgDACQueryTest }
+{ TADRConnModelUniDACQueryTest }
 
-procedure TADRConnModelPgDACQueryTest.InsertBatch;
+procedure TADRConnModelUniDACQueryTest.InsertBatch;
 var
   I: Integer;
 begin
@@ -71,7 +71,7 @@ begin
   Assert.AreEqual(50, FDataSet.FieldByName('id').AsInteger);
 end;
 
-procedure TADRConnModelPgDACQueryTest.Select;
+procedure TADRConnModelUniDACQueryTest.Select;
 begin
   FDataSet := FQuery.SQL('select * from empresas').OpenDataSet;
   Assert.IsNotNull(FDataSet);
@@ -79,7 +79,7 @@ begin
   Assert.AreEqual(1, FDataSet.FieldByName('emp_001').AsInteger);
 end;
 
-procedure TADRConnModelPgDACQueryTest.SelectWithParams;
+procedure TADRConnModelUniDACQueryTest.SelectWithParams;
 begin
   FDataSet := FQuery.SQL('select * from empresas')
     .SQL('where emp_001 = :emp_001')
@@ -91,28 +91,29 @@ begin
   Assert.AreEqual(1, FDataSet.FieldByName('emp_001').AsInteger);
 end;
 
-procedure TADRConnModelPgDACQueryTest.Setup;
+procedure TADRConnModelUniDACQueryTest.Setup;
 begin
-  FConnection := TADRConnModelPGDacConnection.New;
+  FConnection := TADRConnModelUniDacConnection.New;
   FConnection.Params
     .Database('RP')
     .UserName('postgres')
     .Password('123')
+    .Driver(adrPostgres)
     .&End
     .Connect;
 
-  FQuery := TADRConnModelPGDacQuery.New(FConnection);
+  FQuery := TADRConnModelUniDACQuery.New(FConnection);
   FConnection.StartTransaction;
   FDataSet := nil;
 end;
 
-procedure TADRConnModelPgDACQueryTest.TearDown;
+procedure TADRConnModelUniDACQueryTest.TearDown;
 begin
   FConnection.Rollback;
   FreeAndNil(FDataSet);
 end;
 
-procedure TADRConnModelPgDACQueryTest.UpdateWithParams;
+procedure TADRConnModelUniDACQueryTest.UpdateWithParams;
 begin
   FQuery.SQL('update empresas set emp_007 = :emp_007,')
     .SQL('emp_006 = :emp_006')
