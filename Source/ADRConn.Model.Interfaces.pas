@@ -155,7 +155,9 @@ begin
 {$ELSEIF Defined(ADRCONN_PGDAC)}
   Result := TADRConnModelPgDACQuery.New(AConnection);
 {$ELSEIF Defined(ADRCONN_UNIDAC)}
-  Result := TADRConnModelUniDACQuery.New;
+  Result := TADRConnModelUniDACQuery.New(AConnection);
+{$ELSEIF Defined(ADRCONN_ZEOS)}
+  Result := TADRConnModelZeosQuery.New(AConnection);
 {$ELSE}
   raise Exception.Create(DirectiveMessage);
 {$ENDIF}
