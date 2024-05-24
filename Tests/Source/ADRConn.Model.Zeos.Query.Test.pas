@@ -1,21 +1,21 @@
-unit ADRConn.Model.PgDAC.Query.Test;
+unit ADRConn.Model.Zeos.Query.Test;
 
 interface
 
-{$IFDEF ADRCONN_PGDAC}
+{$IFDEF ADRCONN_ZEOS}
 
 uses
   DUnitX.TestFramework,
   ADRConn.Model.Interfaces,
-  ADRConn.Model.PGDac.Connection,
-  ADRConn.Model.PGDac.Query,
+  ADRConn.Model.Zeos.Connection,
+  ADRConn.Model.Zeos.Query,
   Data.DB,
   System.SysUtils,
   System.Classes;
 
 type
   [TestFixture]
-  TADRConnModelPgDACQueryTest = class
+  TADRConnModelZeosQueryTest = class
   private
     FConnection: IADRConnection;
     FQuery: IADRQuery;
@@ -43,11 +43,11 @@ type
 
 implementation
 
-{$IFDEF ADRCONN_PGDAC}
+{$IFDEF ADRCONN_ZEOS}
 
-{ TADRConnModelPgDACQueryTest }
+{ TADRConnModelZeosQueryTest }
 
-procedure TADRConnModelPgDACQueryTest.InsertBatch;
+procedure TADRConnModelZeosQueryTest.InsertBatch;
 var
   I: Integer;
 begin
@@ -71,7 +71,7 @@ begin
   Assert.AreEqual(50, FDataSet.FieldByName('id').AsInteger);
 end;
 
-procedure TADRConnModelPgDACQueryTest.Select;
+procedure TADRConnModelZeosQueryTest.Select;
 begin
   FDataSet := FQuery.SQL('select * from empresas').OpenDataSet;
   Assert.IsNotNull(FDataSet);
@@ -79,7 +79,7 @@ begin
   Assert.AreEqual(1, FDataSet.FieldByName('emp_001').AsInteger);
 end;
 
-procedure TADRConnModelPgDACQueryTest.SelectWithParams;
+procedure TADRConnModelZeosQueryTest.SelectWithParams;
 begin
   FDataSet := FQuery.SQL('select * from empresas')
     .SQL('where emp_001 = :emp_001')
@@ -91,28 +91,29 @@ begin
   Assert.AreEqual(1, FDataSet.FieldByName('emp_001').AsInteger);
 end;
 
-procedure TADRConnModelPgDACQueryTest.Setup;
+procedure TADRConnModelZeosQueryTest.Setup;
 begin
-  FConnection := TADRConnModelPGDacConnection.New;
+  FConnection := TADRConnModelZeosConnection.New;
   FConnection.Params
     .Database('RP')
     .UserName('postgres')
     .Password('123')
+    .Driver(adrPostgres)
     .&End
     .Connect;
 
-  FQuery := TADRConnModelPGDacQuery.New(FConnection);
+  FQuery := TADRConnModelZeosQuery.New(FConnection);
   FConnection.StartTransaction;
   FDataSet := nil;
 end;
 
-procedure TADRConnModelPgDACQueryTest.TearDown;
+procedure TADRConnModelZeosQueryTest.TearDown;
 begin
   FConnection.Rollback;
   FreeAndNil(FDataSet);
 end;
 
-procedure TADRConnModelPgDACQueryTest.UpdateWithParams;
+procedure TADRConnModelZeosQueryTest.UpdateWithParams;
 begin
   FQuery.SQL('update empresas set emp_007 = :emp_007,')
     .SQL('emp_006 = :emp_006')

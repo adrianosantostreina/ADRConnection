@@ -1,18 +1,18 @@
-unit ADRConn.Model.PgDAC.Connection.Test;
+unit ADRConn.Model.Zeos.Connection.Test;
 
 interface
 
-{$IFDEF ADRCONN_PGDAC}
+{$IFDEF ADRCONN_ZEOS}
 uses
   DUnitX.TestFramework,
   ADRConn.Model.Interfaces,
-  ADRConn.Model.PGDac.Connection,
+  ADRConn.Model.Zeos.Connection,
   System.SysUtils,
-  PgError;
+  ZExceptions;
 
 type
   [TestFixture]
-  TADRConnModelPgDACConnectionTest = class
+  TADRConnModelZeosConnectionTest = class
   private
     FConnection: IADRConnection;
   public
@@ -32,28 +32,30 @@ type
 
 implementation
 
-{$IFDEF ADRCONN_PGDAC}
+{$IFDEF ADRCONN_ZEOS}
 
-{ TADRConnModelPgDACConnectionTest }
+{ TADRConnModelZeosConnectionTest }
 
-procedure TADRConnModelPgDACConnectionTest.PostgresConnection;
+procedure TADRConnModelZeosConnectionTest.PostgresConnection;
 begin
   FConnection.Params
     .Database('RP')
     .UserName('postgres')
-    .Password('123');
+    .Password('123')
+    .Driver(adrPostgres);
 
   Assert.IsFalse(FConnection.Connected);
   FConnection.Connect;
   Assert.IsTrue(FConnection.Connected);
 end;
 
-procedure TADRConnModelPgDACConnectionTest.PostgresConnectionError;
+procedure TADRConnModelZeosConnectionTest.PostgresConnectionError;
 begin
   FConnection.Params
     .Database('RP123')
     .UserName('postgres')
-    .Password('123456');
+    .Password('123456')
+    .Driver(adrPostgres);
 
   Assert.IsFalse(FConnection.Connected);
   Assert.WillRaise(
@@ -61,15 +63,15 @@ begin
     begin
       FConnection.Connect;
     end,
-    EPgError);
+    EZSQLException);
 end;
 
-procedure TADRConnModelPgDACConnectionTest.Setup;
+procedure TADRConnModelZeosConnectionTest.Setup;
 begin
-  FConnection := TADRConnModelPGDacConnection.New;
+  FConnection := TADRConnModelZeosConnection.New;
 end;
 
-procedure TADRConnModelPgDACConnectionTest.TearDown;
+procedure TADRConnModelZeosConnectionTest.TearDown;
 begin
 end;
 

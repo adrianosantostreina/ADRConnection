@@ -1,26 +1,25 @@
-unit ADRConn.Model.PgDAC.Query;
+unit ADRConn.Model.Zeos.Query;
 
 interface
 
 uses
   ADRConn.Model.Interfaces,
   ADRConn.Model.Generator,
-  ADRConn.Model.Generator.Postgres,
   Data.DB,
   System.Classes,
   System.SysUtils,
   System.Variants,
   System.Generics.Collections,
-  MemDS,
-  DBAccess,
-  PgAccess;
+  ZDataset,
+  ZConnection,
+  ZDatasetParam;
 
 type
-  TADRConnModelPgDACQuery = class(TInterfacedObject, IADRQuery)
+  TADRConnModelZeosQuery = class(TInterfacedObject, IADRQuery)
   private
     [Weak]
     FConnection: IADRConnection;
-    FQuery: TPgQuery;
+    FQuery: TZQuery;
     FGenerator: IADRGenerator;
     FBatchParams: TObjectList<TParams>;
     FParams: TParams;
@@ -74,9 +73,9 @@ type
 
 implementation
 
-{ TADRConnModelPgDACQuery }
+{ TADRConnModelZeosQuery }
 
-function TADRConnModelPgDACQuery.AddParam(AParams: TParams; AName: string;
+function TADRConnModelZeosQuery.AddParam(AParams: TParams; AName: string;
   AValue: Variant; AType: TFieldType; ANullIfEmpty: Boolean): TParam;
 begin
   Result := AParams.AddParameter;
@@ -86,44 +85,44 @@ begin
   Result.Value := AValue;
 end;
 
-function TADRConnModelPgDACQuery.AddParam(AName: string; AValue: Variant;
+function TADRConnModelZeosQuery.AddParam(AName: string; AValue: Variant;
   AType: TFieldType; ANullIfEmpty: Boolean): TParam;
 begin
   Result := AddParam(FParams, AName, AValue, AType, ANullIfEmpty);
 end;
 
-function TADRConnModelPgDACQuery.ArraySize(AValue: Integer): IADRQuery;
+function TADRConnModelZeosQuery.ArraySize(AValue: Integer): IADRQuery;
 begin
   Result := Self;
 end;
 
-function TADRConnModelPgDACQuery.Component: TComponent;
+function TADRConnModelZeosQuery.Component: TComponent;
 begin
   Result := FQuery;
 end;
 
-constructor TADRConnModelPgDACQuery.Create(AConnection: IADRConnection);
+constructor TADRConnModelZeosQuery.Create(AConnection: IADRConnection);
 begin
   FConnection := AConnection;
-  FQuery := TPgQuery.Create(nil);
-  FQuery.Connection := TPgConnection(FConnection.Connection);
+  FQuery := TZQuery.Create(nil);
+  FQuery.Connection := TZConnection(FConnection.Component);
   FSQL := TStringList.Create;
   FParams := TParams.Create(nil);
 end;
 
-function TADRConnModelPgDACQuery.DataSet: TDataSet;
+function TADRConnModelZeosQuery.DataSet: TDataSet;
 begin
   Result := FQuery;
 end;
 
-function TADRConnModelPgDACQuery.DataSource(AValue: TDataSource): IADRQuery;
+function TADRConnModelZeosQuery.DataSource(AValue: TDataSource): IADRQuery;
 begin
   Result := Self;
   if Assigned(AValue) then
     AValue.DataSet := FQuery;
 end;
 
-destructor TADRConnModelPgDACQuery.Destroy;
+destructor TADRConnModelZeosQuery.Destroy;
 begin
   FQuery.Free;
   FSQL.Free;
@@ -132,7 +131,7 @@ begin
   inherited;
 end;
 
-function TADRConnModelPgDACQuery.ExecSQL: IADRQuery;
+function TADRConnModelZeosQuery.ExecSQL: IADRQuery;
 begin
   Result := Self;
   if Assigned(FBatchParams) then
@@ -141,7 +140,7 @@ begin
     ExecSQLDefault;
 end;
 
-function TADRConnModelPgDACQuery.ExecSQLAndCommit: IADRQuery;
+function TADRConnModelZeosQuery.ExecSQLAndCommit: IADRQuery;
 begin
   Result := Self;
   try
@@ -158,24 +157,19 @@ begin
   end;
 end;
 
-procedure TADRConnModelPgDACQuery.ExecSQLBatch;
+procedure TADRConnModelZeosQuery.ExecSQLBatch;
 var
   I, J: Integer;
-  LQuery: TPgQuery;
+  LQuery: TZQuery;
   LParams: TParams;
+  LDataType: TFieldType;
+  LParam: TZParam;
 begin
-  LQuery := TPgQuery.Create(nil);
+  LQuery := TZQuery.Create(nil);
   try
-    LQuery.Connection := TPgConnection(FConnection.Component);
+    LQuery.Connection := TZConnection(FConnection.Component);
     LQuery.SQL.Text := FSQL.Text;
-    LQuery.Params.ValueCount := FBatchParams.Count;
-
-    if FBatchParams.Count > 0 then
-    begin
-      LParams := FBatchParams.Items[0];
-      for I := 0 to Pred(LParams.Count) do
-        LQuery.Params[I].DataType := LParams[I].DataType;
-    end;
+    LQuery.Params.BatchDMLCount := FBatchParams.Count;
 
     for I := 0 to Pred(FBatchParams.Count) do
     begin
@@ -183,12 +177,55 @@ begin
       for J := 0 to Pred(LParams.Count) do
       begin
         if LParams[J].IsNull then
-          LQuery.ParamByName(LParams[J].Name)[I].Clear
+        begin
+          LQuery.ParamByName(LParams[J].Name).DataType := LParams[J].DataType;
+          LQuery.ParamByName(LParams[J].Name).IsNulls[I] := True;
+        end
         else
-          LQuery.ParamByName(LParams[J].Name)[I].Value := LParams[J].Value;
+        begin
+          LDataType := LParams[J].DataType;
+          LParam := LQuery.ParamByName(LParams[J].Name);
+          case LDataType of
+            ftUnknown: LParam.AsStrings[I] := LParams[J].AsString;
+            ftString: LParam.AsStrings[I] := LParams[J].AsString;
+            ftSmallint: LParam.AsSmallInts[I] := LParams[J].AsSmallInt;
+            ftInteger: LParam.AsIntegers[I] := LParams[J].AsInteger;
+            ftWord: LParam.AsWords[I] := LParams[J].AsWord;
+            ftBoolean: LParam.AsBooleans[I] := LParams[J].AsBoolean;
+            ftFloat: LParam.AsFloats[I] := LParams[J].AsFloat;
+            ftCurrency: LParam.AsCurrencys[I] := LParams[J].AsCurrency;
+            ftBCD: LParam.AsBCDs[I] := LParams[J].AsBCD;
+            ftDate: LParam.AsDates[I] := LParams[J].AsDate;
+            ftTime: LParam.AsTimes[I] := LParams[J].AsTime;
+            ftDateTime: LParam.AsDateTimes[I] := LParams[J].AsDateTime;
+            ftBytes: LParam.AsBytesArray[I] := LParams[J].AsBytes;
+            ftVarBytes: LParam.AsBytesArray[I] := LParams[J].AsBytes;
+            ftAutoInc: LParam.AsInt64s[I] := LParams[J].AsInteger;
+            ftBlob: LParam.AsBlobs[I] := LParams[J].AsBlob;
+            ftMemo: LParam.AsMemos[I] := LParams[J].AsMemo;
+            ftFmtMemo: LParam.AsMemos[I] := LParams[J].AsMemo;
+            ftWideString: LParam.AsWideStrings[I] := LParams[J].AsWideString;
+            ftLargeint: LParam.AsLargeInts[I] := LParams[J].AsLargeInt;
+            ftOraBlob: LParam.AsBlobs[I] := LParams[J].AsBlob;
+            ftOraClob: LParam.AsBlobs[I] := LParams[J].AsBlob;
+            ftVariant: LParam.AsStrings[I] := LParams[J].AsString;
+            ftGuid: LParam.AsGUIDs[I] := LParams[J].AsGuid;
+            ftTimeStamp: LParam.AsDateTimes[I] := LParams[J].AsDateTime;
+            ftFMTBcd: LParam.AsFmtBCDs[I] := LParams[J].AsFMTBCD;
+            ftFixedWideChar: LParam.AsWideStrings[I] := LParams[J].AsWideString;
+            ftWideMemo: LParam.AsWideMemos[I] := LParams[J].AsWideString;
+            ftOraTimeStamp: LParam.AsDateTimes[I] := LParams[J].AsDateTime;
+            ftLongWord: LParam.AsLongwords[I] := LParams[J].AsLongWord;
+            ftShortint: LParam.AsShortInts[I] := LParams[J].AsShortInt;
+            ftByte: LParam.AsBytes[I] := LParams[J].AsByte;
+            ftExtended: LParam.AsFloats[I] := LParams[J].AsFloat;
+            ftTimeStampOffset: LParam.AsDateTimes[I] := LParams[J].AsDateTime;
+            ftSingle: LParam.AsSingles[I] := LParams[J].AsSingle;
+          end;
+        end;
       end;
     end;
-    LQuery.Execute(FBatchParams.Count);
+    LQuery.ExecSQL;
   finally
     FreeAndNil(FBatchParams);
     FSQL.Clear;
@@ -196,14 +233,14 @@ begin
   end;
 end;
 
-procedure TADRConnModelPgDACQuery.ExecSQLDefault;
+procedure TADRConnModelZeosQuery.ExecSQLDefault;
 var
-  LQuery: TPgQuery;
+  LQuery: TZQuery;
   I: Integer;
 begin
-  LQuery := TPgQuery.Create(nil);
+  LQuery := TZQuery.Create(nil);
   try
-    LQuery.Connection := TPgConnection(FConnection.Component);
+    LQuery.Connection := TZConnection(FConnection.Component);
     LQuery.SQL.Text := FSQL.Text;
     for I := 0 to Pred(FParams.Count) do
     begin
@@ -219,14 +256,14 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.Generator: IADRGenerator;
+function TADRConnModelZeosQuery.Generator: IADRGenerator;
 begin
   if not Assigned(FGenerator) then
-    FGenerator := TADRConnModelGeneratorPostgres.New(Self);
+    FGenerator := TADRConnModelGenerator.NewGenerator(FConnection, Self);
   Result := FGenerator;
 end;
 
-function TADRConnModelPgDACQuery.GetBatchParams(AIndex: Integer): TParams;
+function TADRConnModelZeosQuery.GetBatchParams(AIndex: Integer): TParams;
 begin
   if not Assigned(FBatchParams) then
     FBatchParams := TObjectList<TParams>.Create;
@@ -235,12 +272,12 @@ begin
   Result := FBatchParams.Last;
 end;
 
-class function TADRConnModelPgDACQuery.New(AConnection: IADRConnection): IADRQuery;
+class function TADRConnModelZeosQuery.New(AConnection: IADRConnection): IADRQuery;
 begin
   Result := Self.Create(AConnection);
 end;
 
-function TADRConnModelPgDACQuery.Open: IADRQuery;
+function TADRConnModelZeosQuery.Open: IADRQuery;
 var
   I: Integer;
 begin
@@ -262,15 +299,15 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.OpenDataSet: TDataSet;
+function TADRConnModelZeosQuery.OpenDataSet: TDataSet;
 var
-  LQuery: TPgQuery;
+  LQuery: TZQuery;
   I: Integer;
 begin
   try
-    LQuery := TPgQuery.Create(nil);
+    LQuery := TZQuery.Create(nil);
     try
-      LQuery.Connection := TPgConnection(FConnection.Component);
+      LQuery.Connection := TZConnection(FConnection.Component);
       LQuery.SQL.Text := FSQL.Text;
       for I := 0 to Pred(FParams.Count) do
       begin
@@ -289,7 +326,7 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.ParamAsBoolean(AIndex: Integer;
+function TADRConnModelZeosQuery.ParamAsBoolean(AIndex: Integer;
   AName: string; AValue, ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -299,14 +336,14 @@ begin
   AddParam(LParams, AName, AValue, ftBoolean, ANullIfEmpty);
 end;
 
-function TADRConnModelPgDACQuery.ParamAsBoolean(AName: string; AValue,
+function TADRConnModelZeosQuery.ParamAsBoolean(AName: string; AValue,
   ANullIfEmpty: Boolean): IADRQuery;
 begin
   Result := Self;
   AddParam(AName, AValue, ftBoolean, ANullIfEmpty);
 end;
 
-function TADRConnModelPgDACQuery.ParamAsCurrency(AName: string;
+function TADRConnModelZeosQuery.ParamAsCurrency(AName: string;
   AValue: Currency; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -320,7 +357,7 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.ParamAsCurrency(AIndex: Integer;
+function TADRConnModelZeosQuery.ParamAsCurrency(AIndex: Integer;
   AName: string; AValue: Currency; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -336,7 +373,7 @@ begin
   end
 end;
 
-function TADRConnModelPgDACQuery.ParamAsDate(AIndex: Integer;
+function TADRConnModelZeosQuery.ParamAsDate(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -352,7 +389,7 @@ begin
   end
 end;
 
-function TADRConnModelPgDACQuery.ParamAsDate(AName: string;
+function TADRConnModelZeosQuery.ParamAsDate(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -366,7 +403,7 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.ParamAsDateTime(AName: string;
+function TADRConnModelZeosQuery.ParamAsDateTime(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -380,7 +417,7 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.ParamAsDateTime(AIndex: Integer;
+function TADRConnModelZeosQuery.ParamAsDateTime(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -396,7 +433,7 @@ begin
   end
 end;
 
-function TADRConnModelPgDACQuery.ParamAsFloat(AIndex: Integer;
+function TADRConnModelZeosQuery.ParamAsFloat(AIndex: Integer;
   AName: string; AValue: Double; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -412,7 +449,7 @@ begin
   end
 end;
 
-function TADRConnModelPgDACQuery.ParamAsFloat(AName: string;
+function TADRConnModelZeosQuery.ParamAsFloat(AName: string;
   AValue: Double; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -426,7 +463,7 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.ParamAsInteger(AIndex: Integer;
+function TADRConnModelZeosQuery.ParamAsInteger(AIndex: Integer;
   AName: string; AValue: Integer; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -442,7 +479,7 @@ begin
   end
 end;
 
-function TADRConnModelPgDACQuery.ParamAsInteger(AName: string;
+function TADRConnModelZeosQuery.ParamAsInteger(AName: string;
   AValue: Integer; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -456,7 +493,7 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.ParamAsString(AName, AValue: string;
+function TADRConnModelZeosQuery.ParamAsString(AName, AValue: string;
   ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -470,7 +507,7 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.ParamAsString(AIndex: Integer; AName,
+function TADRConnModelZeosQuery.ParamAsString(AIndex: Integer; AName,
   AValue: string; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -486,7 +523,7 @@ begin
   end
 end;
 
-function TADRConnModelPgDACQuery.ParamAsTime(AIndex: Integer;
+function TADRConnModelZeosQuery.ParamAsTime(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParams: TParams;
@@ -502,7 +539,7 @@ begin
   end
 end;
 
-function TADRConnModelPgDACQuery.ParamAsTime(AName: string;
+function TADRConnModelZeosQuery.ParamAsTime(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
 var
   LParam: TParam;
@@ -516,13 +553,13 @@ begin
   end;
 end;
 
-function TADRConnModelPgDACQuery.SQL(AValue: string): IADRQuery;
+function TADRConnModelZeosQuery.SQL(AValue: string): IADRQuery;
 begin
   Result := Self;
   FSQL.Add(AValue);
 end;
 
-function TADRConnModelPgDACQuery.SQL(AValue: string;
+function TADRConnModelZeosQuery.SQL(AValue: string;
   const Args: array of const): IADRQuery;
 begin
   Result := Self;

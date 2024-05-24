@@ -1,0 +1,14 @@
+{
+	"hash": "d41d8cd98f00b204e9800998ecf8427e",
+	"updated": "2024-05-24T09:49:58.5438516-03:00",
+	"installedModules": {
+		"github.com/gabrielbaltazar/zeoslib": {
+			"name": "zeoslib",
+			"version": "8.0.0",
+			"hash": "c2a71f6324be6f709fb7ce2baec70a2c",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		}
+	}
+}
