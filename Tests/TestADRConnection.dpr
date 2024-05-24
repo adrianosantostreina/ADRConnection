@@ -37,7 +37,9 @@ uses
   ADRConn.Model.Zeos.Connection in '..\Source\ADRConn.Model.Zeos.Connection.pas',
   ADRConn.Model.Zeos.Connection.Test in 'Source\ADRConn.Model.Zeos.Connection.Test.pas',
   ADRConn.Model.Zeos.Query in '..\Source\ADRConn.Model.Zeos.Query.pas',
-  ADRConn.Model.Zeos.Query.Test in 'Source\ADRConn.Model.Zeos.Query.Test.pas';
+  ADRConn.Model.Zeos.Query.Test in 'Source\ADRConn.Model.Zeos.Query.Test.pas',
+  PoolManager in '..\Source\PoolManager.pas',
+  ADRConnection.Pool in '..\Source\ADRConnection.Pool.pas';
 
 begin
   IsConsole := False;
