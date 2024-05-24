@@ -29,7 +29,10 @@ uses
   ADRConn.Model.PgDAC.Connection in '..\Source\ADRConn.Model.PgDAC.Connection.pas',
   ADRConn.Model.PgDAC.Connection.Test in 'Source\ADRConn.Model.PgDAC.Connection.Test.pas',
   ADRConn.Model.PgDAC.Query in '..\Source\ADRConn.Model.PgDAC.Query.pas',
-  ADRConn.Model.PgDAC.Query.Test in 'Source\ADRConn.Model.PgDAC.Query.Test.pas';
+  ADRConn.Model.PgDAC.Query.Test in 'Source\ADRConn.Model.PgDAC.Query.Test.pas',
+  ADRConn.Model.UniDAC.Connection in '..\Source\ADRConn.Model.UniDAC.Connection.pas',
+  ADRConn.Model.UniDAC.Connection.Test in 'Source\ADRConn.Model.UniDAC.Connection.Test.pas',
+  ADRConn.Model.UniDAC.Query in '..\Source\ADRConn.Model.UniDAC.Query.pas';
 
 begin
   IsConsole := False;

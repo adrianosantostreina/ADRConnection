@@ -8,7 +8,7 @@ uses
   System.SysUtils;
 
 type
-  TADRDriverConn = (adrFirebird, adrPostgres, adrMySql, adrSQLite);
+  TADRDriverConn = (adrFirebird, adrPostgres, adrMySql, adrSQLite, adrMSSQL, adrOracle);
   IADRConnectionParams = interface;
   IADRGenerator = interface;
 
@@ -110,19 +110,24 @@ function CreateQuery(AConnection: IADRConnection): IADRQuery;
 
 implementation
 
-{$IFDEF ADRCONN_FIREDAC}
 uses
+{$IFDEF ADRCONN_FIREDAC}
   ADRConn.Model.Firedac.Connection,
-  ADRConn.Model.Firedac.Query;
+  ADRConn.Model.Firedac.Query,
 {$ENDIF}
 {$IFDEF ADRCONN_PGDAC}
-uses
   ADRConn.Model.PgDAC.Connection,
-  ADRConn.Model.PgDAC.Query;
+  ADRConn.Model.PgDAC.Query,
 {$ENDIF}
+{$IFDEF ADRCONN_UNIDAC}
+  ADRConn.Model.UniDAC.Connection,
+  ADRConn.Model.UniDAC.Query,
+{$ENDIF}
+  ADRConn.Model.Factory;
 
 const
-  DirectiveMessage = 'Use the ADRCONN_FIREDAC diretive to use Firedac, ADRCONN_PGDAC to use PGDAC...';
+  DirectiveMessage = 'Use the ADRCONN_FIREDAC, ADRCONN_PGDAC or ADRCONN_UNIDAC directive ' +
+    'to use a Engine Connection...';
 
 function CreateConnection: IADRConnection;
 begin
@@ -130,6 +135,8 @@ begin
   Result := TADRConnModelFiredacConnection.New;
 {$ELSEIF Defined(ADRCONN_PGDAC)}
   Result := TADRConnModelPgDACConnection.New;
+{$ELSEIF Defined(ADRCONN_UNIDAC)}
+  Result := TADRConnModelUniDACConnection.New;
 {$ELSE}
   raise Exception.Create(DirectiveMessage);
 {$ENDIF}
@@ -141,6 +148,8 @@ begin
   Result := TADRConnModelFiredacQuery.New(AConnection);
 {$ELSEIF Defined(ADRCONN_PGDAC)}
   Result := TADRConnModelPgDACQuery.New(AConnection);
+{$ELSEIF Defined(ADRCONN_UNIDAC)}
+  Result := TADRConnModelUniDACQuery.New;
 {$ELSE}
   raise Exception.Create(DirectiveMessage);
 {$ENDIF}
