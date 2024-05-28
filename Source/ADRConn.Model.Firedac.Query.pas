@@ -47,6 +47,7 @@ type
     function ParamAsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob; ANullIfEmpty: Boolean = False): IADRQuery; overload;
 
     function ArraySize(AValue: Integer): IADRQuery;
     function ParamAsInteger(AIndex: Integer; AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -478,6 +479,18 @@ begin
     LParam.DataType := ftInteger;
     LParam.Clear;
   end
+end;
+
+function TADRConnModelFiredacQuery.ParamAsStream(AName: string;
+  AValue: TStream; ADataType: TFieldType;
+  ANullIfEmpty: Boolean): IADRQuery;
+var
+  LParam: TParam;
+begin
+  Result := Self;
+  LParam := AddParam(AName, null, ADataType, ANullIfEmpty);
+  if ((Assigned(AValue) and (AValue.Size > 0)) or (not ANullIfEmpty)) then
+    LParam.LoadFromStream(AValue, ADataType);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsString(AIndex: Integer; AName, AValue: string;
