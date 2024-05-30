@@ -61,6 +61,7 @@ type
     ['{AE3BE608-658C-46D4-AC60-6F4EDB6AF90D}']
     function SQL(AValue: string): IADRQuery; overload;
     function SQL(AValue: string; const Args: array of const): IADRQuery; overload;
+    function Clear: IADRQuery;
 
     function Component: TComponent;
     function DataSet: TDataSet;

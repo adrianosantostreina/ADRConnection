@@ -34,6 +34,7 @@ type
   protected
     function SQL(AValue: string): IADRQuery; overload;
     function SQL(AValue: string; const Args: array of const): IADRQuery; overload;
+    function Clear: IADRQuery;
 
     function Component: TComponent;
     function DataSet: TDataSet;
@@ -93,6 +94,12 @@ end;
 function TADRConnModelFiredacQuery.ArraySize(AValue: Integer): IADRQuery;
 begin
   Result := Self;
+end;
+
+function TADRConnModelFiredacQuery.Clear: IADRQuery;
+begin
+  Result := Self;
+  FSQL.Text := EmptyStr;
 end;
 
 function TADRConnModelFiredacQuery.Component: TComponent;
