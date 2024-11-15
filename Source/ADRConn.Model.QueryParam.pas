@@ -101,7 +101,6 @@ type
     FBatchParams: TObjectList<TParams>;
     function GetBatchParams(AIndex: Integer): TParams;
   protected
-    function Get(AIndex: Integer; AName: string): IADRQueryParam;
     function Params(AIndex: Integer): TParams;
     function Clear: IADRQueryBatchParams;
     function ArraySize: Integer;
@@ -594,11 +593,6 @@ end;
 function TADRConnModelQueryBatchParams.&End: IADRQuery;
 begin
   Result := FQuery;
-end;
-
-function TADRConnModelQueryBatchParams.Get(AIndex: Integer; AName: string): IADRQueryParam;
-begin
-
 end;
 
 function TADRConnModelQueryBatchParams.GetBatchParams(AIndex: Integer): TParams;

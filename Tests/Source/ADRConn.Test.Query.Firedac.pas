@@ -95,8 +95,7 @@ begin
   FQuery.SQL('insert into query_firedac (')
     .SQL('description, intTest, dateTest, currTest, boolTest)')
     .SQL('values (')
-    .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)')
-    .ArraySize(5);
+    .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)');
 
   for I := 0 to 4 do
     FQuery.ParamAsString(I, 'description', 'InsertBatch')

@@ -50,7 +50,6 @@ type
     function ParamAsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob; ANullIfEmpty: Boolean = False): IADRQuery; overload;
 
-    function ArraySize(AValue: Integer): IADRQuery;
     function ParamAsInteger(AIndex: Integer; AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AIndex: Integer; AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsFloat(AIndex: Integer; AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -74,11 +73,6 @@ type
 implementation
 
 { TADRConnModelFiredacQuery }
-
-function TADRConnModelFiredacQuery.ArraySize(AValue: Integer): IADRQuery;
-begin
-  Result := Self;
-end;
 
 function TADRConnModelFiredacQuery.BatchParams: IADRQueryBatchParams;
 begin
