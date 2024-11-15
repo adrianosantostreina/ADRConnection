@@ -24,6 +24,7 @@ type
     FParams: TParams;
     FSQL: TStrings;
 
+    function TryHandleException(AException: Exception): Boolean;
     function GetBatchParams(AIndex: Integer): TParams;
     function AddParam(AName: string; AValue: Variant; AType: TFieldType;
       ANullIfEmpty: Boolean = False): TParam; overload;
@@ -171,24 +172,34 @@ var
 begin
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := TFDConnection(FConnection.Component);
-    LQuery.SQL.Text := FSQL.Text;
-    LQuery.Params.ArraySize := FBatchParams.Count;
-    for I := 0 to Pred(FBatchParams.Count) do
-    begin
-      LParams := FBatchParams.Items[I];
-      for J := 0 to Pred(LParams.Count) do
+    try
+      LQuery.Connection := TFDConnection(FConnection.Component);
+      LQuery.SQL.Text := FSQL.Text;
+      LQuery.Params.ArraySize := FBatchParams.Count;
+      for I := 0 to Pred(FBatchParams.Count) do
       begin
-        if LParams[J].IsNull then
+        LParams := FBatchParams.Items[I];
+        for J := 0 to Pred(LParams.Count) do
         begin
-          LQuery.ParamByName(LParams[J].Name).DataType := LParams[J].DataType;
-          LQuery.ParamByName(LParams[J].Name).Clear(I);
-        end
-        else
-          LQuery.ParamByName(LParams[J].Name).Values[I] := LParams[J].Value;
+          if LParams[J].IsNull then
+          begin
+            LQuery.ParamByName(LParams[J].Name).DataType := LParams[J].DataType;
+            LQuery.ParamByName(LParams[J].Name).Clear(I);
+          end
+          else
+            LQuery.ParamByName(LParams[J].Name).Values[I] := LParams[J].Value;
+        end;
+      end;
+      LQuery.Execute(FBatchParams.Count, 0);
+    except
+      on E: Exception do
+      begin
+        if not TryHandleException(E) then
+          raise;
+
+        ExecSQLBatch;
       end;
     end;
-    LQuery.Execute(FBatchParams.Count, 0);
   finally
     FreeAndNil(FBatchParams);
     FSQL.Clear;
@@ -203,15 +214,25 @@ var
 begin
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := TFDConnection(FConnection.Component);
-    LQuery.SQL.Text := FSQL.Text;
-    for I := 0 to Pred(FParams.Count) do
-    begin
-      LQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
-      LQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
-    end;
+    try
+      LQuery.Connection := TFDConnection(FConnection.Component);
+      LQuery.SQL.Text := FSQL.Text;
+      for I := 0 to Pred(FParams.Count) do
+      begin
+        LQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
+        LQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
+      end;
 
-    LQuery.ExecSQL;
+      LQuery.ExecSQL;
+    except
+      on E: Exception do
+      begin
+        if not TryHandleException(E) then
+          raise;
+
+        ExecSQLDefault;
+      end;
+    end;
   finally
     FParams.Clear;
     FSQL.Clear;
@@ -250,12 +271,22 @@ begin
 
   FDQuery.SQL.Text := FSQL.Text;
   try
-    for I := 0 to Pred(FParams.Count) do
-    begin
-      FDQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
-      FDQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
+    try
+      for I := 0 to Pred(FParams.Count) do
+      begin
+        FDQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
+        FDQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
+      end;
+      FDQuery.Open;
+    except
+      on E: Exception do
+      begin
+        if not TryHandleException(E) then
+          raise;
+
+        Result := Open;
+      end;
     end;
-    FDQuery.Open;
   finally
     FSQL.Clear;
     FParams.Clear;
@@ -280,8 +311,14 @@ begin
       LQuery.Open;
       Result := LQuery;
     except
-      LQuery.Free;
-      raise;
+      on E: Exception do
+      begin
+        LQuery.Free;
+        if not TryHandleException(E) then
+          raise;
+
+        Result := OpenDataSet;
+      end;
     end;
   finally
     FSQL.Clear;
@@ -396,6 +433,11 @@ function TADRConnModelFiredacQuery.SQL(AValue: string; const Args: array of cons
 begin
   Result := Self;
   SQL(Format(AValue, Args));
+end;
+
+function TADRConnModelFiredacQuery.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := FConnection.Events.HandleException(AException);
 end;
 
 function TADRConnModelFiredacQuery.ParamAsBoolean(AIndex: Integer; AName: string; AValue,

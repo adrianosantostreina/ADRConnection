@@ -5,6 +5,7 @@ interface
 uses
   ADRConn.Model.Interfaces,
   ADRConn.Model.Params,
+  ADRConn.Model.Events,
   System.Classes,
   System.SysUtils,
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
@@ -24,12 +25,15 @@ type
   TADRConnModelUniDACConnection = class(TInterfacedObject, IADRConnection)
   private
     FConnection: TUniConnection;
+    FEvents: IADRConnectionEvents;
     FParams: IADRConnectionParams;
 
     procedure Setup;
+    function TryHandleException(AException: Exception): Boolean;
   protected
     function Connection: TCustomConnection;
     function Component: TComponent;
+    function Events: IADRConnectionEvents;
 
     function Params: IADRConnectionParams;
 
@@ -64,10 +68,16 @@ end;
 function TADRConnModelUniDACConnection.Connect: IADRConnection;
 begin
   Result := Self;
-  if not FConnection.Connected then
-  begin
-    Setup;
-    FConnection.Connected := True;
+  try
+    if not FConnection.Connected then
+    begin
+      Setup;
+      FConnection.Connected := True;
+    end;
+  except
+    on E: Exception do
+      if not TryHandleException(E) then
+        raise;
   end;
 end;
 
@@ -97,6 +107,13 @@ function TADRConnModelUniDACConnection.Disconnect: IADRConnection;
 begin
   Result := Self;
   FConnection.Connected := False;
+end;
+
+function TADRConnModelUniDACConnection.Events: IADRConnectionEvents;
+begin
+  if not Assigned(FEvents) then
+    FEvents := TADRConnConnectionModelEvents.New;
+  Result := FEvents;
 end;
 
 function TADRConnModelUniDACConnection.InTransaction: Boolean;
@@ -163,6 +180,11 @@ function TADRConnModelUniDACConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;
+end;
+
+function TADRConnModelUniDACConnection.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := Events.TryHandleException(AException);
 end;
 
 end.

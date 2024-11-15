@@ -28,7 +28,7 @@ uses
   ADRConn.Test.MySQL.Connection in 'Source\ADRConn.Test.MySQL.Connection.pas',
   ADRConn.Model.PgDAC.Connection in '..\Source\ADRConn.Model.PgDAC.Connection.pas',
   ADRConn.Model.PgDAC.Connection.Test in 'Source\ADRConn.Model.PgDAC.Connection.Test.pas',
-  ADRConn.Model.PgDAC.Query in '..\Source\ADRConn.Model.PgDAC.Query.pas',
+  ADRConn.Model.PGDac.Query in '..\Source\ADRConn.Model.PGDac.Query.pas',
   ADRConn.Model.PgDAC.Query.Test in 'Source\ADRConn.Model.PgDAC.Query.Test.pas',
   ADRConn.Model.Zeos.Connection in '..\Source\ADRConn.Model.Zeos.Connection.pas',
   ADRConn.Model.Zeos.Connection.Test in 'Source\ADRConn.Model.Zeos.Connection.Test.pas',
@@ -36,7 +36,8 @@ uses
   ADRConn.Model.Zeos.Query.Test in 'Source\ADRConn.Model.Zeos.Query.Test.pas',
   PoolManager in '..\Source\PoolManager.pas',
   ADRConnection.Pool in '..\Source\ADRConnection.Pool.pas',
-  ADRConn.Model.Events in '..\Source\ADRConn.Model.Events.pas';
+  ADRConn.Model.Events in '..\Source\ADRConn.Model.Events.pas',
+  ADRConnection.Pool.Firedac in '..\Source\ADRConnection.Pool.Firedac.pas';
 
 begin
   IsConsole := False;

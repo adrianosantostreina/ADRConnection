@@ -11,11 +11,24 @@ uses
 type
   TOnGetConnection = TFunc<IADRConnection>;
 
+  TOnComponentError = procedure(ASender, AInitiator: TObject; var AException: Exception);
+
   TADRConnectionPoolItem = class
-  private
+  protected
     FConnection: IADRConnection;
+    FRetry: Integer;
+    FRetryCount: Integer;
+    FIsHandledError: Boolean;
+    FSleep: Integer;
+    FOnLog: TProc<string>;
+    function DoHandleException(AException: Exception): Boolean;
+    procedure Log(ALog: string);
+    procedure SetOnLog(const AValue: TProc<string>);
   public
+    constructor Create; virtual;
+    procedure Initialize;
     property Connection: IADRConnection read FConnection;
+    property OnLog: TProc<string> write SetOnLog;
   end;
 
   TADRConnectionPool = class(TPoolManager<TADRConnectionPoolItem>)
@@ -65,6 +78,12 @@ function GetPoolItem: TPoolItem<TADRConnectionPoolItem>;
 
 implementation
 
+{$IFDEF ADRCONN_FIREDAC}
+uses
+  FireDAC.Comp.Client,
+  ADRConnection.Pool.Firedac;
+{$ENDIF}
+
 function GetPoolItem: TPoolItem<TADRConnectionPoolItem>;
 begin
   Result := TADRConnectionPool.PoolManager.TryGetItem;
@@ -79,11 +98,21 @@ begin
 end;
 
 procedure TADRConnectionPool.DoGetInstance(var AInstance: TADRConnectionPoolItem; var AInstanceOwner: Boolean);
+var
+  LInstance: TADRConnectionPoolItem;
 begin
   inherited;
   AInstanceOwner := True;
+{$IFDEF ADRCONN_FIREDAC}
+  AInstance := TADRConnectionPoolItemFiredac.Create;
+  TFDConnection(AInstance.FConnection.Component).OnError :=
+    TADRConnectionPoolItemFiredac(AInstance).OnError;
+{$ELSE}
   AInstance := TADRConnectionPoolItem.Create;
-  AInstance.FConnection := OnGetConnection;
+{$ENDIF}
+  LInstance := AInstance;
+  LInstance.FConnection := OnGetConnection;
+  AInstance.FConnection.Events.OnHandleException(LInstance.DoHandleException);
 end;
 
 class function TADRConnectionPool.GetPoolManager: TADRConnectionPool;
@@ -145,6 +174,61 @@ function TADRConnectionPoolBuilder.OnGetConnection(AValue: TFunc<IADRConnection>
 begin
   Result := Self;
   FOnGetConnection := AValue;
+end;
+
+{ TADRConnectionPoolItem }
+
+constructor TADRConnectionPoolItem.Create;
+begin
+  Initialize;
+end;
+
+function TADRConnectionPoolItem.DoHandleException(AException: Exception): Boolean;
+begin
+  Result := False;
+  if not FIsHandledError then
+    Exit(False);
+
+  repeat
+    if FRetryCount = FRetry then
+    begin
+      Log('Reconnection: Failed');
+      Exit(False);
+    end;
+
+    if FIsHandledError then
+    begin
+      Sleep(FSleep);
+      try
+        if not FConnection.Connected then
+          FConnection.Connect;
+      except
+      end;
+
+      Result := FConnection.Connected;
+      if Result then
+        Log('Reconnection: Success');
+    end;
+  until (not FIsHandledError) or (Result);
+end;
+
+procedure TADRConnectionPoolItem.Initialize;
+begin
+  FRetry := 5;
+  FSleep := 1000;
+  FRetryCount := 0;
+end;
+
+procedure TADRConnectionPoolItem.Log(ALog: string);
+begin
+  if Assigned(FOnLog) then
+    FOnLog(ALog);
+end;
+
+procedure TADRConnectionPoolItem.SetOnLog(const AValue: TProc<string>);
+begin
+  FOnLog := AValue;
+  FConnection.Events.OnLog(FOnLog);
 end;
 
 end.
