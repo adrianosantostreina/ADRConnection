@@ -22,6 +22,7 @@ type
     FPort: Integer;
     FAutoCommit: Boolean;
     FDriver: TADRDriverConn;
+    FAppName: string;
     FParams: TDictionary<string, string>;
   protected
     function Database(AValue: string): IADRConnectionParams; overload;
@@ -42,6 +43,8 @@ type
     function AutoCommit: Boolean; overload;
     function Driver(AValue: TADRDriverConn): IADRConnectionParams; overload;
     function Driver: TADRDriverConn; overload;
+    function AppName(AValue: string): IADRConnectionParams; overload;
+    function AppName: string; overload;
     function Settings: TFormatSettings;
 
     function AddParam(AName, AValue: string): IADRConnectionParams;
@@ -64,6 +67,17 @@ begin
   FParams.AddOrSetValue(AName, AValue);
 end;
 
+function TADRConnModelParams.AppName: string;
+begin
+  Result := FAppName;
+end;
+
+function TADRConnModelParams.AppName(AValue: string): IADRConnectionParams;
+begin
+  Result := Self;
+  FAppName := AValue;
+end;
+
 function TADRConnModelParams.AutoCommit: Boolean;
 begin
   Result := FAutoCommit;
@@ -81,6 +95,7 @@ begin
   FParams := TDictionary<string, string>.Create;
   FAutoCommit := True;
   FDriver := adrFirebird;
+  FAppName := ExtractFileName(GetModuleName(HInstance));
 
   FFormatSettings := TFormatSettings.Create;
   FFormatSettings.DateSeparator := '-';

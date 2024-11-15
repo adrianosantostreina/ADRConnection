@@ -3,15 +3,16 @@ unit ADRConn.Model.Firedac.Query;
 interface
 
 uses
-  ADRConn.Model.Interfaces,
-  ADRConn.Model.Generator,
   Data.DB,
   System.Classes,
   System.SysUtils,
   System.Variants,
   System.Generics.Collections,
   FireDAC.Stan.Param,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client,
+  ADRConn.Model.Interfaces,
+  ADRConn.Model.Generator,
+  ADRConn.Model.QueryParam;
 
 type
   TADRConnModelFiredacQuery = class(TInterfacedObject, IADRQuery)
@@ -22,6 +23,7 @@ type
     FGenerator: IADRGenerator;
     FBatchParams: TObjectList<TParams>;
     FParams: TParams;
+    FQueryParams: IADRQueryParams;
     FSQL: TStrings;
 
     function TryHandleException(AException: Exception): Boolean;
@@ -40,6 +42,8 @@ type
     function Component: TComponent;
     function DataSet: TDataSet;
     function DataSource(AValue: TDataSource): IADRQuery;
+
+    function Params: IADRQueryParams;
 
     function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -234,7 +238,8 @@ begin
       end;
     end;
   finally
-    FParams.Clear;
+    if Assigned(FQueryParams) then
+      FQueryParams.Clear;
     FSQL.Clear;
     LQuery.Free;
   end;
@@ -289,7 +294,7 @@ begin
     end;
   finally
     FSQL.Clear;
-    FParams.Clear;
+    FQueryParams.Clear;
   end;
 end;
 
@@ -572,6 +577,13 @@ begin
     LParam.DataType := ftTime;
     LParam.Clear;
   end
+end;
+
+function TADRConnModelFiredacQuery.Params: IADRQueryParams;
+begin
+  if not Assigned(FQueryParams) then
+    FQueryParams := TADRConnModelQueryParams.New(Self, FParams);
+  Result := FQueryParams;
 end;
 
 end.

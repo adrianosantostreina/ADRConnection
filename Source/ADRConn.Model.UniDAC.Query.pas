@@ -3,8 +3,6 @@ unit ADRConn.Model.UniDAC.Query;
 interface
 
 uses
-  ADRConn.Model.Interfaces,
-  ADRConn.Model.Generator,
   Data.DB,
   System.Classes,
   System.SysUtils,
@@ -12,7 +10,10 @@ uses
   System.Generics.Collections,
   MemDS,
   DBAccess,
-  Uni;
+  Uni,
+  ADRConn.Model.Interfaces,
+  ADRConn.Model.Generator,
+  ADRConn.Model.QueryParam;
 
 type
   TADRConnModelUniDACQuery = class(TInterfacedObject, IADRQuery)
@@ -23,6 +24,7 @@ type
     FGenerator: IADRGenerator;
     FBatchParams: TObjectList<TParams>;
     FParams: TParams;
+    FQueryParams: IADRQueryParams;
     FSQL: TStrings;
 
     function TryHandleException(AException: Exception): Boolean;
@@ -41,6 +43,8 @@ type
     function Component: TComponent;
     function DataSet: TDataSet;
     function DataSource(AValue: TDataSource): IADRQuery;
+
+    function Params: IADRQueryParams;
 
     function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -556,6 +560,13 @@ begin
     LParam.DataType := ftTime;
     LParam.Clear;
   end
+end;
+
+function TADRConnModelUniDACQuery.Params: IADRQueryParams;
+begin
+  if not Assigned(FQueryParams) then
+    FQueryParams := TADRConnModelQueryParams.New(Self, FParams);
+  Result := FQueryParams;
 end;
 
 function TADRConnModelUniDACQuery.ParamAsTime(AName: string;

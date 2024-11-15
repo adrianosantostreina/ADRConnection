@@ -3,9 +3,6 @@ unit ADRConn.Model.PgDAC.Query;
 interface
 
 uses
-  ADRConn.Model.Interfaces,
-  ADRConn.Model.Generator,
-  ADRConn.Model.Generator.Postgres,
   Data.DB,
   System.Classes,
   System.SysUtils,
@@ -13,7 +10,11 @@ uses
   System.Generics.Collections,
   MemDS,
   DBAccess,
-  PgAccess;
+  PgAccess,
+  ADRConn.Model.Interfaces,
+  ADRConn.Model.Generator,
+  ADRConn.Model.Generator.Postgres,
+  ADRConn.Model.QueryParam;
 
 type
   TADRConnModelPgDACQuery = class(TInterfacedObject, IADRQuery)
@@ -24,6 +25,7 @@ type
     FGenerator: IADRGenerator;
     FBatchParams: TObjectList<TParams>;
     FParams: TParams;
+    FQueryParams: IADRQueryParams;
     FSQL: TStrings;
 
     function TryHandleException(AException: Exception): Boolean;
@@ -42,6 +44,8 @@ type
     function Component: TComponent;
     function DataSet: TDataSet;
     function DataSource(AValue: TDataSource): IADRQuery;
+
+    function Params: IADRQueryParams;
 
     function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -557,6 +561,13 @@ begin
     LParam.DataType := ftTime;
     LParam.Clear;
   end
+end;
+
+function TADRConnModelPgDACQuery.Params: IADRQueryParams;
+begin
+  if not Assigned(FQueryParams) then
+    FQueryParams := TADRConnModelQueryParams.New(Self, FParams);
+  Result := FQueryParams;
 end;
 
 function TADRConnModelPgDACQuery.ParamAsTime(AName: string;

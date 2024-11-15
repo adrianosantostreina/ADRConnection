@@ -126,15 +126,19 @@ begin
     .SQL('description, intTest, dateTest, currTest, boolTest)')
     .SQL('values (')
     .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)')
-    .ParamAsString('description', 'SimpleInsert')
-    .ParamAsInteger('intTest', 5)
-    .ParamAsDateTime('dateTest', EncodeDate(2023, 6, 29))
-    .ParamAsCurrency('currTest', 5.5)
-    .ParamAsBoolean('boolTest', True)
+    .Params
+      .AsString('description', 'SimpleInsert').&End
+      .AsInteger('intTest', 5).&End
+      .AsDateTime('dateTest', EncodeDate(2023, 6, 29)).&End
+      .AsCurrency('currTest', 5.5).&End
+      .AsBoolean('boolTest', True).&End
+    .&End
     .ExecSQL;
 
   FQuery.SQL('select * from query_firedac where description = :description')
-    .ParamAsString('description', 'SimpleInsert')
+    .Params
+      .AsString('description', 'SimpleInsert').&End
+    .&End
     .Open;
 
   Assert.AreEqual('SimpleInsert', FQuery.DataSet.FieldByName('description').AsString);

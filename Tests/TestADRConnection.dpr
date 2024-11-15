@@ -37,7 +37,8 @@ uses
   PoolManager in '..\Source\PoolManager.pas',
   ADRConnection.Pool in '..\Source\ADRConnection.Pool.pas',
   ADRConn.Model.Events in '..\Source\ADRConn.Model.Events.pas',
-  ADRConnection.Pool.Firedac in '..\Source\ADRConnection.Pool.Firedac.pas';
+  ADRConnection.Pool.Firedac in '..\Source\ADRConnection.Pool.Firedac.pas',
+  ADRConn.Model.QueryParam in '..\Source\ADRConn.Model.QueryParam.pas';
 
 begin
   IsConsole := False;
