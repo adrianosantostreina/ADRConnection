@@ -9,11 +9,20 @@ uses
 
 type
   TADRDriverConn = (adrFirebird, adrPostgres, adrMySql, adrSQLite, adrMSSQL, adrOracle);
+
+  IADRConnectionEvents = interface;
+
   IADRConnectionParams = interface;
+
   IADRGenerator = interface;
+
+  TADRHandleException = TFunc<Exception, Boolean>;
+
+  TADROnLog = TProc<string>;
 
   IADRConnection = interface
     ['{681E59C7-6AAC-47DE-AE6D-F649C1922565}']
+    function Events: IADRConnectionEvents;
     function Connection: TCustomConnection;
     function Component: TComponent;
 
@@ -26,6 +35,19 @@ type
     function Commit: IADRConnection;
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
+  end;
+
+  IADRConnectionEvents = interface
+    ['{18F33391-6D45-42A0-9AD7-DD4D54688402}']
+    function OnHandleException(AValue: TADRHandleException): IADRConnectionEvents; overload;
+    function OnHandleException: TADRHandleException; overload;
+
+    function OnLog(AValue: TADROnLog): IADRConnectionEvents; overload;
+    function OnLog: TADROnLog; overload;
+
+    function HandleException(AException: Exception): Boolean;
+    function Log(ALog: string): IADRConnectionEvents; overload;
+    function Log(ALog: string; const AArgs: array of const): IADRConnectionEvents; overload;
   end;
 
   IADRConnectionParams = interface

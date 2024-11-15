@@ -4,6 +4,7 @@ interface
 
 uses
   ADRConn.Model.Interfaces,
+  ADRConn.Model.Events,
   ADRConn.Model.Params,
   System.Classes,
   System.SysUtils,
@@ -17,12 +18,15 @@ type
   private
     FConnection: TZConnection;
     FParams: IADRConnectionParams;
+    FEvents: IADRConnectionEvents;
 
     function  GetProtocol: string;
     procedure Setup;
+    function TryHandleException(AException: Exception): Boolean;
   protected
     function Connection: TCustomConnection;
     function Component: TComponent;
+    function Events: IADRConnectionEvents;
 
     function Params: IADRConnectionParams;
 
@@ -57,10 +61,18 @@ end;
 function TADRConnModelZeosConnection.Connect: IADRConnection;
 begin
   Result := Self;
-  if not FConnection.Connected then
-  begin
-    Setup;
-    FConnection.Connected := True;
+  try
+    if not FConnection.Connected then
+    begin
+      Setup;
+      FConnection.Connected := True;
+    end;
+  except
+    on E: Exception do
+    begin
+      if not TryHandleException(E) then
+        raise;
+    end;
   end;
 end;
 
@@ -91,6 +103,13 @@ function TADRConnModelZeosConnection.Disconnect: IADRConnection;
 begin
   Result := Self;
   FConnection.Connected := False;
+end;
+
+function TADRConnModelZeosConnection.Events: IADRConnectionEvents;
+begin
+  if not Assigned(FEvents) then
+    FEvents := TADRConnConnectionModelEvents.New;
+  Result := FEvents;
 end;
 
 function TADRConnModelZeosConnection.GetProtocol: string;
@@ -150,6 +169,11 @@ function TADRConnModelZeosConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;
+end;
+
+function TADRConnModelZeosConnection.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := Events.HandleException(AException);
 end;
 
 end.

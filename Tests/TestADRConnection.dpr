@@ -30,16 +30,13 @@ uses
   ADRConn.Model.PgDAC.Connection.Test in 'Source\ADRConn.Model.PgDAC.Connection.Test.pas',
   ADRConn.Model.PgDAC.Query in '..\Source\ADRConn.Model.PgDAC.Query.pas',
   ADRConn.Model.PgDAC.Query.Test in 'Source\ADRConn.Model.PgDAC.Query.Test.pas',
-  ADRConn.Model.UniDAC.Connection in '..\Source\ADRConn.Model.UniDAC.Connection.pas',
-  ADRConn.Model.UniDAC.Connection.Test in 'Source\ADRConn.Model.UniDAC.Connection.Test.pas',
-  ADRConn.Model.UniDAC.Query in '..\Source\ADRConn.Model.UniDAC.Query.pas',
-  ADRConn.Model.UniDAC.Query.Test in 'Source\ADRConn.Model.UniDAC.Query.Test.pas',
   ADRConn.Model.Zeos.Connection in '..\Source\ADRConn.Model.Zeos.Connection.pas',
   ADRConn.Model.Zeos.Connection.Test in 'Source\ADRConn.Model.Zeos.Connection.Test.pas',
   ADRConn.Model.Zeos.Query in '..\Source\ADRConn.Model.Zeos.Query.pas',
   ADRConn.Model.Zeos.Query.Test in 'Source\ADRConn.Model.Zeos.Query.Test.pas',
   PoolManager in '..\Source\PoolManager.pas',
-  ADRConnection.Pool in '..\Source\ADRConnection.Pool.pas';
+  ADRConnection.Pool in '..\Source\ADRConnection.Pool.pas',
+  ADRConn.Model.Events in '..\Source\ADRConn.Model.Events.pas';
 
 begin
   IsConsole := False;
