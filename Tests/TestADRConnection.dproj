@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{4C9D40CD-6B96-44A0-8688-05A22A09C05C}</ProjectGuid>
-        <ProjectVersion>20.1</ProjectVersion>
+        <ProjectVersion>20.2</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <MainSource>TestADRConnection.dpr</MainSource>
         <Base>True</Base>
@@ -65,7 +65,7 @@
         <VerInfo_Locale>1046</VerInfo_Locale>
         <SanitizedProjectName>TestADRConnection</SanitizedProjectName>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_Define>TESTINSIGHT;ADRCONN_FIREDAC;ADRCONN_PGDAC;ADRCONN_UNIDAC;ADRCONN_ZEOS;$(DCC_Define)</DCC_Define>
+        <DCC_Define>TESTINSIGHT;ADRCONN_FIREDAC;ADRCONN_PGDAC;ADRCONN_ZEOS;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
@@ -131,18 +131,16 @@
         <DCCReference Include="Source\ADRConn.Test.MySQL.Connection.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.PgDAC.Connection.pas"/>
         <DCCReference Include="Source\ADRConn.Model.PgDAC.Connection.Test.pas"/>
-        <DCCReference Include="..\Source\ADRConn.Model.PgDAC.Query.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.PGDac.Query.pas"/>
         <DCCReference Include="Source\ADRConn.Model.PgDAC.Query.Test.pas"/>
-        <DCCReference Include="..\Source\ADRConn.Model.UniDAC.Connection.pas"/>
-        <DCCReference Include="Source\ADRConn.Model.UniDAC.Connection.Test.pas"/>
-        <DCCReference Include="..\Source\ADRConn.Model.UniDAC.Query.pas"/>
-        <DCCReference Include="Source\ADRConn.Model.UniDAC.Query.Test.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.Zeos.Connection.pas"/>
         <DCCReference Include="Source\ADRConn.Model.Zeos.Connection.Test.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.Zeos.Query.pas"/>
         <DCCReference Include="Source\ADRConn.Model.Zeos.Query.Test.pas"/>
         <DCCReference Include="..\Source\PoolManager.pas"/>
         <DCCReference Include="..\Source\ADRConnection.Pool.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.Events.pas"/>
+        <DCCReference Include="..\Source\ADRConnection.Pool.Firedac.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -166,10 +164,9 @@
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k290.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp290.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\workspace\Delphi\Frameworks\ADRFrameworks\ADRCompo\Source\ADRIFood\Source\Source_23_Win32\pkgADRIFood.bpl">File C:\workspace\Delphi\Frameworks\ADRFrameworks\ADRCompo\Source\ADRIFood\Source\Source_23_Win32\pkgADRIFood.bpl not found</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
-            <Deployment Version="4">
+            <Deployment Version="5">
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libPCRE.dylib" Class="DependencyModule"/>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
@@ -202,16 +199,6 @@
                         <Operation>0</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="AndroidClasses">
-                    <Platform Name="Android">
-                        <RemoteDir>classes</RemoteDir>
-                        <Operation>64</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>classes</RemoteDir>
-                        <Operation>64</Operation>
-                    </Platform>
-                </DeployClass>
                 <DeployClass Name="AndroidFileProvider">
                     <Platform Name="Android">
                         <RemoteDir>res\xml</RemoteDir>
@@ -219,12 +206,6 @@
                     </Platform>
                     <Platform Name="Android64">
                         <RemoteDir>res\xml</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="AndroidGDBServer">
-                    <Platform Name="Android">
-                        <RemoteDir>library\lib\armeabi-v7a</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>

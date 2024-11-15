@@ -4,6 +4,7 @@ interface
 
 uses
   ADRConn.Model.Interfaces,
+  ADRConn.Model.Events,
   ADRConn.Model.Params,
   System.Classes,
   System.SysUtils,
@@ -16,10 +17,13 @@ type
   TADRConnModelPgDACConnection = class(TInterfacedObject, IADRConnection)
   private
     FConnection: TPgConnection;
+    FEvents: IADRConnectionEvents;
     FParams: IADRConnectionParams;
 
     procedure Setup;
+    function TryHandleException(AException: Exception): Boolean;
   protected
+    function Events: IADRConnectionEvents;
     function Connection: TCustomConnection;
     function Component: TComponent;
 
@@ -56,10 +60,18 @@ end;
 function TADRConnModelPgDACConnection.Connect: IADRConnection;
 begin
   Result := Self;
-  if not FConnection.Connected then
-  begin
-    Setup;
-    FConnection.Connected := True;
+  try
+    if not FConnection.Connected then
+    begin
+      Setup;
+      FConnection.Connected := True;
+    end;
+  except
+    on E: Exception do
+    begin
+      if not TryHandleException(E) then
+        raise;
+    end;
   end;
 end;
 
@@ -89,6 +101,13 @@ function TADRConnModelPgDACConnection.Disconnect: IADRConnection;
 begin
   Result := Self;
   FConnection.Connected := False;
+end;
+
+function TADRConnModelPgDACConnection.Events: IADRConnectionEvents;
+begin
+  if not Assigned(FEvents) then
+    FEvents := TADRConnConnectionModelEvents.New;
+  Result := FEvents;
 end;
 
 function TADRConnModelPgDACConnection.InTransaction: Boolean;
@@ -137,6 +156,11 @@ function TADRConnModelPgDACConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;
+end;
+
+function TADRConnModelPgDACConnection.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := Events.HandleException(AException);
 end;
 
 end.

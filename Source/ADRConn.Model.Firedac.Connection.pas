@@ -4,6 +4,7 @@ interface
 
 uses
   ADRConn.Model.Interfaces,
+  ADRConn.Model.Events,
   ADRConn.Model.Params,
   ADRConn.Model.Firedac.Driver,
   Data.DB,
@@ -26,6 +27,7 @@ uses
 type
   TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
   private
+    FEvents: IADRConnectionEvents;
     FConnection: TFDConnection;
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
     FCursor: TFDGUIxWaitCursor;
@@ -36,7 +38,9 @@ type
     procedure Setup;
     procedure CreateDriver;
     function GetDriverId: string;
+    function TryHandleException(AException: Exception): Boolean;
   protected
+    function Events: IADRConnectionEvents;
     function Connection: TCustomConnection;
     function Component: TComponent;
 
@@ -73,10 +77,16 @@ end;
 function TADRConnModelFiredacConnection.Connect: IADRConnection;
 begin
   Result := Self;
-  if not FConnection.Connected then
-  begin
-    Setup;
-    FConnection.Connected := True;
+  try
+    if not FConnection.Connected then
+    begin
+      Setup;
+      FConnection.Connected := True;
+    end;
+  except
+    on E: Exception do
+      if not TryHandleException(E) then
+        raise;
   end;
 end;
 
@@ -120,6 +130,13 @@ function TADRConnModelFiredacConnection.Disconnect: IADRConnection;
 begin
   Result := Self;
   FConnection.Connected := False;
+end;
+
+function TADRConnModelFiredacConnection.Events: IADRConnectionEvents;
+begin
+  if not Assigned(FEvents) then
+    FEvents := TADRConnConnectionModelEvents.New;
+  Result := FEvents;
 end;
 
 function TADRConnModelFiredacConnection.GetDriverId: string;
@@ -187,6 +204,11 @@ function TADRConnModelFiredacConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;
+end;
+
+function TADRConnModelFiredacConnection.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := Events.HandleException(AException);
 end;
 
 end.
