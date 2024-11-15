@@ -188,6 +188,7 @@ begin
   FConnection.Params.Values['Password'] := FParams.Password;
   FConnection.Params.Values['Server'] := FParams.Server;
   FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+  FConnection.Params.Values['ApplicationName'] := FParams.AppName;
   FConnection.TxOptions.AutoCommit := FParams.AutoCommit;
 
   LParams := FParams.ParamNames;

@@ -14,6 +14,10 @@ type
 
   IADRConnectionParams = interface;
 
+  IADRQueryParams = interface;
+
+  IADRQueryBatchParams = interface;
+
   IADRGenerator = interface;
 
   TADRHandleException = TFunc<Exception, Boolean>;
@@ -70,6 +74,8 @@ type
     function AutoCommit: Boolean; overload;
     function Driver(AValue: TADRDriverConn): IADRConnectionParams; overload;
     function Driver: TADRDriverConn; overload;
+    function AppName(AValue: string): IADRConnectionParams; overload;
+    function AppName: string; overload;
     function Settings: TFormatSettings;
 
     function AddParam(AName, AValue: string): IADRConnectionParams;
@@ -89,6 +95,9 @@ type
     function DataSet: TDataSet;
     function DataSource(AValue: TDataSource): IADRQuery;
 
+    function Params: IADRQueryParams;
+    function BatchParams: IADRQueryBatchParams;
+
     function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -99,7 +108,6 @@ type
     function ParamAsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob; ANullIfEmpty: Boolean = False): IADRQuery; overload;
 
-    function ArraySize(AValue: Integer): IADRQuery;
     function ParamAsInteger(AIndex: Integer; AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AIndex: Integer; AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsFloat(AIndex: Integer; AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -115,6 +123,89 @@ type
     function ExecSQLAndCommit: IADRQuery;
 
     function Generator: IADRGenerator;
+  end;
+
+  IADRQueryParam = interface
+    ['{E4A5F235-9646-4D26-936B-76CC3D7AF1AF}']
+    function Name(AValue: string): IADRQueryParam; overload;
+    function Name: string; overload;
+
+    function DataType(AValue: TFieldType): IADRQueryParam; overload;
+    function DataType: TFieldType; overload;
+
+    function NullIfEmpty(AValue: Boolean): IADRQueryParam; overload;
+    function NullIfEmpty: Boolean; overload;
+
+    function NotEmpty(AValue: Boolean): IADRQueryParam; overload;
+    function NotEmpty: Boolean; overload;
+
+    function AsInteger(AValue: Integer): IADRQueryParam; overload;
+    function AsInteger: Integer; overload;
+    function AsCurrency(AValue: Currency): IADRQueryParam; overload;
+    function AsCurrency: Currency; overload;
+    function AsFloat(AValue: Double): IADRQueryParam; overload;
+    function AsFloat: Double; overload;
+    function AsString(AValue: string): IADRQueryParam; overload;
+    function AsString: string; overload;
+    function AsDateTime(AValue: TDateTime): IADRQueryParam; overload;
+    function AsDateTime: TDateTime; overload;
+    function AsDate(AValue: TDate): IADRQueryParam; overload;
+    function AsDate: TDate; overload;
+    function AsTime(AValue: TTime): IADRQueryParam; overload;
+    function AsTime: TTime; overload;
+    function AsBoolean(AValue: Boolean): IADRQueryParam; overload;
+    function AsBoolean: Boolean; overload;
+    function AsStream(AValue: TStream): IADRQueryParam; overload;
+    function AsStream: TStream; overload;
+
+    function Build: TParam;
+    function Param: TParam;
+    function &End: IADRQueryParams;
+  end;
+
+  IADRQueryParams = interface
+    ['{FC0A2424-6065-4D20-AF72-FA64E3327068}']
+    function Params: TParams;
+    function Clear: IADRQueryParams;
+
+    function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob;
+      ANullIfEmpty: Boolean = False): IADRQueryParam;
+
+    function &End: IADRQuery;
+  end;
+
+  IADRQueryBatchParams = interface
+    ['{6B9CE513-1051-4818-857B-8C6298BCEDB3}']
+    function Params(AIndex: Integer): TParams;
+    function Clear: IADRQueryBatchParams;
+    function ArraySize: Integer;
+
+    function AsInteger(AIndex: Integer; AName: string; AValue: Integer;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsCurrency(AIndex: Integer; AName: string; AValue: Currency;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsFloat(AIndex: Integer; AName: string; AValue: Double;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsString(AIndex: Integer; AName: string; AValue: string;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsDateTime(AIndex: Integer; AName: string; AValue: TDateTime;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsDate(AIndex: Integer; AName: string; AValue: TDateTime;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsTime(AIndex: Integer; AName: string; AValue: TDateTime;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsBoolean(AIndex: Integer; AName: string; AValue: Boolean;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+
+    function &End: IADRQuery;
   end;
 
   IADRGenerator = interface
