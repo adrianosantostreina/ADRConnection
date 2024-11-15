@@ -22,7 +22,7 @@ type
     FConnection: IADRConnection;
     FQuery: TZQuery;
     FGenerator: IADRGenerator;
-    FBatchParams: TObjectList<TParams>;
+    FBatchParamsOLD: TObjectList<TParams>;
     FParams: TParams;
     FQueryParams: IADRQueryParams;
     FSQL: TStrings;
@@ -45,6 +45,7 @@ type
     function DataSource(AValue: TDataSource): IADRQuery;
 
     function Params: IADRQueryParams;
+    function BatchParams: IADRQueryBatchParams;
 
     function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -103,6 +104,11 @@ begin
   Result := Self;
 end;
 
+function TADRConnModelZeosQuery.BatchParams: IADRQueryBatchParams;
+begin
+
+end;
+
 function TADRConnModelZeosQuery.Clear: IADRQuery;
 begin
   Result := Self;
@@ -140,14 +146,14 @@ begin
   FQuery.Free;
   FSQL.Free;
   FParams.Free;
-  FreeAndNil(FBatchParams);
+  FreeAndNil(FBatchParamsOLD);
   inherited;
 end;
 
 function TADRConnModelZeosQuery.ExecSQL: IADRQuery;
 begin
   Result := Self;
-  if Assigned(FBatchParams) then
+  if Assigned(FBatchParamsOLD) then
     ExecSQLBatch
   else
     ExecSQLDefault;
@@ -183,11 +189,11 @@ begin
     try
       LQuery.Connection := TZConnection(FConnection.Component);
       LQuery.SQL.Text := FSQL.Text;
-      LQuery.Params.BatchDMLCount := FBatchParams.Count;
+      LQuery.Params.BatchDMLCount := FBatchParamsOLD.Count;
 
-      for I := 0 to Pred(FBatchParams.Count) do
+      for I := 0 to Pred(FBatchParamsOLD.Count) do
       begin
-        LParams := FBatchParams.Items[I];
+        LParams := FBatchParamsOLD.Items[I];
         for J := 0 to Pred(LParams.Count) do
         begin
           if LParams[J].IsNull then
@@ -250,7 +256,7 @@ begin
       end;
     end;
   finally
-    FreeAndNil(FBatchParams);
+    FreeAndNil(FBatchParamsOLD);
     FSQL.Clear;
     LQuery.Free;
   end;
@@ -298,11 +304,11 @@ end;
 
 function TADRConnModelZeosQuery.GetBatchParams(AIndex: Integer): TParams;
 begin
-  if not Assigned(FBatchParams) then
-    FBatchParams := TObjectList<TParams>.Create;
-  if FBatchParams.Count <= AIndex then
-    FBatchParams.Add(TParams.Create);
-  Result := FBatchParams.Last;
+  if not Assigned(FBatchParamsOLD) then
+    FBatchParamsOLD := TObjectList<TParams>.Create;
+  if FBatchParamsOLD.Count <= AIndex then
+    FBatchParamsOLD.Add(TParams.Create);
+  Result := FBatchParamsOLD.Last;
 end;
 
 class function TADRConnModelZeosQuery.New(AConnection: IADRConnection): IADRQuery;
@@ -603,7 +609,7 @@ end;
 function TADRConnModelZeosQuery.Params: IADRQueryParams;
 begin
   if not Assigned(FQueryParams) then
-    FQueryParams := TADRConnModelQueryParams.New(Self, FParams);
+    FQueryParams := TADRConnModelQueryParams.New(Self);
   Result := FQueryParams;
 end;
 

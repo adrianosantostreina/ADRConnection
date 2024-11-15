@@ -23,9 +23,10 @@ type
     FConnection: IADRConnection;
     FQuery: TPgQuery;
     FGenerator: IADRGenerator;
-    FBatchParams: TObjectList<TParams>;
+    FBatchParamsOLD: TObjectList<TParams>;
     FParams: TParams;
     FQueryParams: IADRQueryParams;
+    FBatchParams: IADRQueryBatchParams;
     FSQL: TStrings;
 
     function TryHandleException(AException: Exception): Boolean;
@@ -46,6 +47,7 @@ type
     function DataSource(AValue: TDataSource): IADRQuery;
 
     function Params: IADRQueryParams;
+    function BatchParams: IADRQueryBatchParams;
 
     function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -104,6 +106,13 @@ begin
   Result := Self;
 end;
 
+function TADRConnModelPgDACQuery.BatchParams: IADRQueryBatchParams;
+begin
+  if not Assigned(FBatchParams) then
+    FBatchParams := TADRConnModelQueryBatchParams.New(Self);
+  Result := FBatchParams;
+end;
+
 function TADRConnModelPgDACQuery.Clear: IADRQuery;
 begin
   Result := Self;
@@ -141,14 +150,14 @@ begin
   FQuery.Free;
   FSQL.Free;
   FParams.Free;
-  FreeAndNil(FBatchParams);
+  FreeAndNil(FBatchParamsOLD);
   inherited;
 end;
 
 function TADRConnModelPgDACQuery.ExecSQL: IADRQuery;
 begin
   Result := Self;
-  if Assigned(FBatchParams) then
+  if Assigned(FBatchParamsOLD) then
     ExecSQLBatch
   else
     ExecSQLDefault;
@@ -182,18 +191,18 @@ begin
     try
       LQuery.Connection := TPgConnection(FConnection.Component);
       LQuery.SQL.Text := FSQL.Text;
-      LQuery.Params.ValueCount := FBatchParams.Count;
+      LQuery.Params.ValueCount := FBatchParamsOLD.Count;
 
-      if FBatchParams.Count > 0 then
+      if FBatchParamsOLD.Count > 0 then
       begin
-        LParams := FBatchParams.Items[0];
+        LParams := FBatchParamsOLD.Items[0];
         for I := 0 to Pred(LParams.Count) do
           LQuery.Params[I].DataType := LParams[I].DataType;
       end;
 
-      for I := 0 to Pred(FBatchParams.Count) do
+      for I := 0 to Pred(FBatchParamsOLD.Count) do
       begin
-        LParams := FBatchParams.Items[I];
+        LParams := FBatchParamsOLD.Items[I];
         for J := 0 to Pred(LParams.Count) do
         begin
           if LParams[J].IsNull then
@@ -202,7 +211,7 @@ begin
             LQuery.ParamByName(LParams[J].Name)[I].Value := LParams[J].Value;
         end;
       end;
-      LQuery.Execute(FBatchParams.Count);
+      LQuery.Execute(FBatchParamsOLD.Count);
     except
       on E: Exception do
       begin
@@ -213,7 +222,7 @@ begin
       end;
     end;
   finally
-    FreeAndNil(FBatchParams);
+    FreeAndNil(FBatchParamsOLD);
     FSQL.Clear;
     LQuery.Free;
   end;
@@ -261,11 +270,11 @@ end;
 
 function TADRConnModelPgDACQuery.GetBatchParams(AIndex: Integer): TParams;
 begin
-  if not Assigned(FBatchParams) then
-    FBatchParams := TObjectList<TParams>.Create;
-  if FBatchParams.Count <= AIndex then
-    FBatchParams.Add(TParams.Create);
-  Result := FBatchParams.Last;
+  if not Assigned(FBatchParamsOLD) then
+    FBatchParamsOLD := TObjectList<TParams>.Create;
+  if FBatchParamsOLD.Count <= AIndex then
+    FBatchParamsOLD.Add(TParams.Create);
+  Result := FBatchParamsOLD.Last;
 end;
 
 class function TADRConnModelPgDACQuery.New(AConnection: IADRConnection): IADRQuery;
@@ -566,7 +575,7 @@ end;
 function TADRConnModelPgDACQuery.Params: IADRQueryParams;
 begin
   if not Assigned(FQueryParams) then
-    FQueryParams := TADRConnModelQueryParams.New(Self, FParams);
+    FQueryParams := TADRConnModelQueryParams.New(Self);
   Result := FQueryParams;
 end;
 

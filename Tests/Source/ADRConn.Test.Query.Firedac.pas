@@ -100,7 +100,7 @@ begin
 
   for I := 0 to 4 do
     FQuery.ParamAsString(I, 'description', 'InsertBatch')
-      .ParamAsInteger(I, 'intTest', 5)
+      .ParamAsInteger(I, 'intTest', 5 + I)
       .ParamAsDateTime(I, 'dateTest', IncDay(Now, I))
       .ParamAsCurrency(I, 'currTest', 5.5 + I)
       .ParamAsBoolean(I, 'boolTest', True);
@@ -112,6 +112,8 @@ begin
     .Open;
 
   Assert.AreEqual(5, FQuery.DataSet.RecordCount);
+
+  FQuery.SQL('delete from query_firedac').ExecSQL;
 end;
 
 procedure TADRConnTestQueryFiredac.Setup;

@@ -58,6 +58,7 @@ type
     function AsStream: TStream; overload;
 
     function Build: TParam;
+    function Param: TParam;
 
     function &End: IADRQueryParams;
   public
@@ -74,20 +75,58 @@ type
   protected
     function Get(AName: string): IADRQueryParam;
     function Clear: IADRQueryParams;
+    function Params: TParams;
     function &End: IADRQuery;
 
-    function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
-    function AsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob; ANullIfEmpty: Boolean = False): IADRQueryParam; overload;
+    function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob;
+      ANullIfEmpty: Boolean = False): IADRQueryParam;
   public
-    constructor Create(AQuery: IADRQuery; AParams: TParams);
-    class function New(AQuery: IADRQuery; AParams: TParams): IADRQueryParams;
+    constructor Create(AQuery: IADRQuery);
+    class function New(AQuery: IADRQuery): IADRQueryParams;
+    destructor Destroy; override;
+  end;
+
+  TADRConnModelQueryBatchParams = class(TInterfacedObject, IADRQueryBatchParams)
+  private
+    [Weak]
+    FQuery: IADRQuery;
+    FBatchParams: TObjectList<TParams>;
+    function GetBatchParams(AIndex: Integer): TParams;
+  protected
+    function Get(AIndex: Integer; AName: string): IADRQueryParam;
+    function Params(AIndex: Integer): TParams;
+    function Clear: IADRQueryBatchParams;
+    function ArraySize: Integer;
+
+    function AsInteger(AIndex: Integer; AName: string; AValue: Integer;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsCurrency(AIndex: Integer; AName: string; AValue: Currency;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsFloat(AIndex: Integer; AName: string; AValue: Double;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsString(AIndex: Integer; AName: string; AValue: string;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsDateTime(AIndex: Integer; AName: string; AValue: TDateTime;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsDate(AIndex: Integer; AName: string; AValue: TDateTime;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsTime(AIndex: Integer; AName: string; AValue: TDateTime;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsBoolean(AIndex: Integer; AName: string; AValue: Boolean;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+
+    function &End: IADRQuery;
+  public
+    constructor Create(AQuery: IADRQuery);
+    class function New(AQuery: IADRQuery): IADRQueryBatchParams;
     destructor Destroy; override;
   end;
 
@@ -188,6 +227,8 @@ begin
   Result := Self;
   FStream := AValue;
   FDataType := ftBlob;
+//  if ((Assigned(AValue) and (AValue.Size > 0)) or (not ANullIfEmpty)) then
+//    LParam.LoadFromStream(AValue, ADataType);
   Build;
 end;
 
@@ -295,6 +336,11 @@ begin
   Result := FNullIfEmpty;
 end;
 
+function TADRConnModelQueryParam.Param: TParam;
+begin
+  Result := FParam;
+end;
+
 { TADRConnModelQueryParams }
 
 function TADRConnModelQueryParams.&End: IADRQuery;
@@ -370,16 +416,17 @@ begin
   FQueryParams.Clear;
 end;
 
-constructor TADRConnModelQueryParams.Create(AQuery: IADRQuery; AParams: TParams);
+constructor TADRConnModelQueryParams.Create(AQuery: IADRQuery);
 begin
   FQuery := AQuery;
-  FParams := AParams;
+  FParams := TParams.Create(nil);
   FQueryParams := TDictionary<string, IADRQueryParam>.Create;
 end;
 
 destructor TADRConnModelQueryParams.Destroy;
 begin
   FQueryParams.Free;
+  FParams.Free;
   inherited;
 end;
 
@@ -395,9 +442,182 @@ begin
   end;
 end;
 
-class function TADRConnModelQueryParams.New(AQuery: IADRQuery; AParams: TParams): IADRQueryParams;
+class function TADRConnModelQueryParams.New(AQuery: IADRQuery): IADRQueryParams;
 begin
-  Result := Self.Create(AQuery, AParams);
+  Result := Self.Create(AQuery);
+end;
+
+function TADRConnModelQueryParams.Params: TParams;
+begin
+  Result := FParams;
+end;
+
+{ TADRConnModelQueryBatchParams }
+
+function TADRConnModelQueryBatchParams.ArraySize: Integer;
+begin
+  Result := 0;
+  if Assigned(FBatchParams) then
+    Result := FBatchParams.Count;
+end;
+
+function TADRConnModelQueryBatchParams.AsBoolean(AIndex: Integer; AName: string; AValue,
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftBoolean)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsBoolean(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.AsCurrency(AIndex: Integer; AName: string; AValue: Currency;
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftCurrency)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsCurrency(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.AsDate(AIndex: Integer; AName: string; AValue: TDateTime;
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftDate)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsDate(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.AsDateTime(AIndex: Integer; AName: string; AValue: TDateTime;
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftDateTime)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsDateTime(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.AsFloat(AIndex: Integer; AName: string; AValue: Double;
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftFloat)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsFloat(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.AsInteger(AIndex: Integer; AName: string; AValue: Integer;
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftInteger)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsInteger(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.AsString(AIndex: Integer; AName, AValue: string;
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftString)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsString(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.AsTime(AIndex: Integer; AName: string; AValue: TDateTime;
+  ANullIfEmpty: Boolean): IADRQueryBatchParams;
+var
+  LParams: TParams;
+begin
+  Result := Self;
+  LParams := GetBatchParams(AIndex);
+  TADRConnModelQueryParam.New(LParams, nil)
+    .Name(AName)
+    .DataType(ftTime)
+    .NullIfEmpty(ANullIfEmpty)
+    .AsTime(AValue);
+end;
+
+function TADRConnModelQueryBatchParams.Clear: IADRQueryBatchParams;
+begin
+  FreeAndNil(FBatchParams);
+  FBatchParams := TObjectList<TParams>.Create;
+end;
+
+constructor TADRConnModelQueryBatchParams.Create(AQuery: IADRQuery);
+begin
+  FQuery := AQuery;
+  FBatchParams := TObjectList<TParams>.Create;
+end;
+
+destructor TADRConnModelQueryBatchParams.Destroy;
+begin
+  FBatchParams.Free;
+  inherited;
+end;
+
+function TADRConnModelQueryBatchParams.&End: IADRQuery;
+begin
+  Result := FQuery;
+end;
+
+function TADRConnModelQueryBatchParams.Get(AIndex: Integer; AName: string): IADRQueryParam;
+begin
+
+end;
+
+function TADRConnModelQueryBatchParams.GetBatchParams(AIndex: Integer): TParams;
+begin
+  if not Assigned(FBatchParams) then
+    FBatchParams := TObjectList<TParams>.Create;
+  if FBatchParams.Count <= AIndex then
+    FBatchParams.Add(TParams.Create);
+  Result := FBatchParams.Items[AIndex];
+end;
+
+class function TADRConnModelQueryBatchParams.New(AQuery: IADRQuery): IADRQueryBatchParams;
+begin
+  Result := Self.Create(AQuery);
+end;
+
+function TADRConnModelQueryBatchParams.Params(AIndex: Integer): TParams;
+begin
+  Result := GetBatchParams(AIndex);
 end;
 
 end.
