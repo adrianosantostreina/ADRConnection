@@ -142,6 +142,7 @@
         <DCCReference Include="..\Source\ADRConn.Model.Events.pas"/>
         <DCCReference Include="..\Source\ADRConnection.Pool.Firedac.pas"/>
         <DCCReference Include="..\Source\ADRConn.Model.QueryParam.pas"/>
+        <DCCReference Include="..\Source\ADRConn.Model.QueryParam.Validator.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

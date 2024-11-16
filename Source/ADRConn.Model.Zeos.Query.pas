@@ -240,6 +240,7 @@ var
   LQuery: TZQuery;
   LParams: TParams;
 begin
+  FQueryParams.ValidateParameters;
   LQuery := TZQuery.Create(nil);
   try
     try

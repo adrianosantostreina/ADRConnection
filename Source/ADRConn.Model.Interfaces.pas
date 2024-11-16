@@ -139,6 +139,20 @@ type
     function NotEmpty(AValue: Boolean): IADRQueryParam; overload;
     function NotEmpty: Boolean; overload;
 
+    function MinLength(AValue: Integer): IADRQueryParam; overload;
+    function MinLength: Integer; overload;
+
+    function MaxLength(AValue: Integer): IADRQueryParam; overload;
+    function MaxLength: Integer; overload;
+
+    function MinValue(AValue: Double): IADRQueryParam; overload;
+    function MinValue: Double; overload;
+
+    function MaxValue(AValue: Double): IADRQueryParam; overload;
+    function MaxValue: Double; overload;
+
+    procedure Validate;
+
     function AsInteger(AValue: Integer): IADRQueryParam; overload;
     function AsInteger: Integer; overload;
     function AsCurrency(AValue: Currency): IADRQueryParam; overload;
@@ -167,6 +181,7 @@ type
     ['{FC0A2424-6065-4D20-AF72-FA64E3327068}']
     function Params: TParams;
     function Clear: IADRQueryParams;
+    procedure ValidateParameters;
 
     function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQueryParam;
@@ -206,6 +221,11 @@ type
       ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
 
     function &End: IADRQuery;
+  end;
+
+  IADRQueryParamValidator = interface
+    ['{54D236DA-8D30-457F-AD5D-9AB7A086F560}']
+    procedure Validate;
   end;
 
   IADRGenerator = interface

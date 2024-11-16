@@ -195,6 +195,7 @@ var
   LQuery: TFDQuery;
   LParams: TParams;
 begin
+  FQueryParams.ValidateParameters;
   LQuery := TFDQuery.Create(nil);
   try
     try

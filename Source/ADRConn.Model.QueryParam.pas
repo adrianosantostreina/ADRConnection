@@ -8,7 +8,8 @@ uses
   System.Generics.Collections,
   System.Variants,
   System.Classes,
-  ADRConn.Model.Interfaces;
+  ADRConn.Model.Interfaces,
+  ADRConn.Model.QueryParam.Validator;
 
 type
   TADRConnModelQueryParam = class(TInterfacedObject, IADRQueryParam)
@@ -23,6 +24,10 @@ type
     FNullIfEmpty: Boolean;
     FStream: TStream;
     FValue: Variant;
+    FMaxLength: Integer;
+    FMinLength: Integer;
+    FMinValue: Double;
+    FMaxValue: Double;
 
     function IsEmptyValue: Boolean;
   protected
@@ -37,6 +42,20 @@ type
 
     function NullIfEmpty(AValue: Boolean): IADRQueryParam; overload;
     function NullIfEmpty: Boolean; overload;
+
+    function MinLength(AValue: Integer): IADRQueryParam; overload;
+    function MinLength: Integer; overload;
+
+    function MaxLength(AValue: Integer): IADRQueryParam; overload;
+    function MaxLength: Integer; overload;
+
+    function MinValue(AValue: Double): IADRQueryParam; overload;
+    function MinValue: Double; overload;
+
+    function MaxValue(AValue: Double): IADRQueryParam; overload;
+    function MaxValue: Double; overload;
+
+    procedure Validate;
 
     function AsInteger(AValue: Integer): IADRQueryParam; overload;
     function AsInteger: Integer; overload;
@@ -76,6 +95,7 @@ type
     function Get(AName: string): IADRQueryParam;
     function Clear: IADRQueryParams;
     function Params: TParams;
+    procedure ValidateParameters;
     function &End: IADRQuery;
 
     function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
@@ -283,6 +303,50 @@ begin
   Result := VarIsEmpty(FValue);
 end;
 
+function TADRConnModelQueryParam.MaxLength(AValue: Integer): IADRQueryParam;
+begin
+  Result := Self;
+  FMaxLength := AValue;
+end;
+
+function TADRConnModelQueryParam.MaxLength: Integer;
+begin
+  Result := FMaxLength;
+end;
+
+function TADRConnModelQueryParam.MaxValue(AValue: Double): IADRQueryParam;
+begin
+  Result := Self;
+  FMaxValue := AValue;
+end;
+
+function TADRConnModelQueryParam.MaxValue: Double;
+begin
+  Result := FMaxValue;
+end;
+
+function TADRConnModelQueryParam.MinLength(AValue: Integer): IADRQueryParam;
+begin
+  Result := Self;
+  FMinLength := AValue;
+end;
+
+function TADRConnModelQueryParam.MinLength: Integer;
+begin
+  Result := FMinLength;
+end;
+
+function TADRConnModelQueryParam.MinValue(AValue: Double): IADRQueryParam;
+begin
+  Result := Self;
+  FMinValue := AValue;
+end;
+
+function TADRConnModelQueryParam.MinValue: Double;
+begin
+  Result := FMinValue;
+end;
+
 function TADRConnModelQueryParam.DataType(AValue: TFieldType): IADRQueryParam;
 begin
   Result := Self;
@@ -338,6 +402,14 @@ end;
 function TADRConnModelQueryParam.Param: TParam;
 begin
   Result := FParam;
+end;
+
+procedure TADRConnModelQueryParam.Validate;
+var
+  LValidator: IADRQueryParamValidator;
+begin
+  LValidator := TADRConnModelQueryParamValidator.New(Self);
+  LValidator.Validate;
 end;
 
 { TADRConnModelQueryParams }
@@ -449,6 +521,18 @@ end;
 function TADRConnModelQueryParams.Params: TParams;
 begin
   Result := FParams;
+end;
+
+procedure TADRConnModelQueryParams.ValidateParameters;
+var
+  LParamName: string;
+  LParam: IADRQueryParam;
+begin
+  for LParamName in FQueryParams.Keys do
+  begin
+    LParam := FQueryParams.Items[LParamName];
+    LParam.Validate;
+  end;
 end;
 
 { TADRConnModelQueryBatchParams }

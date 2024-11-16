@@ -38,7 +38,8 @@ uses
   ADRConnection.Pool in '..\Source\ADRConnection.Pool.pas',
   ADRConn.Model.Events in '..\Source\ADRConn.Model.Events.pas',
   ADRConnection.Pool.Firedac in '..\Source\ADRConnection.Pool.Firedac.pas',
-  ADRConn.Model.QueryParam in '..\Source\ADRConn.Model.QueryParam.pas';
+  ADRConn.Model.QueryParam in '..\Source\ADRConn.Model.QueryParam.pas',
+  ADRConn.Model.QueryParam.Validator in '..\Source\ADRConn.Model.QueryParam.Validator.pas';
 
 begin
   IsConsole := False;

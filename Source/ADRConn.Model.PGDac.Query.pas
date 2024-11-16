@@ -203,6 +203,7 @@ var
   I: Integer;
   LParams: TParams;
 begin
+  FQueryParams.ValidateParameters;
   LQuery := TPgQuery.Create(nil);
   try
     try

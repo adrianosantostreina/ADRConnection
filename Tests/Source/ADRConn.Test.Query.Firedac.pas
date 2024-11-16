@@ -31,6 +31,21 @@ type
 
     [Test]
     procedure InsertBatch;
+
+    [Test]
+    procedure InsertValidatorNotEmpty;
+
+    [Test]
+    procedure InsertValidatorMinLength;
+
+    [Test]
+    procedure InsertValidatorMaxLength;
+
+    [Test]
+    procedure InsertValidatorMaxValue;
+
+    [Test]
+    procedure InsertValidatorMinValue;
   end;
 
 implementation
@@ -113,6 +128,116 @@ begin
   Assert.AreEqual(5, FQuery.DataSet.RecordCount);
 
   FQuery.SQL('delete from query_firedac').ExecSQL;
+end;
+
+procedure TADRConnTestQueryFiredac.InsertValidatorMaxLength;
+begin
+  FQuery.SQL('insert into query_firedac (')
+    .SQL('description, intTest, dateTest, currTest, boolTest)')
+    .SQL('values (')
+    .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)')
+    .Params
+      .AsString('description', 'abcd').MaxLength(3).&End
+      .AsInteger('intTest', 5).&End
+      .AsDateTime('dateTest', EncodeDate(2023, 6, 29)).&End
+      .AsCurrency('currTest', 5.5).&End
+      .AsBoolean('boolTest', True).&End;
+
+  Assert.WillRaiseWithMessage(
+    procedure
+    begin
+      FQuery.ExecSQL;
+    end,
+    Exception,
+    'Field description must have a maximum size of 3.');
+end;
+
+procedure TADRConnTestQueryFiredac.InsertValidatorMaxValue;
+begin
+  FQuery.SQL('insert into query_firedac (')
+    .SQL('description, intTest, dateTest, currTest, boolTest)')
+    .SQL('values (')
+    .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)')
+    .Params
+      .AsString('description', 'ab').&End
+      .AsInteger('intTest', 7).MaxValue(6).MinValue(2).&End
+      .AsDateTime('dateTest', EncodeDate(2023, 6, 29)).&End
+      .AsCurrency('currTest', 5.5).&End
+      .AsBoolean('boolTest', True).&End;
+
+  Assert.WillRaiseWithMessage(
+    procedure
+    begin
+      FQuery.ExecSQL;
+    end,
+    Exception,
+    'Field intTest must have a maximum value of 6.');
+end;
+
+procedure TADRConnTestQueryFiredac.InsertValidatorMinLength;
+begin
+  FQuery.SQL('insert into query_firedac (')
+    .SQL('description, intTest, dateTest, currTest, boolTest)')
+    .SQL('values (')
+    .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)')
+    .Params
+      .AsString('description', 'ab').MinLength(3).&End
+      .AsInteger('intTest', 5).&End
+      .AsDateTime('dateTest', EncodeDate(2023, 6, 29)).&End
+      .AsCurrency('currTest', 5.5).&End
+      .AsBoolean('boolTest', True).&End;
+
+  Assert.WillRaiseWithMessage(
+    procedure
+    begin
+      FQuery.ExecSQL;
+    end,
+    Exception,
+    'Field description must have a minimum size of 3.');
+end;
+
+procedure TADRConnTestQueryFiredac.InsertValidatorMinValue;
+begin
+  FQuery.SQL('insert into query_firedac (')
+    .SQL('description, intTest, dateTest, currTest, boolTest)')
+    .SQL('values (')
+    .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)')
+    .Params
+      .AsString('description', 'ab').&End
+      .AsInteger('intTest', 1).MaxValue(6).MinValue(2).&End
+      .AsDateTime('dateTest', EncodeDate(2023, 6, 29)).&End
+      .AsCurrency('currTest', 5.5).&End
+      .AsBoolean('boolTest', True).&End;
+
+  Assert.WillRaiseWithMessage(
+    procedure
+    begin
+      FQuery.ExecSQL;
+    end,
+    Exception,
+    'Field intTest must have a minimum value of 2.');
+end;
+
+procedure TADRConnTestQueryFiredac.InsertValidatorNotEmpty;
+begin
+  FQuery.SQL('insert into query_firedac (')
+    .SQL('description, intTest, dateTest, currTest, boolTest)')
+    .SQL('values (')
+    .SQL(':description, :intTest, :dateTest, :currTest, :boolTest)')
+    .Params
+      .AsString('description', '').NotEmpty(True).&End
+      .AsInteger('intTest', 5).&End
+      .AsDateTime('dateTest', EncodeDate(2023, 6, 29)).&End
+      .AsCurrency('currTest', 5.5).&End
+      .AsBoolean('boolTest', True).&End;
+
+  Assert.WillRaiseWithMessage(
+    procedure
+    begin
+      FQuery.ExecSQL;
+    end,
+    Exception,
+    'Field description must not be empty.');
 end;
 
 procedure TADRConnTestQueryFiredac.Setup;
