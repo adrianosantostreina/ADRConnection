@@ -260,7 +260,7 @@ uses
 {$ENDIF}
 {$IFDEF ADRCONN_ZEOS}
   ADRConn.Model.Zeos.Connection,
-//  ADRConn.Model.UniDAC.Query,
+  ADRConn.Model.Zeos.Query,
 {$ENDIF}
   ADRConn.Model.Factory;
 
