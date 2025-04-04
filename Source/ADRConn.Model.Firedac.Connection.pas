@@ -27,6 +27,7 @@ uses
 type
   TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
   private
+    FOwner: Boolean;
     FEvents: IADRConnectionEvents;
     FConnection: TFDConnection;
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
@@ -54,9 +55,11 @@ type
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
   public
-    constructor Create;
+    constructor Create; overload;
+    class function New: IADRConnection; overload;
+    constructor Create(AComponent: TComponent); overload;
+    class function New(AComponent: TComponent): IADRConnection; overload;
     destructor Destroy; override;
-    class function New: IADRConnection;
   end;
 
 implementation
@@ -80,7 +83,8 @@ begin
   try
     if not FConnection.Connected then
     begin
-      Setup;
+      if FOwner then
+        Setup;
       FConnection.Connected := True;
     end;
   except
@@ -102,11 +106,18 @@ end;
 
 constructor TADRConnModelFiredacConnection.Create;
 begin
+  FOwner := True;
   FConnection := TFDConnection.Create(nil);
   FParams := TADRConnModelParams.New(Self);
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
   FCursor := TFDGUIxWaitCursor.Create(nil);
 {$ENDIF}
+end;
+
+constructor TADRConnModelFiredacConnection.Create(AComponent: TComponent);
+begin
+  FConnection := TFDConnection(AComponent);
+  FOwner := False;
 end;
 
 procedure TADRConnModelFiredacConnection.CreateDriver;
@@ -118,11 +129,14 @@ end;
 
 destructor TADRConnModelFiredacConnection.Destroy;
 begin
-  FConnection.Free;
-  FDriver.Free;
+  if FOwner then
+  begin
+    FConnection.Free;
+    FDriver.Free;
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
-  FCursor.Free;
+    FCursor.Free;
 {$ENDIF}
+  end;
   inherited;
 end;
 
@@ -144,12 +158,18 @@ begin
   case FParams.Driver of
     adrFirebird:
       Result := 'FB';
+    adrMSSQL:
+      Result := 'MSSQL';
     adrMySql:
       Result := 'MySQL';
     adrSQLite:
       Result := 'SQLite';
     adrPostgres:
       Result := 'PG';
+    adrOracle:
+      Result := 'Ora';
+    adrMongoDB:
+      Result := 'Mongo';
   else
     raise Exception.CreateFmt('Driver Firedac not found for %s.', [FParams.Driver.toString]);
   end;
@@ -158,6 +178,11 @@ end;
 function TADRConnModelFiredacConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
+end;
+
+class function TADRConnModelFiredacConnection.New(AComponent: TComponent): IADRConnection;
+begin
+  Result := Self.Create(AComponent);
 end;
 
 class function TADRConnModelFiredacConnection.New: IADRConnection;

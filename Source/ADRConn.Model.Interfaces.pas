@@ -8,7 +8,8 @@ uses
   System.SysUtils;
 
 type
-  TADRDriverConn = (adrFirebird, adrPostgres, adrMySql, adrSQLite, adrMSSQL, adrOracle);
+  TADRDriverConn = (adrFirebird, adrPostgres, adrMySql, adrSQLite, adrMSSQL, adrOracle,
+    adrMongoDB);
 
   IADRConnectionEvents = interface;
 
@@ -161,6 +162,7 @@ type
     function AsFloat: Double; overload;
     function AsString(AValue: string): IADRQueryParam; overload;
     function AsString: string; overload;
+    function AsGuid(AValue: string): IADRQueryParam; overload;
     function AsDateTime(AValue: TDateTime): IADRQueryParam; overload;
     function AsDateTime: TDateTime; overload;
     function AsDate(AValue: TDate): IADRQueryParam; overload;
@@ -180,12 +182,14 @@ type
   IADRQueryParams = interface
     ['{FC0A2424-6065-4D20-AF72-FA64E3327068}']
     function Params: TParams;
+    function Build: TParams;
     function Clear: IADRQueryParams;
     procedure ValidateParameters;
 
     function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsGuid(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
@@ -240,7 +244,8 @@ type
     procedure FromString(AValue: string);
   end;
 
-function CreateConnection: IADRConnection;
+function CreateConnection: IADRConnection; overload;
+function CreateConnection(AComponent: TComponent): IADRConnection; overload;
 function CreateQuery(AConnection: IADRConnection): IADRQuery;
 
 implementation
@@ -272,6 +277,21 @@ function CreateConnection: IADRConnection;
 begin
 {$IFDEF ADRCONN_FIREDAC}
   Result := TADRConnModelFiredacConnection.New;
+{$ELSEIF Defined(ADRCONN_PGDAC)}
+  Result := TADRConnModelPgDACConnection.New;
+{$ELSEIF Defined(ADRCONN_UNIDAC)}
+  Result := TADRConnModelUniDACConnection.New;
+{$ELSEIF Defined(ADRCONN_ZEOS)}
+  Result := TADRConnModelZeosConnection.New;
+{$ELSE}
+  raise Exception.Create(DirectiveMessage);
+{$ENDIF}
+end;
+
+function CreateConnection(AComponent: TComponent): IADRConnection;
+begin
+{$IFDEF ADRCONN_FIREDAC}
+  Result := TADRConnModelFiredacConnection.New(AComponent);
 {$ELSEIF Defined(ADRCONN_PGDAC)}
   Result := TADRConnModelPgDACConnection.New;
 {$ELSEIF Defined(ADRCONN_UNIDAC)}
@@ -340,6 +360,12 @@ begin
     Self := adrMSSQL;
     Exit;
   end;
+
+  if LDriver.Equals('mongodb') then
+  begin
+    Self := adrMongoDB;
+    Exit;
+  end;
 end;
 
 function TADRDriverConnHelper.ToString: string;
@@ -357,6 +383,8 @@ begin
       Result := 'MSSQL';
     adrOracle:
       Result := 'Oracle';
+    adrMongoDB:
+      Result := 'MongoDB';
   end;
 end;
 

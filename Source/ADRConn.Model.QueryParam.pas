@@ -65,6 +65,7 @@ type
     function AsFloat: Double; overload;
     function AsString(AValue: string): IADRQueryParam; overload;
     function AsString: string; overload;
+    function AsGuid(AValue: string): IADRQueryParam; overload;
     function AsDateTime(AValue: TDateTime): IADRQueryParam; overload;
     function AsDateTime: TDateTime; overload;
     function AsDate(AValue: TDate): IADRQueryParam; overload;
@@ -96,11 +97,13 @@ type
     function Clear: IADRQueryParams;
     function Params: TParams;
     procedure ValidateParameters;
+    function Build: TParams;
     function &End: IADRQuery;
 
     function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsGuid(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
@@ -163,6 +166,7 @@ end;
 
 function TADRConnModelQueryParam.&End: IADRQueryParams;
 begin
+  Build;
   Result := FQueryParams;
 end;
 
@@ -223,6 +227,14 @@ begin
   Result := FValue;
 end;
 
+function TADRConnModelQueryParam.AsGuid(AValue: string): IADRQueryParam;
+begin
+  Result := Self;
+  FValue := AValue;
+  FDataType := ftGuid;
+  Build;
+end;
+
 function TADRConnModelQueryParam.AsInteger: Integer;
 begin
   Result := FValue;
@@ -246,8 +258,6 @@ begin
   Result := Self;
   FStream := AValue;
   FDataType := ftBlob;
-//  if ((Assigned(AValue) and (AValue.Size > 0)) or (not ANullIfEmpty)) then
-//    LParam.LoadFromStream(AValue, ADataType);
   Build;
 end;
 
@@ -277,12 +287,21 @@ begin
     FParam.Name := FName;
     FParam.ParamType := ptInput;
     FParam.DataType := FDataType;
+  end;
+  if FDataType = ftGuid then
+    FParam.AsGuid := StringToGUID(FValue)
+  else
+  if FDataType in [ftBlob] then
+  begin
+    if (Assigned(FStream)) and (FStream.Size > 0)then
+      FParam.LoadFromStream(FStream, FDataType);
+  end
+  else
     FParam.Value := FValue;
-    if IsEmptyValue and FNullIfEmpty then
-    begin
-      FParam.DataType := FDataType;
-      FParam.Clear;
-    end;
+  if IsEmptyValue and FNullIfEmpty then
+  begin
+    FParam.DataType := FDataType;
+    FParam.Clear;
   end;
   Result := FParam;
 end;
@@ -300,7 +319,27 @@ end;
 
 function TADRConnModelQueryParam.IsEmptyValue: Boolean;
 begin
-  Result := VarIsEmpty(FValue);
+  Result := False;
+  case FDataType of
+    ftString, ftFixedChar, ftWideString, ftGuid, ftFixedWideChar, ftWideMemo: Result := FValue = EmptyStr;
+    ftSmallint,
+    ftInteger,
+    ftSingle,
+    ftWord,
+    ftFloat,
+    ftExtended,
+    ftCurrency,
+    ftLongWord,
+    ftShortint,
+    ftBCD,
+    ftDate,
+    ftTimeStampOffset,
+    ftTime,
+    ftDateTime,
+    ftTimeStamp,
+    ftLargeint: Result := FValue = 0;
+    ftVariant: Result := VarIsEmpty(FValue);
+  end;
 end;
 
 function TADRConnModelQueryParam.MaxLength(AValue: Integer): IADRQueryParam;
@@ -453,6 +492,12 @@ begin
   Result.AsFloat(AValue).NullIfEmpty(ANullIfEmpty);
 end;
 
+function TADRConnModelQueryParams.AsGuid(AName, AValue: string; ANullIfEmpty: Boolean): IADRQueryParam;
+begin
+  Result := Get(AName);
+  Result.AsGuid(AValue).NullIfEmpty(ANullIfEmpty);
+end;
+
 function TADRConnModelQueryParams.AsInteger(AName: string; AValue: Integer;
   ANullIfEmpty: Boolean): IADRQueryParam;
 begin
@@ -478,6 +523,19 @@ function TADRConnModelQueryParams.AsTime(AName: string; AValue: TDateTime;
 begin
   Result := Get(AName);
   Result.AsTime(AValue).NullIfEmpty(ANullIfEmpty);
+end;
+
+function TADRConnModelQueryParams.Build: TParams;
+var
+  LParam: IADRQueryParam;
+  LKey: string;
+begin
+  for LKey in FQueryParams.Keys do
+  begin
+    LParam := FQueryParams.Items[LKey];
+    LParam.Build;
+  end;
+  Result := FParams;
 end;
 
 function TADRConnModelQueryParams.Clear: IADRQueryParams;
