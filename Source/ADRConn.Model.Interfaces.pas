@@ -293,11 +293,11 @@ begin
 {$IFDEF ADRCONN_FIREDAC}
   Result := TADRConnModelFiredacConnection.New(AComponent);
 {$ELSEIF Defined(ADRCONN_PGDAC)}
-  Result := TADRConnModelPgDACConnection.New;
+  Result := TADRConnModelPgDACConnection.New(AComponent);
 {$ELSEIF Defined(ADRCONN_UNIDAC)}
-  Result := TADRConnModelUniDACConnection.New;
+  Result := TADRConnModelUniDACConnection.New(AComponent);
 {$ELSEIF Defined(ADRCONN_ZEOS)}
-  Result := TADRConnModelZeosConnection.New;
+  Result := TADRConnModelZeosConnection.New(AComponent);
 {$ELSE}
   raise Exception.Create(DirectiveMessage);
 {$ENDIF}

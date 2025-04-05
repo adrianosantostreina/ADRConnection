@@ -26,8 +26,8 @@ uses
   ADRConn.Test.SQLite.Connection in 'Source\ADRConn.Test.SQLite.Connection.pas',
   ADRConn.Test.Query.Firedac in 'Source\ADRConn.Test.Query.Firedac.pas',
   ADRConn.Test.MySQL.Connection in 'Source\ADRConn.Test.MySQL.Connection.pas',
-  ADRConn.Model.PgDAC.Connection.Test in 'Source\ADRConn.Model.PGDac.Connection.Test.pas',
-  ADRConn.Model.PgDAC.Query.Test in 'Source\ADRConn.Model.PGDac.Query.Test.pas',
+  ADRConn.Model.PGDac.Connection.Test in 'Source\ADRConn.Model.PGDac.Connection.Test.pas',
+  ADRConn.Model.PGDac.Query.Test in 'Source\ADRConn.Model.PGDac.Query.Test.pas',
   ADRConn.Model.Zeos.Connection.Test in 'Source\ADRConn.Model.Zeos.Connection.Test.pas',
   ADRConn.Model.Zeos.Query.Test in 'Source\ADRConn.Model.Zeos.Query.Test.pas',
   PoolManager in '..\Source\PoolManager.pas',
@@ -35,7 +35,10 @@ uses
   ADRConn.Model.Events in '..\Source\ADRConn.Model.Events.pas',
   ADRConnection.Pool.Firedac in '..\Source\ADRConnection.Pool.Firedac.pas',
   ADRConn.Model.QueryParam in '..\Source\ADRConn.Model.QueryParam.pas',
-  ADRConn.Model.QueryParam.Validator in '..\Source\ADRConn.Model.QueryParam.Validator.pas';
+  ADRConn.Model.QueryParam.Validator in '..\Source\ADRConn.Model.QueryParam.Validator.pas',
+  ADRConn.Model.PGDac.Connection in '..\Source\ADRConn.Model.PGDac.Connection.pas',
+  ADRConn.Model.Zeos.Connection in '..\Source\ADRConn.Model.Zeos.Connection.pas',
+  ADRConn.Model.UniDAC.Connection in '..\Source\ADRConn.Model.UniDAC.Connection.pas';
 
 begin
   IsConsole := False;

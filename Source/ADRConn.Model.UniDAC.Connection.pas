@@ -24,6 +24,7 @@ uses
 type
   TADRConnModelUniDACConnection = class(TInterfacedObject, IADRConnection)
   private
+    FOwner: Boolean;
     FConnection: TUniConnection;
     FEvents: IADRConnectionEvents;
     FParams: IADRConnectionParams;
@@ -45,9 +46,11 @@ type
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
   public
-    constructor Create;
+    constructor Create; overload;
+    class function New: IADRConnection; overload;
+    constructor Create(AComponent: TComponent); overload;
+    class function New(AComponent: TComponent): IADRConnection; overload;
     destructor Destroy; override;
-    class function New: IADRConnection;
   end;
 
 implementation
@@ -71,7 +74,8 @@ begin
   try
     if not FConnection.Connected then
     begin
-      Setup;
+      if FOwner then
+        Setup;
       FConnection.Connected := True;
     end;
   except
@@ -91,15 +95,24 @@ begin
   Result := FConnection;
 end;
 
+constructor TADRConnModelUniDACConnection.Create(AComponent: TComponent);
+begin
+  FOwner := False;
+  FConnection := TUniConnection(AComponent);
+  FParams := TADRConnModelParams.New(Self);
+end;
+
 constructor TADRConnModelUniDACConnection.Create;
 begin
+  FOwner := True;
   FConnection := TUniConnection.Create(nil);
   FParams := TADRConnModelParams.New(Self);
 end;
 
 destructor TADRConnModelUniDACConnection.Destroy;
 begin
-  FConnection.Free;
+  if FOwner then
+    FConnection.Free;
   inherited;
 end;
 
@@ -119,6 +132,11 @@ end;
 function TADRConnModelUniDACConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
+end;
+
+class function TADRConnModelUniDACConnection.New(AComponent: TComponent): IADRConnection;
+begin
+  Result := Self.Create(AComponent);
 end;
 
 class function TADRConnModelUniDACConnection.New: IADRConnection;
@@ -163,6 +181,8 @@ begin
       FConnection.ProviderName := 'SQL Server';
     adrOracle:
       FConnection.ProviderName := 'Oracle';
+    adrMongoDB:
+      FConnection.ProviderName := 'MongoDB';
   end;
 {$ELSE}
   FConnection.ProviderName := 'SQLite';
@@ -184,7 +204,7 @@ end;
 
 function TADRConnModelUniDACConnection.TryHandleException(AException: Exception): Boolean;
 begin
-  Result := Events.TryHandleException(AException);
+  Result := Events.HandleException(AException);
 end;
 
 end.

@@ -16,6 +16,7 @@ uses
 type
   TADRConnModelPgDACConnection = class(TInterfacedObject, IADRConnection)
   private
+    FOwner: Boolean;
     FConnection: TPgConnection;
     FEvents: IADRConnectionEvents;
     FParams: IADRConnectionParams;
@@ -37,9 +38,11 @@ type
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
   public
-    constructor Create;
+    constructor Create; overload;
+    class function New: IADRConnection; overload;
+    constructor Create(AComponent: TComponent); overload;
+    class function New(AComponent: TComponent): IADRConnection; overload;
     destructor Destroy; override;
-    class function New: IADRConnection;
   end;
 
 implementation
@@ -63,7 +66,8 @@ begin
   try
     if not FConnection.Connected then
     begin
-      Setup;
+      if FOwner then
+        Setup;
       FConnection.Connected := True;
     end;
   except
@@ -85,15 +89,24 @@ begin
   Result := FConnection;
 end;
 
+constructor TADRConnModelPgDACConnection.Create(AComponent: TComponent);
+begin
+  FOwner := False;
+  FConnection := TPgConnection(AComponent);
+  FParams := TADRConnModelParams.New(Self);
+end;
+
 constructor TADRConnModelPgDACConnection.Create;
 begin
+  FOwner := True;
   FConnection := TPgConnection.Create(nil);
   FParams := TADRConnModelParams.New(Self);
 end;
 
 destructor TADRConnModelPgDACConnection.Destroy;
 begin
-  FConnection.Free;
+  if FOwner then
+    FConnection.Free;
   inherited;
 end;
 
@@ -113,6 +126,11 @@ end;
 function TADRConnModelPgDACConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
+end;
+
+class function TADRConnModelPgDACConnection.New(AComponent: TComponent): IADRConnection;
+begin
+  Result := Self.Create(AComponent);
 end;
 
 class function TADRConnModelPgDACConnection.New: IADRConnection;

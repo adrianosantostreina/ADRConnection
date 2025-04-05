@@ -16,6 +16,7 @@ uses
 type
   TADRConnModelZeosConnection = class(TInterfacedObject, IADRConnection)
   private
+    FOwner: Boolean;
     FConnection: TZConnection;
     FParams: IADRConnectionParams;
     FEvents: IADRConnectionEvents;
@@ -38,9 +39,11 @@ type
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
   public
-    constructor Create;
+    constructor Create; overload;
+    class function New: IADRConnection; overload;
+    constructor Create(AComponent: TComponent); overload;
+    class function New(AComponent: TComponent): IADRConnection; overload;
     destructor Destroy; override;
-    class function New: IADRConnection;
   end;
 
 implementation
@@ -64,7 +67,8 @@ begin
   try
     if not FConnection.Connected then
     begin
-      Setup;
+      if FOwner then
+        Setup;
       FConnection.Connected := True;
     end;
   except
@@ -86,16 +90,26 @@ begin
   raise ENotSupportedException.Create('Function not supported to Zeos Driver.');
 end;
 
+constructor TADRConnModelZeosConnection.Create(AComponent: TComponent);
+begin
+  FOwner := False;
+  FParams := TADRConnModelParams.New(Self);
+  FConnection := TZConnection(AComponent);
+end;
+
 constructor TADRConnModelZeosConnection.Create;
 begin
+  FOwner := True;
   FParams := TADRConnModelParams.New(Self);
   FConnection := TZConnection.Create(nil);
-  FConnection.Name := 'Conn';
+  FConnection.Name := 'Conn' + TGUID.NewGuid.ToString
+    .Replace('{', '').Replace('}', '').ToLower;
 end;
 
 destructor TADRConnModelZeosConnection.Destroy;
 begin
-  FConnection.Free;
+  if FOwner then
+    FConnection.Free;
   inherited;
 end;
 
@@ -121,6 +135,7 @@ begin
     adrMSSQL: Result := 'mssql';
     adrPostgres: Result := 'postgresql';
     adrFirebird: Result := 'firebird';
+    adrMongoDB: Result := 'mongodb';
   else
     raise ENotImplemented.CreateFmt('Not Implemented driver %s.', [FParams.Driver.ToString]);
   end;
@@ -129,6 +144,11 @@ end;
 function TADRConnModelZeosConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
+end;
+
+class function TADRConnModelZeosConnection.New(AComponent: TComponent): IADRConnection;
+begin
+  Result := Self.Create(AComponent);
 end;
 
 class function TADRConnModelZeosConnection.New: IADRConnection;

@@ -116,8 +116,9 @@ end;
 
 constructor TADRConnModelFiredacConnection.Create(AComponent: TComponent);
 begin
-  FConnection := TFDConnection(AComponent);
   FOwner := False;
+  FConnection := TFDConnection(AComponent);
+  FParams := TADRConnModelParams.New(Self);
 end;
 
 procedure TADRConnModelFiredacConnection.CreateDriver;
