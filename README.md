@@ -1,5 +1,11 @@
+<p align="left">
+  <a href="https://github.com/adrianosantostreina/ADRConnection/blob/main/img/ADRConnection_ComFundo_Branco_No_Circulo.png">
+    <img alt="ADRConnection" height="200" src="https://github.com/adrianosantostreina/ADRConnection/blob/main/img/ADRConnection_ComFundo_Branco_No_Circulo.png">
+  </a>  
+</p>
+
 # ADRConnection
-Database connection engine. Encapsulates multiple connection components into a single interface.
+Database connection abstraction. Encapsulates multiple connection components into a single interface.
 
 ## 🧬Available Components
 
