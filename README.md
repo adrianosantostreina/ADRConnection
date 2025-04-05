@@ -42,4 +42,15 @@ begin
 
   FConnection.Connect;    
 end.
+
+// Create a Query
+var
+  FQuery: IADRQuery;
+begin
+  FQuery := CreateQuery(FConnection);
+  FQuery.SQL('select id, name, document, phone')
+    .SQL('from person')
+    .Open;
+end;
+
 ```
