@@ -5,6 +5,7 @@ interface
 uses
   ADRConn.Model.Interfaces,
   ADRConn.Model.Params,
+  ADRConn.Model.Events,
   System.Classes,
   System.SysUtils,
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
@@ -23,13 +24,17 @@ uses
 type
   TADRConnModelUniDACConnection = class(TInterfacedObject, IADRConnection)
   private
+    FOwner: Boolean;
     FConnection: TUniConnection;
+    FEvents: IADRConnectionEvents;
     FParams: IADRConnectionParams;
 
     procedure Setup;
+    function TryHandleException(AException: Exception): Boolean;
   protected
     function Connection: TCustomConnection;
     function Component: TComponent;
+    function Events: IADRConnectionEvents;
 
     function Params: IADRConnectionParams;
 
@@ -41,9 +46,11 @@ type
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
   public
-    constructor Create;
+    constructor Create; overload;
+    class function New: IADRConnection; overload;
+    constructor Create(AComponent: TComponent); overload;
+    class function New(AComponent: TComponent): IADRConnection; overload;
     destructor Destroy; override;
-    class function New: IADRConnection;
   end;
 
 implementation
@@ -64,10 +71,17 @@ end;
 function TADRConnModelUniDACConnection.Connect: IADRConnection;
 begin
   Result := Self;
-  if not FConnection.Connected then
-  begin
-    Setup;
-    FConnection.Connected := True;
+  try
+    if not FConnection.Connected then
+    begin
+      if FOwner then
+        Setup;
+      FConnection.Connected := True;
+    end;
+  except
+    on E: Exception do
+      if not TryHandleException(E) then
+        raise;
   end;
 end;
 
@@ -81,15 +95,24 @@ begin
   Result := FConnection;
 end;
 
+constructor TADRConnModelUniDACConnection.Create(AComponent: TComponent);
+begin
+  FOwner := False;
+  FConnection := TUniConnection(AComponent);
+  FParams := TADRConnModelParams.New(Self);
+end;
+
 constructor TADRConnModelUniDACConnection.Create;
 begin
+  FOwner := True;
   FConnection := TUniConnection.Create(nil);
   FParams := TADRConnModelParams.New(Self);
 end;
 
 destructor TADRConnModelUniDACConnection.Destroy;
 begin
-  FConnection.Free;
+  if FOwner then
+    FConnection.Free;
   inherited;
 end;
 
@@ -99,9 +122,21 @@ begin
   FConnection.Connected := False;
 end;
 
+function TADRConnModelUniDACConnection.Events: IADRConnectionEvents;
+begin
+  if not Assigned(FEvents) then
+    FEvents := TADRConnConnectionModelEvents.New;
+  Result := FEvents;
+end;
+
 function TADRConnModelUniDACConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
+end;
+
+class function TADRConnModelUniDACConnection.New(AComponent: TComponent): IADRConnection;
+begin
+  Result := Self.Create(AComponent);
 end;
 
 class function TADRConnModelUniDACConnection.New: IADRConnection;
@@ -146,6 +181,8 @@ begin
       FConnection.ProviderName := 'SQL Server';
     adrOracle:
       FConnection.ProviderName := 'Oracle';
+    adrMongoDB:
+      FConnection.ProviderName := 'MongoDB';
   end;
 {$ELSE}
   FConnection.ProviderName := 'SQLite';
@@ -163,6 +200,11 @@ function TADRConnModelUniDACConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;
+end;
+
+function TADRConnModelUniDACConnection.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := Events.HandleException(AException);
 end;
 
 end.

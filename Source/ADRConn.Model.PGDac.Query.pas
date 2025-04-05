@@ -3,9 +3,6 @@ unit ADRConn.Model.PgDAC.Query;
 interface
 
 uses
-  ADRConn.Model.Interfaces,
-  ADRConn.Model.Generator,
-  ADRConn.Model.Generator.Postgres,
   Data.DB,
   System.Classes,
   System.SysUtils,
@@ -13,7 +10,11 @@ uses
   System.Generics.Collections,
   MemDS,
   DBAccess,
-  PgAccess;
+  PgAccess,
+  ADRConn.Model.Interfaces,
+  ADRConn.Model.Generator,
+  ADRConn.Model.Generator.Postgres,
+  ADRConn.Model.QueryParam;
 
 type
   TADRConnModelPgDACQuery = class(TInterfacedObject, IADRQuery)
@@ -22,17 +23,13 @@ type
     FConnection: IADRConnection;
     FQuery: TPgQuery;
     FGenerator: IADRGenerator;
-    FBatchParams: TObjectList<TParams>;
-    FParams: TParams;
+    FQueryParams: IADRQueryParams;
+    FBatchParams: IADRQueryBatchParams;
     FSQL: TStrings;
 
-    function GetBatchParams(AIndex: Integer): TParams;
+    function TryHandleException(AException: Exception): Boolean;
     procedure ExecSQLDefault;
     procedure ExecSQLBatch;
-    function AddParam(AName: string; AValue: Variant; AType: TFieldType;
-      ANullIfEmpty: Boolean = False): TParam; overload;
-    function AddParam(AParams: TParams; AName: string; AValue: Variant; AType: TFieldType;
-      ANullIfEmpty: Boolean = False): TParam; overload;
   protected
     function SQL(AValue: string): IADRQuery; overload;
     function SQL(AValue: string; const Args: array of const): IADRQuery; overload;
@@ -41,6 +38,9 @@ type
     function Component: TComponent;
     function DataSet: TDataSet;
     function DataSource(AValue: TDataSource): IADRQuery;
+
+    function Params: IADRQueryParams;
+    function BatchParams: IADRQueryBatchParams;
 
     function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -52,7 +52,6 @@ type
     function ParamAsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob; ANullIfEmpty: Boolean = False): IADRQuery; overload;
 
-    function ArraySize(AValue: Integer): IADRQuery;
     function ParamAsInteger(AIndex: Integer; AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsCurrency(AIndex: Integer; AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsFloat(AIndex: Integer; AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
@@ -78,25 +77,11 @@ implementation
 
 { TADRConnModelPgDACQuery }
 
-function TADRConnModelPgDACQuery.AddParam(AParams: TParams; AName: string;
-  AValue: Variant; AType: TFieldType; ANullIfEmpty: Boolean): TParam;
+function TADRConnModelPgDACQuery.BatchParams: IADRQueryBatchParams;
 begin
-  Result := AParams.AddParameter;
-  Result.Name := AName;
-  Result.DataType := AType;
-  Result.ParamType := ptInput;
-  Result.Value := AValue;
-end;
-
-function TADRConnModelPgDACQuery.AddParam(AName: string; AValue: Variant;
-  AType: TFieldType; ANullIfEmpty: Boolean): TParam;
-begin
-  Result := AddParam(FParams, AName, AValue, AType, ANullIfEmpty);
-end;
-
-function TADRConnModelPgDACQuery.ArraySize(AValue: Integer): IADRQuery;
-begin
-  Result := Self;
+  if not Assigned(FBatchParams) then
+    FBatchParams := TADRConnModelQueryBatchParams.New(Self);
+  Result := FBatchParams;
 end;
 
 function TADRConnModelPgDACQuery.Clear: IADRQuery;
@@ -115,8 +100,8 @@ begin
   FConnection := AConnection;
   FQuery := TPgQuery.Create(nil);
   FQuery.Connection := TPgConnection(FConnection.Connection);
+  FQueryParams := TADRConnModelQueryParams.New(Self);
   FSQL := TStringList.Create;
-  FParams := TParams.Create(nil);
 end;
 
 function TADRConnModelPgDACQuery.DataSet: TDataSet;
@@ -135,8 +120,6 @@ destructor TADRConnModelPgDACQuery.Destroy;
 begin
   FQuery.Free;
   FSQL.Free;
-  FParams.Free;
-  FreeAndNil(FBatchParams);
   inherited;
 end;
 
@@ -174,31 +157,41 @@ var
 begin
   LQuery := TPgQuery.Create(nil);
   try
-    LQuery.Connection := TPgConnection(FConnection.Component);
-    LQuery.SQL.Text := FSQL.Text;
-    LQuery.Params.ValueCount := FBatchParams.Count;
+    try
+      LQuery.Connection := TPgConnection(FConnection.Component);
+      LQuery.SQL.Text := FSQL.Text;
+      LQuery.Params.ValueCount := FBatchParams.ArraySize;
 
-    if FBatchParams.Count > 0 then
-    begin
-      LParams := FBatchParams.Items[0];
-      for I := 0 to Pred(LParams.Count) do
-        LQuery.Params[I].DataType := LParams[I].DataType;
-    end;
-
-    for I := 0 to Pred(FBatchParams.Count) do
-    begin
-      LParams := FBatchParams.Items[I];
-      for J := 0 to Pred(LParams.Count) do
+      if FBatchParams.ArraySize > 0 then
       begin
-        if LParams[J].IsNull then
-          LQuery.ParamByName(LParams[J].Name)[I].Clear
-        else
-          LQuery.ParamByName(LParams[J].Name)[I].Value := LParams[J].Value;
+        LParams := FBatchParams.Params(0);
+        for I := 0 to Pred(LParams.Count) do
+          LQuery.Params[I].DataType := LParams[I].DataType;
+      end;
+
+      for I := 0 to Pred(FBatchParams.ArraySize) do
+      begin
+        LParams := FBatchParams.Params(I);
+        for J := 0 to Pred(LParams.Count) do
+        begin
+          if LParams[J].IsNull then
+            LQuery.ParamByName(LParams[J].Name)[I].Clear
+          else
+            LQuery.ParamByName(LParams[J].Name)[I].Value := LParams[J].Value;
+        end;
+      end;
+      LQuery.Execute(FBatchParams.ArraySize);
+    except
+      on E: Exception do
+      begin
+        if not TryHandleException(E) then
+          raise;
+
+        ExecSQLBatch;
       end;
     end;
-    LQuery.Execute(FBatchParams.Count);
   finally
-    FreeAndNil(FBatchParams);
+    FBatchParams := nil;
     FSQL.Clear;
     LQuery.Free;
   end;
@@ -208,20 +201,33 @@ procedure TADRConnModelPgDACQuery.ExecSQLDefault;
 var
   LQuery: TPgQuery;
   I: Integer;
+  LParams: TParams;
 begin
+  FQueryParams.ValidateParameters;
   LQuery := TPgQuery.Create(nil);
   try
-    LQuery.Connection := TPgConnection(FConnection.Component);
-    LQuery.SQL.Text := FSQL.Text;
-    for I := 0 to Pred(FParams.Count) do
-    begin
-      LQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
-      LQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
-    end;
+    try
+      LQuery.Connection := TPgConnection(FConnection.Component);
+      LQuery.SQL.Text := FSQL.Text;
+      LParams := FQueryParams.Params;
+      for I := 0 to Pred(LParams.Count) do
+      begin
+        LQuery.ParamByName(LParams[I].Name).DataType := LParams[I].DataType;
+        LQuery.ParamByName(LParams[I].Name).Value := LParams[I].Value;
+      end;
 
-    LQuery.ExecSQL;
+      LQuery.ExecSQL;
+    except
+      on E: Exception do
+      begin
+        if not TryHandleException(E) then
+          raise;
+
+        ExecSQLDefault;
+      end;
+    end;
   finally
-    FParams.Clear;
+    FQueryParams.Clear;
     FSQL.Clear;
     LQuery.Free;
   end;
@@ -234,15 +240,6 @@ begin
   Result := FGenerator;
 end;
 
-function TADRConnModelPgDACQuery.GetBatchParams(AIndex: Integer): TParams;
-begin
-  if not Assigned(FBatchParams) then
-    FBatchParams := TObjectList<TParams>.Create;
-  if FBatchParams.Count <= AIndex then
-    FBatchParams.Add(TParams.Create);
-  Result := FBatchParams.Last;
-end;
-
 class function TADRConnModelPgDACQuery.New(AConnection: IADRConnection): IADRQuery;
 begin
   Result := Self.Create(AConnection);
@@ -251,6 +248,7 @@ end;
 function TADRConnModelPgDACQuery.Open: IADRQuery;
 var
   I: Integer;
+  LParams: TParams;
 begin
   Result := Self;
   if FQuery.Active then
@@ -258,282 +256,189 @@ begin
 
   FQuery.SQL.Text := FSQL.Text;
   try
-    for I := 0 to Pred(FParams.Count) do
-    begin
-      FQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
-      FQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
+    try
+      LParams := FQueryParams.Params;
+      for I := 0 to Pred(LParams.Count) do
+      begin
+        FQuery.ParamByName(LParams[I].Name).DataType := LParams[I].DataType;
+        FQuery.ParamByName(LParams[I].Name).Value := LParams[I].Value;
+      end;
+    except
+      on E: Exception do
+      begin
+        if not TryHandleException(E) then
+          raise;
+
+        Result := Open;
+      end;
     end;
     FQuery.Open;
   finally
     FSQL.Clear;
-    FParams.Clear;
+    FQueryParams.Clear;
   end;
 end;
 
 function TADRConnModelPgDACQuery.OpenDataSet: TDataSet;
 var
-  LQuery: TPgQuery;
   I: Integer;
+  LQuery: TPgQuery;
+  LParams: TParams;
 begin
   try
     LQuery := TPgQuery.Create(nil);
     try
       LQuery.Connection := TPgConnection(FConnection.Component);
       LQuery.SQL.Text := FSQL.Text;
-      for I := 0 to Pred(FParams.Count) do
+      LParams := FQueryParams.Params;
+      for I := 0 to Pred(LParams.Count) do
       begin
-        LQuery.ParamByName(FParams[I].Name).DataType := FParams[I].DataType;
-        LQuery.ParamByName(FParams[I].Name).Value := FParams[I].Value;
+        LQuery.ParamByName(LParams[I].Name).DataType := LParams[I].DataType;
+        LQuery.ParamByName(LParams[I].Name).Value := LParams[I].Value;
       end;
       LQuery.Open;
       Result := LQuery;
     except
-      LQuery.Free;
-      raise;
+      on E: Exception do
+      begin
+        LQuery.Free;
+        if not TryHandleException(E) then
+          raise;
+
+        Result := OpenDataSet;
+      end;
     end;
   finally
     FSQL.Clear;
-    FParams.Clear;
+    FQueryParams.Clear;
   end;
 end;
 
 function TADRConnModelPgDACQuery.ParamAsBoolean(AIndex: Integer;
   AName: string; AValue, ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  AddParam(LParams, AName, AValue, ftBoolean, ANullIfEmpty);
+  BatchParams.AsBoolean(AIndex, AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsBoolean(AName: string; AValue,
   ANullIfEmpty: Boolean): IADRQuery;
 begin
   Result := Self;
-  AddParam(AName, AValue, ftBoolean, ANullIfEmpty);
+  Params.AsBoolean(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsCurrency(AName: string;
   AValue: Currency; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, AValue, ftCurrency);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftCurrency;
-    LParam.Value := Null;
-  end;
+  Params.AsCurrency(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsCurrency(AIndex: Integer;
   AName: string; AValue: Currency; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
-  LParam: TParam;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  LParam := AddParam(LParams, AName, AValue, ftCurrency, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftCurrency;
-    LParam.Clear;
-  end
+  BatchParams.AsCurrency(AIndex, AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsDate(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
-  LParam: TParam;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  LParam := AddParam(LParams, AName, AValue, ftDate, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftDate;
-    LParam.Clear;
-  end
+  BatchParams.AsDate(AIndex, AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsDate(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, AValue, ftDate, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftDate;
-    LParam.Value := Null;
-  end;
+  Params.AsDate(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsDateTime(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, AValue, ftDateTime, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftDateTime;
-    LParam.Value := Null;
-  end;
+  Params.AsDateTime(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsDateTime(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
-  LParam: TParam;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  LParam := AddParam(LParams, AName, AValue, ftDateTime, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftDateTime;
-    LParam.Clear;
-  end
+  BatchParams.AsTime(AIndex, AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsFloat(AIndex: Integer;
   AName: string; AValue: Double; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
-  LParam: TParam;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  LParam := AddParam(LParams, AName, AValue, ftFloat, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftFloat;
-    LParam.Clear;
-  end
+  BatchParams.AsFloat(AIndex, AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsFloat(AName: string;
   AValue: Double; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, AValue, ftFloat, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftFloat;
-    LParam.Value := Null;
-  end;
+  Params.AsFloat(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsInteger(AIndex: Integer;
   AName: string; AValue: Integer; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
-  LParam: TParam;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  LParam := AddParam(LParams, AName, AValue, ftInteger, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftInteger;
-    LParam.Clear;
-  end
+  BatchParams.AsInteger(AIndex, AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsInteger(AName: string;
   AValue: Integer; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, AValue, ftInteger, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftInteger;
-    LParam.Value := Null;
-  end;
+  Params.AsInteger(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsString(AName, AValue: string;
   ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, AValue, ftString, ANullIfEmpty);
-  if (AValue = EmptyStr) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftString;
-    LParam.Value := Null;
-  end;
+  Params.AsString(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsStream(AName: string;
   AValue: TStream; ADataType: TFieldType;
   ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, null, ADataType, ANullIfEmpty);
-  if ((Assigned(AValue) and (AValue.Size > 0)) or (not ANullIfEmpty)) then
-    LParam.LoadFromStream(AValue, ADataType);
+  Params.AsStream(AName, AValue, ADataType, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsString(AIndex: Integer; AName,
   AValue: string; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
-  LParam: TParam;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  LParam := AddParam(LParams, AName, AValue, ftString, ANullIfEmpty);
-  if (AValue = EmptyStr) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftString;
-    LParam.Clear;
-  end
+  BatchParams.AsString(AIndex, AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.ParamAsTime(AIndex: Integer;
   AName: string; AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParams: TParams;
-  LParam: TParam;
 begin
   Result := Self;
-  LParams := GetBatchParams(AIndex);
-  LParam := AddParam(LParams, AName, AValue, ftTime, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftTime;
-    LParam.Clear;
-  end
+  BatchParams.AsTime(AIndex, AName, AValue, ANullIfEmpty);
+end;
+
+function TADRConnModelPgDACQuery.Params: IADRQueryParams;
+begin
+  if not Assigned(FQueryParams) then
+    FQueryParams := TADRConnModelQueryParams.New(Self);
+  Result := FQueryParams;
 end;
 
 function TADRConnModelPgDACQuery.ParamAsTime(AName: string;
   AValue: TDateTime; ANullIfEmpty: Boolean): IADRQuery;
-var
-  LParam: TParam;
 begin
   Result := Self;
-  LParam := AddParam(AName, AValue, ftTime, ANullIfEmpty);
-  if (AValue = 0) and (ANullIfEmpty) then
-  begin
-    LParam.DataType := ftTime;
-    LParam.Value := Null;
-  end;
+  Params.AsTime(AName, AValue, ANullIfEmpty);
 end;
 
 function TADRConnModelPgDACQuery.SQL(AValue: string): IADRQuery;
@@ -547,6 +452,11 @@ function TADRConnModelPgDACQuery.SQL(AValue: string;
 begin
   Result := Self;
   SQL(Format(AValue, Args));
+end;
+
+function TADRConnModelPgDACQuery.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := FConnection.Events.HandleException(AException);
 end;
 
 end.

@@ -4,6 +4,7 @@ interface
 
 uses
   ADRConn.Model.Interfaces,
+  ADRConn.Model.Events,
   ADRConn.Model.Params,
   System.Classes,
   System.SysUtils,
@@ -15,14 +16,18 @@ uses
 type
   TADRConnModelZeosConnection = class(TInterfacedObject, IADRConnection)
   private
+    FOwner: Boolean;
     FConnection: TZConnection;
     FParams: IADRConnectionParams;
+    FEvents: IADRConnectionEvents;
 
     function  GetProtocol: string;
     procedure Setup;
+    function TryHandleException(AException: Exception): Boolean;
   protected
     function Connection: TCustomConnection;
     function Component: TComponent;
+    function Events: IADRConnectionEvents;
 
     function Params: IADRConnectionParams;
 
@@ -34,9 +39,11 @@ type
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
   public
-    constructor Create;
+    constructor Create; overload;
+    class function New: IADRConnection; overload;
+    constructor Create(AComponent: TComponent); overload;
+    class function New(AComponent: TComponent): IADRConnection; overload;
     destructor Destroy; override;
-    class function New: IADRConnection;
   end;
 
 implementation
@@ -57,10 +64,19 @@ end;
 function TADRConnModelZeosConnection.Connect: IADRConnection;
 begin
   Result := Self;
-  if not FConnection.Connected then
-  begin
-    Setup;
-    FConnection.Connected := True;
+  try
+    if not FConnection.Connected then
+    begin
+      if FOwner then
+        Setup;
+      FConnection.Connected := True;
+    end;
+  except
+    on E: Exception do
+    begin
+      if not TryHandleException(E) then
+        raise;
+    end;
   end;
 end;
 
@@ -74,16 +90,26 @@ begin
   raise ENotSupportedException.Create('Function not supported to Zeos Driver.');
 end;
 
+constructor TADRConnModelZeosConnection.Create(AComponent: TComponent);
+begin
+  FOwner := False;
+  FParams := TADRConnModelParams.New(Self);
+  FConnection := TZConnection(AComponent);
+end;
+
 constructor TADRConnModelZeosConnection.Create;
 begin
+  FOwner := True;
   FParams := TADRConnModelParams.New(Self);
   FConnection := TZConnection.Create(nil);
-  FConnection.Name := 'Conn';
+  FConnection.Name := 'Conn' + TGUID.NewGuid.ToString
+    .Replace('{', '').Replace('}', '').ToLower;
 end;
 
 destructor TADRConnModelZeosConnection.Destroy;
 begin
-  FConnection.Free;
+  if FOwner then
+    FConnection.Free;
   inherited;
 end;
 
@@ -91,6 +117,13 @@ function TADRConnModelZeosConnection.Disconnect: IADRConnection;
 begin
   Result := Self;
   FConnection.Connected := False;
+end;
+
+function TADRConnModelZeosConnection.Events: IADRConnectionEvents;
+begin
+  if not Assigned(FEvents) then
+    FEvents := TADRConnConnectionModelEvents.New;
+  Result := FEvents;
 end;
 
 function TADRConnModelZeosConnection.GetProtocol: string;
@@ -102,6 +135,7 @@ begin
     adrMSSQL: Result := 'mssql';
     adrPostgres: Result := 'postgresql';
     adrFirebird: Result := 'firebird';
+    adrMongoDB: Result := 'mongodb';
   else
     raise ENotImplemented.CreateFmt('Not Implemented driver %s.', [FParams.Driver.ToString]);
   end;
@@ -110,6 +144,11 @@ end;
 function TADRConnModelZeosConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
+end;
+
+class function TADRConnModelZeosConnection.New(AComponent: TComponent): IADRConnection;
+begin
+  Result := Self.Create(AComponent);
 end;
 
 class function TADRConnModelZeosConnection.New: IADRConnection;
@@ -150,6 +189,11 @@ function TADRConnModelZeosConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;
+end;
+
+function TADRConnModelZeosConnection.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := Events.HandleException(AException);
 end;
 
 end.

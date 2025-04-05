@@ -4,6 +4,7 @@ interface
 
 uses
   ADRConn.Model.Interfaces,
+  ADRConn.Model.Events,
   ADRConn.Model.Params,
   ADRConn.Model.Firedac.Driver,
   Data.DB,
@@ -26,6 +27,8 @@ uses
 type
   TADRConnModelFiredacConnection = class(TInterfacedObject, IADRConnection)
   private
+    FOwner: Boolean;
+    FEvents: IADRConnectionEvents;
     FConnection: TFDConnection;
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
     FCursor: TFDGUIxWaitCursor;
@@ -36,7 +39,9 @@ type
     procedure Setup;
     procedure CreateDriver;
     function GetDriverId: string;
+    function TryHandleException(AException: Exception): Boolean;
   protected
+    function Events: IADRConnectionEvents;
     function Connection: TCustomConnection;
     function Component: TComponent;
 
@@ -50,9 +55,11 @@ type
     function Rollback: IADRConnection;
     function InTransaction: Boolean;
   public
-    constructor Create;
+    constructor Create; overload;
+    class function New: IADRConnection; overload;
+    constructor Create(AComponent: TComponent); overload;
+    class function New(AComponent: TComponent): IADRConnection; overload;
     destructor Destroy; override;
-    class function New: IADRConnection;
   end;
 
 implementation
@@ -73,10 +80,17 @@ end;
 function TADRConnModelFiredacConnection.Connect: IADRConnection;
 begin
   Result := Self;
-  if not FConnection.Connected then
-  begin
-    Setup;
-    FConnection.Connected := True;
+  try
+    if not FConnection.Connected then
+    begin
+      if FOwner then
+        Setup;
+      FConnection.Connected := True;
+    end;
+  except
+    on E: Exception do
+      if not TryHandleException(E) then
+        raise;
   end;
 end;
 
@@ -92,11 +106,19 @@ end;
 
 constructor TADRConnModelFiredacConnection.Create;
 begin
+  FOwner := True;
   FConnection := TFDConnection.Create(nil);
   FParams := TADRConnModelParams.New(Self);
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
   FCursor := TFDGUIxWaitCursor.Create(nil);
 {$ENDIF}
+end;
+
+constructor TADRConnModelFiredacConnection.Create(AComponent: TComponent);
+begin
+  FOwner := False;
+  FConnection := TFDConnection(AComponent);
+  FParams := TADRConnModelParams.New(Self);
 end;
 
 procedure TADRConnModelFiredacConnection.CreateDriver;
@@ -108,11 +130,14 @@ end;
 
 destructor TADRConnModelFiredacConnection.Destroy;
 begin
-  FConnection.Free;
-  FDriver.Free;
+  if FOwner then
+  begin
+    FConnection.Free;
+    FDriver.Free;
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
-  FCursor.Free;
+    FCursor.Free;
 {$ENDIF}
+  end;
   inherited;
 end;
 
@@ -122,17 +147,30 @@ begin
   FConnection.Connected := False;
 end;
 
+function TADRConnModelFiredacConnection.Events: IADRConnectionEvents;
+begin
+  if not Assigned(FEvents) then
+    FEvents := TADRConnConnectionModelEvents.New;
+  Result := FEvents;
+end;
+
 function TADRConnModelFiredacConnection.GetDriverId: string;
 begin
   case FParams.Driver of
     adrFirebird:
       Result := 'FB';
+    adrMSSQL:
+      Result := 'MSSQL';
     adrMySql:
       Result := 'MySQL';
     adrSQLite:
       Result := 'SQLite';
     adrPostgres:
       Result := 'PG';
+    adrOracle:
+      Result := 'Ora';
+    adrMongoDB:
+      Result := 'Mongo';
   else
     raise Exception.CreateFmt('Driver Firedac not found for %s.', [FParams.Driver.toString]);
   end;
@@ -141,6 +179,11 @@ end;
 function TADRConnModelFiredacConnection.InTransaction: Boolean;
 begin
   Result := FConnection.InTransaction;
+end;
+
+class function TADRConnModelFiredacConnection.New(AComponent: TComponent): IADRConnection;
+begin
+  Result := Self.Create(AComponent);
 end;
 
 class function TADRConnModelFiredacConnection.New: IADRConnection;
@@ -171,6 +214,7 @@ begin
   FConnection.Params.Values['Password'] := FParams.Password;
   FConnection.Params.Values['Server'] := FParams.Server;
   FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+  FConnection.Params.Values['ApplicationName'] := FParams.AppName;
   FConnection.TxOptions.AutoCommit := FParams.AutoCommit;
 
   LParams := FParams.ParamNames;
@@ -187,6 +231,11 @@ function TADRConnModelFiredacConnection.StartTransaction: IADRConnection;
 begin
   Result := Self;
   FConnection.StartTransaction;
+end;
+
+function TADRConnModelFiredacConnection.TryHandleException(AException: Exception): Boolean;
+begin
+  Result := Events.HandleException(AException);
 end;
 
 end.

@@ -10,6 +10,7 @@ uses
   FireDAC.Phys.MySQL,
   FireDAC.Phys.PG,
   {$IFNDEF COMMUNITY}
+  FireDAC.Phys.MongoDB,
   FireDAC.Phys.MSSQL,
   FireDAC.Phys.Oracle,
   {$ENDIF}
@@ -25,6 +26,7 @@ type
     class function GetPostgresDriver: TFDPhysDriverLink;
     class function GetMySQLDriver: TFDPhysDriverLink;
   {$IFNDEF COMMUNITY}
+    class function GetMongoDBDriver: TFDPhysDriverLink;
     class function GetMSSQLDriver: TFDPhysDriverLink;
     class function GetOracleDriver: TFDPhysDriverLink;
   {$ENDIF}
@@ -49,6 +51,8 @@ begin
     adrPostgres:
       Result := GetPostgresDriver;
   {$IFNDEF COMMUNITY}
+    adrMongoDB:
+      Result := GetMongoDBDriver;
     adrMSSQL:
       Result := GetMSSQLDriver;
     adrOracle:
@@ -84,6 +88,15 @@ begin
   Result := TFDPhysPgDriverLink.Create(nil);
   Result.VendorLib := '';
 end;
+{$ENDIF}
+
+{$IF (not Defined(ANDROID)) and (not Defined(IOS))}
+{$IFNDEF COMMUNITY}
+class function TADRConnModelFiredacDriver.GetMongoDBDriver: TFDPhysDriverLink;
+begin
+  Result := TFDPhysMongoDriverLink.Create(nil);
+end;
+{$ENDIF}
 {$ENDIF}
 
 {$IF (not Defined(ANDROID)) and (not Defined(IOS))}
