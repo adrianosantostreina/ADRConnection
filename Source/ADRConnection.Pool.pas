@@ -105,13 +105,15 @@ begin
   AInstanceOwner := True;
 {$IFDEF ADRCONN_FIREDAC}
   AInstance := TADRConnectionPoolItemFiredac.Create;
-  TFDConnection(AInstance.FConnection.Component).OnError :=
-    TADRConnectionPoolItemFiredac(AInstance).OnError;
 {$ELSE}
   AInstance := TADRConnectionPoolItem.Create;
 {$ENDIF}
   LInstance := AInstance;
   LInstance.FConnection := OnGetConnection;
+{$IFDEF ADRCONN_FIREDAC}
+  TFDConnection(AInstance.FConnection.Component).OnError :=
+    TADRConnectionPoolItemFiredac(AInstance).OnError;
+{$ENDIF}
   AInstance.FConnection.Events.OnHandleException(LInstance.DoHandleException);
 end;
 
