@@ -1,0 +1,14 @@
+{
+	"name": "CRUDBasicHorse",
+	"description": "",
+	"version": "1.0.0",
+	"homepage": "",
+	"mainsrc": "./src",
+	"projects": [],
+	"dependencies": {
+		"github.com/gabrielbaltazar/gbjson": "^1.1.2",
+		"github.com/hashload/horse": "^3.1.6",
+		"github.com/hashload/jhonson": "^1.1.9",
+		"github.com/viniciussanchez/dataset-serialize": "^v2.5.9"
+	}
+}
