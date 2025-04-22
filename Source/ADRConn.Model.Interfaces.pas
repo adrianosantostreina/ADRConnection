@@ -99,24 +99,26 @@ type
     function Params: IADRQueryParams;
     function BatchParams: IADRQueryBatchParams;
 
-    function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsLargeInt(AName: string; AValue: Largeint; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
 
-    function ParamAsInteger(AIndex: Integer; AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsCurrency(AIndex: Integer; AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsFloat(AIndex: Integer; AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsString(AIndex: Integer; AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsDateTime(AIndex: Integer; AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsDate(AIndex: Integer; AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
-    function ParamAsTime(AIndex: Integer; AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
     function ParamAsBoolean(AIndex: Integer; AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsCurrency(AIndex: Integer; AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsDate(AIndex: Integer; AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsDateTime(AIndex: Integer; AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsFloat(AIndex: Integer; AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsInteger(AIndex: Integer; AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsLargeInt(AIndex: Integer; AName: string; AValue: Largeint; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsString(AIndex: Integer; AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQuery; overload;
+    function ParamAsTime(AIndex: Integer; AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQuery; overload;
 
     function OpenDataSet: TDataSet;
     function Open: IADRQuery;
@@ -154,25 +156,27 @@ type
 
     procedure Validate;
 
-    function AsInteger(AValue: Integer): IADRQueryParam; overload;
-    function AsInteger: Integer; overload;
-    function AsCurrency(AValue: Currency): IADRQueryParam; overload;
-    function AsCurrency: Currency; overload;
-    function AsFloat(AValue: Double): IADRQueryParam; overload;
-    function AsFloat: Double; overload;
-    function AsString(AValue: string): IADRQueryParam; overload;
-    function AsString: string; overload;
-    function AsGuid(AValue: string): IADRQueryParam; overload;
-    function AsDateTime(AValue: TDateTime): IADRQueryParam; overload;
-    function AsDateTime: TDateTime; overload;
-    function AsDate(AValue: TDate): IADRQueryParam; overload;
-    function AsDate: TDate; overload;
-    function AsTime(AValue: TTime): IADRQueryParam; overload;
-    function AsTime: TTime; overload;
     function AsBoolean(AValue: Boolean): IADRQueryParam; overload;
     function AsBoolean: Boolean; overload;
+    function AsCurrency(AValue: Currency): IADRQueryParam; overload;
+    function AsCurrency: Currency; overload;
+    function AsDate(AValue: TDate): IADRQueryParam; overload;
+    function AsDate: TDate; overload;
+    function AsDateTime(AValue: TDateTime): IADRQueryParam; overload;
+    function AsDateTime: TDateTime; overload;
+    function AsFloat(AValue: Double): IADRQueryParam; overload;
+    function AsFloat: Double; overload;
+    function AsGuid(AValue: string): IADRQueryParam; overload;
+    function AsInteger(AValue: Integer): IADRQueryParam; overload;
+    function AsInteger: Integer; overload;
+    function AsLargeint(AValue: Largeint): IADRQueryParam; overload;
+    function AsLargeint: Largeint; overload;
     function AsStream(AValue: TStream): IADRQueryParam; overload;
     function AsStream: TStream; overload;
+    function AsString(AValue: string): IADRQueryParam; overload;
+    function AsString: string; overload;
+    function AsTime(AValue: TTime): IADRQueryParam; overload;
+    function AsTime: TTime; overload;
 
     function Build: TParam;
     function Param: TParam;
@@ -186,15 +190,16 @@ type
     function Clear: IADRQueryParams;
     procedure ValidateParameters;
 
-    function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsCurrency(AName: string; AValue: Currency; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsFloat(AName: string; AValue: Double; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsGuid(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsInteger(AName: string; AValue: Integer; ANullIfEmpty: Boolean = False): IADRQueryParam;
+    function AsLargeint(AName: string; AValue: Largeint; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsString(AName: string; AValue: string; ANullIfEmpty: Boolean = False): IADRQueryParam;
-    function AsDateTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
-    function AsDate(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsTime(AName: string; AValue: TDateTime; ANullIfEmpty: Boolean = False): IADRQueryParam;
-    function AsBoolean(AName: string; AValue: Boolean; ANullIfEmpty: Boolean = False): IADRQueryParam;
     function AsStream(AName: string; AValue: TStream; ADataType: TFieldType = ftBlob;
       ANullIfEmpty: Boolean = False): IADRQueryParam;
 
@@ -207,21 +212,23 @@ type
     function Clear: IADRQueryBatchParams;
     function ArraySize: Integer;
 
-    function AsInteger(AIndex: Integer; AName: string; AValue: Integer;
+    function AsBoolean(AIndex: Integer; AName: string; AValue: Boolean;
       ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
     function AsCurrency(AIndex: Integer; AName: string; AValue: Currency;
       ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
-    function AsFloat(AIndex: Integer; AName: string; AValue: Double;
-      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
-    function AsString(AIndex: Integer; AName: string; AValue: string;
+    function AsDate(AIndex: Integer; AName: string; AValue: TDateTime;
       ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
     function AsDateTime(AIndex: Integer; AName: string; AValue: TDateTime;
       ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
-    function AsDate(AIndex: Integer; AName: string; AValue: TDateTime;
+    function AsFloat(AIndex: Integer; AName: string; AValue: Double;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsInteger(AIndex: Integer; AName: string; AValue: Integer;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsLargeint(AIndex: Integer; AName: string; AValue: Largeint;
+      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
+    function AsString(AIndex: Integer; AName: string; AValue: string;
       ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
     function AsTime(AIndex: Integer; AName: string; AValue: TDateTime;
-      ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
-    function AsBoolean(AIndex: Integer; AName: string; AValue: Boolean;
       ANullIfEmpty: Boolean = False): IADRQueryBatchParams;
 
     function &End: IADRQuery;

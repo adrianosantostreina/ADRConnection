@@ -36,9 +36,8 @@ uses
   ADRConnection.Pool.Firedac in '..\Source\ADRConnection.Pool.Firedac.pas',
   ADRConn.Model.QueryParam in '..\Source\ADRConn.Model.QueryParam.pas',
   ADRConn.Model.QueryParam.Validator in '..\Source\ADRConn.Model.QueryParam.Validator.pas',
-  ADRConn.Model.PGDac.Connection in '..\Source\ADRConn.Model.PGDac.Connection.pas',
   ADRConn.Model.Zeos.Connection in '..\Source\ADRConn.Model.Zeos.Connection.pas',
-  ADRConn.Model.UniDAC.Connection in '..\Source\ADRConn.Model.UniDAC.Connection.pas';
+  ADRConn.Model.Zeos.Query in '..\Source\ADRConn.Model.Zeos.Query.pas';
 
 begin
   IsConsole := False;
