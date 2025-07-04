@@ -125,7 +125,10 @@ procedure TADRConnModelFiredacConnection.CreateDriver;
 begin
   FreeAndNil(FDriver);
   FDriver := TADRConnModelFiredacDriver.GetDriver(FParams);
-  FDriver.VendorLib := FParams.Lib;
+  if ExtractFileName(FParams.Lib).Trim.IsEmpty then
+    FDriver.VendorHome := FParams.Lib
+  else
+    FDriver.VendorLib := FParams.Lib;
 end;
 
 destructor TADRConnModelFiredacConnection.Destroy;
