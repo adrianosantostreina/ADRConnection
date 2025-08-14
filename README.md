@@ -54,3 +54,65 @@ begin
 end;
 
 ```
+
+There is the possibility to include custom parameters to connection
+```delphi
+FConnection.Params
+    .Driver(adrPostgres)
+    .Database('demoadrconnection')
+    .Server('127.0.0.1')
+    .Port(5432)
+    .UserName('postgres')
+    .Password('postgres');
+    .AddParam('CharacterSet', 'UTF8') //<-- custom parameters Here
+    .AddParam('lc_ctype', 'UTF8'); //<-- custom parameters Here
+```
+
+To execute Insert, update or Delete, use
+
+```delphi
+var
+  FQuery: IADRQuery;
+begin
+  FQuery := CreateQuery(FConnection);
+  FQuery.SQL('insert into person (id, name, document, phone)')
+    .SQL('values(1, 'DinosDev', '00001', '11 9 12345656')')
+    .ExecSQL;
+end;
+    
+```
+
+If you need works with TDataSet, you can convert this query on Dataset Easily
+```delphi
+
+var
+  lCds: TDataSet;
+begin
+  lCds := CreateQuery(FConnection);
+            .SQL('select id, name, document, phone')
+            .SQL('from person')
+          .OpenDataSet;
+end;
+
+// Or you can use that
+var
+  FQuery: IADRQuery;
+  lCds: TDataSet;
+  lDataSource: TDataSource;
+begin
+  FQuery := CreateQuery(FConnection);
+  FQuery.SQL('select id, name, document, phone')
+    .SQL('from person')
+    .Open;
+
+  lCds := FQuery.DataSet;
+
+  // you can extract the DataSource to link on Grid
+  FQuery.DataSource(lDataSource); //Return a interface IADRQuery
+  Grid.DataSource := lDataSource;
+end;
+    
+```
+
+
+
