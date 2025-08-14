@@ -11,8 +11,8 @@ uses
   FireDAC.Comp.Client,
   FireDAC.Stan.Def,
   FireDAC.Stan.Async,
-{$IFDEF MSWINDOWS}
   FireDAC.Comp.UI,
+{$IFDEF MSWINDOWS}
   FireDAC.VCLUI.Wait,
   FireDAC.UI.Intf,
 {$ENDIF}
@@ -125,10 +125,7 @@ procedure TADRConnModelFiredacConnection.CreateDriver;
 begin
   FreeAndNil(FDriver);
   FDriver := TADRConnModelFiredacDriver.GetDriver(FParams);
-  if ExtractFileName(FParams.Lib).Trim.IsEmpty then
-    FDriver.VendorHome := FParams.Lib
-  else
-    FDriver.VendorLib := FParams.Lib;
+  FDriver.VendorLib := FParams.Lib;
 end;
 
 destructor TADRConnModelFiredacConnection.Destroy;
