@@ -5,114 +5,214 @@
 </p>
 
 # ADRConnection
-Database connection abstraction. Encapsulates multiple connection components into a single interface.
 
-## 🧬Available Components
+**ADRConnection** is a powerful database connection abstraction library for Delphi. It encapsulates multiple data access components into a single fluent and intuitive interface, allowing you to switch the database engine (driver) without changing your application's business logic.
 
-| Component | Delphi | Directive
-| ------------------------------------------------------------------- | -------------------- | -------------------- |
-|  [Firedac](https://www.embarcadero.com/br/products/rad-studio/firedac) | &nbsp;&nbsp;&nbsp;✔️ | ADRCONN_FIREDAC |
-|  [PGDAC](https://www.devart.com/pgdac)   | &nbsp;&nbsp;&nbsp;✔️ | ADRCONN_PGDAC |
-|  [Unidac](https://www.devart.com/unidac/?gad_source=1&gclid=Cj0KCQjwqcO_BhDaARIsACz62vNi-vTROkelJb-VKVWJTM5sKaEOy9C3i5IPwrhCCcU_l2wvhm8h2TAaAik_EALw_wcB)  | &nbsp;&nbsp;&nbsp;✔️ | ADRCONN_UNIDAC |
-|  [ZEOS](https://sourceforge.net/projects/zeoslib)  | &nbsp;&nbsp;&nbsp;✔️ | ADRCONN_ZEOS |
+## 🚀 Key Features
+
+- **Component Abstraction:** Support for FireDAC, UniDAC, Zeos, and PGDAC.
+- **Multiple Databases:** Compatible with Firebird, PostgreSQL, MySQL, SQLite, Oracle, SQL Server, and MongoDB.
+- **Fluent API:** Connection configuration, and query/parameter construction in a clean, chained manner.
+- **Connection Pooling:** Efficient connection management for high-performance applications.
+- **DAO Support:** Base class for quick implementation of the Data Access Object pattern.
+- **Automatic Configuration:** Read connection parameters from an INI file.
+- **Batch Operations:** Support for Batch Updates for bulk insertions.
+
+## 🧬 Supported Components
+
+To use a specific component, define the corresponding compiler directive in your project:
+
+| Component | Directive | Documentation |
+| :--- | :--- | :--- |
+| **FireDAC** | `ADRCONN_FIREDAC` | [Embarcadero FireDAC](https://www.embarcadero.com/br/products/rad-studio/firedac) |
+| **UniDAC** | `ADRCONN_UNIDAC` | [DevArt UniDAC](https://www.devart.com/unidac/) |
+| **ZeosLib** | `ADRCONN_ZEOS` | [ZeosLib SourceForge](https://sourceforge.net/projects/zeoslib) |
+| **PgDAC** | `ADRCONN_PGDAC` | [DevArt PgDAC](https://www.devart.com/pgdac) |
 
 ## ⚙️ Installation
-Installation is done using the [`boss install`](https://github.com/HashLoad/boss) command:
-``` sh
+
+Installation is done using [`boss`](https://github.com/HashLoad/boss):
+
+```sh
 boss install github.com/adrianosantostreina/ADRConnection
 ```
 
-## ⚡️ Quickstart
+## ⚡️ Usage
+
+### 1. Creating a Connection
+
+You can manually configure the connection using the fluent interface:
+
 ```delphi
-// Create a Connection
 uses
   ADRConn.Model.Interfaces;
 
 var
-  FConnection: IADRConnection;
+  LConnection: IADRConnection;
 begin
-  FConnection := CreateConnection;
+  LConnection := CreateConnection;
+  
+  LConnection.Params
+    .Driver(adrPostgres)
+    .Database('mydatabase')
+    .Server('127.0.0.1')
+    .Port(5432)
+    .UserName('postgres')
+    .Password('password')
+    .AddParam('CharacterSet', 'UTF8'); // Custom parameters
+    
+  LConnection.Connect;
+end;
+```
+
+### 2. Executing Queries
+
+Executing SQL commands also follows the fluent pattern:
+
+```delphi
+var
+  LQuery: IADRQuery;
+begin
+  LQuery := CreateQuery(LConnection);
+  
+  // Select
+  LQuery.SQL('select id, name, email from customers')
+        .SQL('where id = :id')
+        .ParamAsInteger('id', 1)
+        .Open;
+
+  // Insert/Update/Delete
+  LQuery.Clear
+        .SQL('update customers set name = :name where id = :id')
+        .ParamAsString('name', 'New Name')
+        .ParamAsInteger('id', 1)
+        .ExecSQL;
+end;
+```
+
+### 3. Configuration via INI File
+
+The `TADRConnConfigIni` class facilitates reading settings from an `.ini` file (named after the executable):
+
+```delphi
+uses
+  ADRConn.Config.IniFile;
+
+var
+  LConfig: TADRConnConfigIni;
+begin
+  LConfig := TADRConnConfigIni.GetInstance;
+  
+  // The connection can be configured by reading directly from the INI
   FConnection.Params
-    .Driver(adrPostgres)
-    .Database('demoadrconnection')
-    .Server('127.0.0.1')
-    .Port(5432)
-    .UserName('postgres')
-    .Password('postgres');
-
-  FConnection.Connect;    
-end.
-
-// Create a Query
-var
-  FQuery: IADRQuery;
-begin
-  FQuery := CreateQuery(FConnection);
-  FQuery.SQL('select id, name, document, phone')
-    .SQL('from person')
-    .Open;
+    .Driver(LConfig.Driver)
+    .Database(LConfig.Database)
+    .Server(LConfig.Server)
+    .Port(LConfig.Port)
+    .UserName(LConfig.UserName)
+    .Password(LConfig.Password);
 end;
-
 ```
 
-There is the possibility to include custom parameters to connection
-```delphi
-FConnection.Params
-    .Driver(adrPostgres)
-    .Database('demoadrconnection')
-    .Server('127.0.0.1')
-    .Port(5432)
-    .UserName('postgres')
-    .Password('postgres');
-    .AddParam('CharacterSet', 'UTF8') //<-- custom parameters Here
-    .AddParam('lc_ctype', 'UTF8'); //<-- custom parameters Here
+Example INI structure:
+```ini
+[CONFIG]
+Driver=Postgres
+Database=mydatabase
+User_Name=postgres
+Password=password
+Server=localhost
+Port=5432
+VendorLib=libpq.dll
 ```
 
-To execute Insert, update or Delete, use
+### 4. Connection Pooling
+
+For applications requiring high concurrency, use the Connection Pool:
 
 ```delphi
+uses
+  ADRConnection.Pool,
+  ADRConn.Model.Interfaces;
+
+// Pool Initialization (usually at application start)
+TADRConnectionPoolBuilder.New
+  .MinPoolCount(5)
+  .MaxIdleSeconds(60)
+  .OnGetConnection(
+    function: IADRConnection
+    begin
+      // Returns a new configured connection instance
+      Result := CreateConnection;
+      Result.Params
+        .Driver(adrFirebird)
+        .Database('database.fdb')
+        ...
+    end)
+  .Build;
+
+// Getting a connection from the Pool
 var
-  FQuery: IADRQuery;
+  LPoolItem: TPoolItem<TADRConnectionPoolItem>;
 begin
-  FQuery := CreateQuery(FConnection);
-  FQuery.SQL('insert into person (id, name, document, phone)')
-    .SQL('values(1, 'DinosDev', '00001', '11 9 12345656')')
-    .ExecSQL;
-end;
-    
+  LPoolItem := GetPoolItem; 
+  // LPoolItem.Value.Connection is ready for use
+  LPoolItem.Value.Connection.StartTransaction;
+  try
+    // ... operations ...
+    LPoolItem.Value.Connection.Commit;
+  except
+    LPoolItem.Value.Connection.Rollback;
+  end;
+end; // The connection automatically returns to the pool here
 ```
 
-If you need works with TDataSet, you can convert this query on Dataset Easily
+### 5. DAO Pattern (Data Access Object)
+
+The library provides a base class `TADRConnDAOBase` to facilitate DAO creation:
+
 ```delphi
+uses
+  ADRConn.DAO.Base;
 
-var
-  lCds: TDataSet;
+type
+  TCustomerDAO = class(TADRConnDAOBase)
+  public
+    procedure Save(customer: TCustomer);
+  end;
+
+procedure TCustomerDAO.Save(customer: TCustomer);
 begin
-  lCds := CreateQuery(FConnection);
-            .SQL('select id, name, document, phone')
-            .SQL('from person')
-          .OpenDataSet;
+  FQuery.Clear
+        .SQL('insert into customers (name) values (:name)')
+        .ParamAsString('name', customer.Name)
+        .ExecSQL;
 end;
-
-// Or you can use that
-var
-  FQuery: IADRQuery;
-  lCds: TDataSet;
-  lDataSource: TDataSource;
-begin
-  FQuery := CreateQuery(FConnection);
-  FQuery.SQL('select id, name, document, phone')
-    .SQL('from person')
-    .Open;
-
-  lCds := FQuery.DataSet;
-
-  // you can extract the DataSource to link on Grid
-  FQuery.DataSource(lDataSource); //Return a interface IADRQuery
-  Grid.DataSource := lDataSource;
-end;
-    
 ```
 
+### 6. Error Handling and Logs
 
+You can interact with connection error and log events:
 
+```delphi
+LConnection.Events
+  .OnLog(
+    procedure(ALog: string)
+    begin
+      Writeln('Database Log: ' + ALog);
+    end)
+  .OnHandleException(
+    function(E: Exception): Boolean
+    begin
+      // Return True if the error was handled
+      Writeln('Error captured: ' + E.Message);
+      Result := False; 
+    end);
+```
+
+## 📋 License
+
+This project is licensed under the MIT license - see the [LICENSE.md](LICENSE.md) file for details.
+
+---
+🇧🇷 [Versão em Português](README.pt-BR.md)
